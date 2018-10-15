@@ -23,7 +23,7 @@
  * This module is used to control velocity only in MODULE mode
  */
 
-#include "modules/guidance_loop_velocity_autonomous_race/guidance_loop_velocity_autonomous_race.h"
+#include "modules/guidance_h_module/guidance_h_module.h"
 #include "state.h"
 #include "firmwares/rotorcraft/guidance/guidance_h.h"
 #include "firmwares/rotorcraft/stabilization/stabilization_attitude.h"
@@ -90,17 +90,15 @@ struct guidance_module_st guidance_module = {
 
 	.x_pgain = X_PGAIN,
 	.y_pgain = Y_PGAIN,
-//	.x_dgain = X_DGAIN,
-//	.y_dgain = Y_DGAIN,
 
-.phi_pgain = PHI_PGAIN,
-.phi_igain = PHI_IGAIN,
-.phi_dgain = PHI_DGAIN,
-.theta_pgain = THETA_PGAIN,
-.theta_igain = THETA_IGAIN,
-.theta_dgain = THETA_DGAIN,
-        .desired_vx = DESIRED_VX,
-        .desired_vy = DESIRED_VY,
+	.phi_pgain = PHI_PGAIN,
+	.phi_igain = PHI_IGAIN,
+	.phi_dgain = PHI_DGAIN,
+	.theta_pgain = THETA_PGAIN,
+	.theta_igain = THETA_IGAIN,
+	.theta_dgain = THETA_DGAIN,
+	.desired_vx = DESIRED_VX,
+	.desired_vy = DESIRED_VY,
 
 };
 
@@ -153,58 +151,6 @@ void guidance_h_module_run(bool in_flight)    // this function is called in high
  */
 void guidance_loop_pid()
 {
-    if(autopilot_get_mode() != AP_MODE_MODULE)
-    {
-	    guidance_module.err_vx_int = 0;
-	    guidance_module.err_vy_int = 0;
-    }
-    //current_guidance_h_mode = guidance_h.mode;
-    //
-    
-    float current_x = stateGetPositionNed_f()->x;
-    float current_y = stateGetPositionNed_f()->y;
-    guidance_module.desired_vx = guidance_module.x_pgain * (guidance_module.desired_x-current_x);
-    guidance_module.desired_vy = guidance_module.y_pgain * (guidance_module.desired_y-current_y);
-    float current_vel_x = stateGetSpeedNed_f()->x;
-    float current_vel_y = stateGetSpeedNed_f()->y;
-    /* Calculate the error */
-    guidance_h_module_speed_error_x = guidance_module.desired_vx - current_vel_x;
-    guidance_h_module_speed_error_y = guidance_module.desired_vy - current_vel_y;
-
-    /* Calculate the integrated errors (TODO: bound??) */
-    guidance_module.err_vx_int += guidance_h_module_speed_error_x / 512;
-    guidance_module.err_vy_int += guidance_h_module_speed_error_y / 512;
-
-
-
-    guidance_module.err_vx_deri = (guidance_h_module_speed_error_x - guidance_h_module_speed_error_x_previous)*512;
-    guidance_module.err_vy_deri = (guidance_h_module_speed_error_y - guidance_h_module_speed_error_y_previous)*512;
-
-    struct FloatVect2 cmd_f;
-    /* Calculate the commands */
-    cmd_f.y   = guidance_module.phi_pgain * guidance_h_module_speed_error_y
-                               + guidance_module.phi_igain * guidance_module.err_vy_int
-                               + guidance_module.phi_dgain * guidance_module.err_vy_deri;
-    cmd_f.x   = -(guidance_module.theta_pgain * guidance_h_module_speed_error_x
-                                 + guidance_module.theta_igain * guidance_module.err_vx_int
-                                 +guidance_module.theta_dgain * guidance_module.err_vx_deri);
-    float psi = stateGetNedToBodyEulers_f()->psi-33.0/180*3.14;
-    float s_psi = sinf(psi);
-    float c_psi = cosf(psi);
-    phi_desired_f = s_psi * cmd_f.x + c_psi * cmd_f.y;
-    theta_desired_f = c_psi * cmd_f.x - s_psi * cmd_f.y;
-
-    guidance_module.cmd.phi = BFP_OF_REAL(phi_desired_f, INT32_ANGLE_FRAC);
-    guidance_module.cmd.theta = BFP_OF_REAL(theta_desired_f, INT32_ANGLE_FRAC);
-
-
-	/*printf("[guidance_loop_velocity_autonomous_race] Now velocity control loop is actived \n");*/
-
-    /* Bound the roll and pitch commands */
-    BoundAbs(guidance_module.cmd.phi, CMD_OF_SAT);
-    BoundAbs(guidance_module.cmd.theta, CMD_OF_SAT);
-    guidance_h_module_speed_error_x_previous = guidance_h_module_speed_error_x;
-    guidance_h_module_speed_error_y_previous = guidance_h_module_speed_error_y;
 }
 
 void guidance_loop_set_heading(float heading){
@@ -212,21 +158,17 @@ void guidance_loop_set_heading(float heading){
 }
 
 void guidance_loop_set_velocity(float vx_earth, float vy_earth){
-    guidance_module.desired_vx = vx_earth;
-    guidance_module.desired_vy = vy_earth;
 }
 
 void guidance_loop_set_theta(float desired_theta)
 {
-		guidance_module.cmd.theta = BFP_OF_REAL(desired_theta, INT32_ANGLE_FRAC);
-    /*guidance_rp_command.theta = desired_theta;*/
+	guidance_module.cmd.theta = BFP_OF_REAL(desired_theta, INT32_ANGLE_FRAC);
 }
 
 
 void guidance_loop_set_phi(float desired_phi)
 {
-		guidance_module.cmd.phi= BFP_OF_REAL(desired_phi, INT32_ANGLE_FRAC);
-    /*guidance_rp_command.phi = desired_phi;*/
+	guidance_module.cmd.phi= BFP_OF_REAL(desired_phi, INT32_ANGLE_FRAC);
 }
 
 void guidance_loop_set_vx(float vx)

@@ -24,7 +24,7 @@
  */
 
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
-#include "modules/guidance_loop_velocity_autonomous_race/guidance_loop_velocity_autonomous_race.h"
+#include "modules/guidance_h_module/guidance_h_module.h"
 #include "modules/nn/nn.h"
 #include "stdio.h"
 #include "state.h"

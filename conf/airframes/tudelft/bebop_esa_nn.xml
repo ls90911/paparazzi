@@ -45,7 +45,7 @@
     <module name="nn"/>
     <module name="scheduleloop"/>
     <module name="guidance_loop_controller"/>
-    <module name="guidance_loop_velocity_autonomous_race"/>
+    <module name="guidance_h_module"/>
 
   </firmware>
 
