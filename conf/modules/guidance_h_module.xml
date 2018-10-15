@@ -8,6 +8,7 @@
     <file name="guidance_h_module.h"/>
   </header>
   <init fun="guidance_h_module_init()"/>
+  <periodic fun="guidance_loop_pid()"/>
   <makefile>
     <file name="guidance_h_module.c"/>
   </makefile>

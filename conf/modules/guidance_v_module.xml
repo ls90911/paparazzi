@@ -1,0 +1,14 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="guidance_v_module">
+  <doc>
+    <description>This module is a customized module, which receive thrust command from other module in float and transfer it to fix point number and send it to low level control</description>
+  </doc>
+  <header>
+    <file name="guidance_v_module.h"/>
+  </header>
+  <makefile>
+    <file name="guidance_v_module.c"/>
+  </makefile>
+</module>
+

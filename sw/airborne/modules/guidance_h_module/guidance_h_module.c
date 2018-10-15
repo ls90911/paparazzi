@@ -151,6 +151,52 @@ void guidance_h_module_run(bool in_flight)    // this function is called in high
  */
 void guidance_loop_pid()
 {
+	if(autopilot_get_mode() != AP_MODE_MODULE)
+	{
+		guidance_module.err_vx_int = 0;
+		guidance_module.err_vy_int = 0;
+	}
+	       
+	float current_x = stateGetPositionNed_f()->x;
+	float current_y = stateGetPositionNed_f()->y;
+	guidance_module.desired_vx = guidance_module.x_pgain * (guidance_module.desired_x-current_x);
+	guidance_module.desired_vy = guidance_module.y_pgain * (guidance_module.desired_y-current_y);
+	float current_vel_x = stateGetSpeedNed_f()->x;
+	float current_vel_y = stateGetSpeedNed_f()->y;
+	/* Calculate the error */
+	guidance_h_module_speed_error_x = guidance_module.desired_vx - current_vel_x;
+	guidance_h_module_speed_error_y = guidance_module.desired_vy - current_vel_y;
+	
+	guidance_module.err_vx_int += guidance_h_module_speed_error_x / 512;
+	guidance_module.err_vy_int += guidance_h_module_speed_error_y / 512;
+	
+	
+	
+	guidance_module.err_vx_deri = (guidance_h_module_speed_error_x - guidance_h_module_speed_error_x_previous)*512;
+	guidance_module.err_vy_deri = (guidance_h_module_speed_error_y - guidance_h_module_speed_error_y_previous)*512;
+	
+	struct FloatVect2 cmd_f;
+	/* Calculate the commands */
+	cmd_f.y   = guidance_module.phi_pgain * guidance_h_module_speed_error_y
+	+ guidance_module.phi_igain * guidance_module.err_vy_int
+	+ guidance_module.phi_dgain * guidance_module.err_vy_deri;
+	cmd_f.x   = -(guidance_module.theta_pgain * guidance_h_module_speed_error_x
+	+ guidance_module.theta_igain * guidance_module.err_vx_int
+	+guidance_module.theta_dgain * guidance_module.err_vx_deri);
+	float psi = stateGetNedToBodyEulers_f()->psi;
+	float s_psi = sinf(psi);
+	float c_psi = cosf(psi);
+	phi_desired_f = s_psi * cmd_f.x + c_psi * cmd_f.y;
+	theta_desired_f = c_psi * cmd_f.x - s_psi * cmd_f.y;
+	
+	guidance_module.cmd.phi = BFP_OF_REAL(phi_desired_f, INT32_ANGLE_FRAC);
+	guidance_module.cmd.theta = BFP_OF_REAL(theta_desired_f, INT32_ANGLE_FRAC);
+	
+	/* Bound the roll and pitch commands */
+	BoundAbs(guidance_module.cmd.phi, CMD_OF_SAT);
+	BoundAbs(guidance_module.cmd.theta, CMD_OF_SAT);
+	guidance_h_module_speed_error_x_previous = guidance_h_module_speed_error_x;
+	guidance_h_module_speed_error_y_previous = guidance_h_module_speed_error_y;
 }
 
 void guidance_loop_set_heading(float heading){

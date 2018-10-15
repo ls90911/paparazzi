@@ -185,6 +185,8 @@ void guidance_h_init(void)
 
   gh_ref_init();
 
+#define GUIDANCE_H_MODE_MODULE_SETTING GUIDANCE_H_MODE_MODULE
+
 #if GUIDANCE_H_MODE_MODULE_SETTING == GUIDANCE_H_MODE_MODULE
   guidance_h_module_init();
 #endif

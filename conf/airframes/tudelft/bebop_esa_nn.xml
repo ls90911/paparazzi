@@ -46,6 +46,7 @@
     <module name="scheduleloop"/>
     <module name="guidance_loop_controller"/>
     <module name="guidance_h_module"/>
+    <module name="guidance_v_module"/>
 
   </firmware>
 
