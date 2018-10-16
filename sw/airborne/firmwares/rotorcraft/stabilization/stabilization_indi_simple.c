@@ -320,6 +320,7 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
   indi.angular_accel_ref.q = indi.reference_acceleration.err_q * QUAT1_FLOAT_OF_BFP(att_err->qy)
                              - indi.reference_acceleration.rate_q * rates_for_feedback.q;
 
+//  printf("[stabilization indi] indi is running\n");
   //This separates the P and D controller and lets you impose a maximum yaw rate.
   float rate_ref_r = indi.reference_acceleration.err_r * QUAT1_FLOAT_OF_BFP(att_err->qz) / indi.reference_acceleration.rate_r;
   BoundAbs(rate_ref_r, indi.attitude_max_yaw_rate);

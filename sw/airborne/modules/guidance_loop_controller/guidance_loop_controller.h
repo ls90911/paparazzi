@@ -59,6 +59,12 @@ struct NN_STATE
 	double r;
 };
 
+struct ADAPT_HOVER_COEFFCIENT
+{
+	int counter;
+	int32_t sumDeltaT;
+};
+
 extern bool hover_with_optitrack(float hoverTime);
 extern void nn_controller(void);
 extern bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_heading);

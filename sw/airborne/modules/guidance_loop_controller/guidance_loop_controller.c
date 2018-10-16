@@ -38,6 +38,7 @@ struct Euler hoverEuler;
 bool flagNN;
 struct NN_CMD nn_cmd;
 struct NN_STATE nn_state;
+struct ADAPT_HOVER_COEFFCIENT hover_coefficient;
 
 struct FloatRMat R_OPTITRACK_2_NED, R_NED_2_NWU;
 struct FloatEulers eulersOT2NED = {0.0,0.0,-0.0/180.0*3.14};
@@ -64,6 +65,8 @@ bool hover_with_optitrack(float hoverTime)
             printf("hover is initialized\n");
             printf("time 2 is %f\n",getTime(2));
             flagNN = false;
+	    hover_coefficient.counter = 0;
+	    hover_coefficient.sumDeltaT = 0;
     }
 
     // -------------for log -----------------------
@@ -87,11 +90,15 @@ bool hover_with_optitrack(float hoverTime)
   
    guidance_loop_set_x(0.0);
    guidance_loop_set_y(0.0);
-   psi_c = 30.0/180.0*3.14*sin(3.14/6*getTime(2));
-   guidance_h_set_guided_heading(psi_c);
+   //psi_c = 30.0/180.0*3.14*sin(3.14/6*getTime(2));
+   //guidance_h_set_guided_heading(psi_c);
    guidance_loop_set_heading(0.0);
    guidance_v_set_guided_z(-1.5);
 
+   hover_coefficient.counter ++;
+   hover_coefficient.sumDeltaT += guidance_v_delta_t;
+   
+   printf("[guidance_loop_controller] guidance_v_nominal_throttle = %f\n",hover_coefficient.sumDeltaT/hover_coefficient.counter);
 
     if(getTime(2)>hoverTime)
     {
@@ -116,7 +123,7 @@ void nn_controller(void)
             controllerInUse = CONTROLLER_NN_CONTROLLER;
             clearClock(2);
             guidance_h_mode_changed(GUIDANCE_H_MODE_MODULE);
-            guidance_v_mode_changed(GUIDANCE_V_MODE_GUIDED);
+            guidance_v_mode_changed(GUIDANCE_V_MODE_MODULE);
             flagNN = true;
             printf("[nn controle] nn controller is activated]");
 
@@ -131,6 +138,7 @@ void nn_controller(void)
 	    guidance_loop_set_y(0.0);
 	    guidance_h_set_guided_heading(0);
 	    guidance_v_set_guided_z(-1.5);
+	    guidance_v_nominal_throttle = (float)hover_coefficient.sumDeltaT/(hover_coefficient.counter-1);
     }
 
     // First use pid to hover, then hack p and thrust using NN. 
@@ -156,8 +164,8 @@ void nn_controller(void)
     float_rmat_transp_vmult(&vel_NWU, &R_NED_2_NWU, &vel_NED);
 
    // prepare current states to feed NN
-    double state[NUM_STATE_VARS] = {pos_NWU.x, vel_NWU.x, pos_NWU.z-1.5, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta};
-    double control[NUM_CONTROL_VARS];
+    float state[NUM_STATE_VARS] = {pos_NWU.x, vel_NWU.x, pos_NWU.z-1.5, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta};
+    float control[NUM_CONTROL_VARS];
     gettimeofday(&t0, 0);
     nn(state, control);
     gettimeofday(&t1, 0);
