@@ -45,9 +45,11 @@ struct FloatEulers eulersOT2NED = {0.0,0.0,-0.0/180.0*3.14};
 struct FloatEulers eulersNED2BWU = {3.14,0.0,0.0};
 struct FloatVect3 pos_OT,vel_OT,pos_NED,vel_NED,pos_NWU,vel_NWU;
 float nn_time;
+float temp_time;
 float psi_c;
 struct timeval t0;
 struct timeval t1;
+struct timeval NN_start;
 
 
 bool hover_with_optitrack(float hoverTime)
@@ -93,7 +95,7 @@ bool hover_with_optitrack(float hoverTime)
    //psi_c = 30.0/180.0*3.14*sin(3.14/6*getTime(2));
    //guidance_h_set_guided_heading(psi_c);
    guidance_loop_set_heading(0.0);
-   guidance_v_set_guided_z(-1.5);
+   guidance_v_set_guided_z(-0.5);
 
    hover_coefficient.counter ++;
    hover_coefficient.sumDeltaT += guidance_v_delta_t;
@@ -124,7 +126,7 @@ void nn_controller(void)
             controllerInUse = CONTROLLER_NN_CONTROLLER;
             clearClock(2);
             guidance_h_mode_changed(GUIDANCE_H_MODE_MODULE);
-            guidance_v_mode_changed(GUIDANCE_V_MODE_MODULE);
+            guidance_v_mode_changed(GUIDANCE_V_MODE_GUIDED);
             flagNN = true;
             printf("[nn controle] nn controller is activated]");
 
@@ -138,15 +140,21 @@ void nn_controller(void)
 	    guidance_loop_set_x(0.0);
 	    guidance_loop_set_y(0.0);
 	    guidance_h_set_guided_heading(0);
-	    guidance_v_set_guided_z(-1.5);
+	    guidance_v_set_guided_z(-0.5);
 	    guidance_v_nominal_throttle = (float)hover_coefficient.sumDeltaT/(hover_coefficient.counter-1)/MAX_PPRZ;
+	    gettimeofday(&NN_start, 0);
     }
 
     // First use pid to hover, then hack p and thrust using NN. 
     guidance_loop_set_y(hoverPos.y);
     guidance_loop_set_x(hoverPos.x);
     guidance_loop_set_heading(0.0);
-    guidance_v_set_guided_z(-1.5);
+    int time_int;
+    gettimeofday(&t1, 0);
+    temp_time = timedifference_msec(NN_start,t1);
+    time_int = temp_time/1000;
+    int temp = time_int/10%10;
+    guidance_v_set_guided_z(-0.5-0.5*(temp));
     printf("[nn controller] nn controller is run\n");
 
     // transform coordinate from Optitrack frame to NED frame of cyberzoo and then to North-west-up frame

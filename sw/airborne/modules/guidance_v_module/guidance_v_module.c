@@ -65,5 +65,6 @@ void guidance_v_module_run(bool in_flight)
 
   /* bound the result */
   Bound(guidance_v_delta_t, 0, MAX_PPRZ);
+  printf("[guidance_v_module] altitude nn is running\n");
   stabilization_cmd[COMMAND_THRUST] = guidance_v_delta_t;
 }

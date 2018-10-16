@@ -52,6 +52,7 @@ void schedule_run() {
     {
         clearClock(1);
         highLevelGuidanceState = FIRST_HIGH_LEVEL;
+        lowLevelGuidanceState = TEMP;
         controllerInUse = NO_CONTROLLER; 
 	flagNN = false;
     }
