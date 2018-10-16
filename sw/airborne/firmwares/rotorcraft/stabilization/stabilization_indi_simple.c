@@ -40,6 +40,9 @@
 #include "paparazzi.h"
 #include "subsystems/radio_control.h"
 
+
+#include "modules/guidance_loop_controller/guidance_loop_controller.h"
+
 #if !defined(STABILIZATION_INDI_ACT_DYN_P) && !defined(STABILIZATION_INDI_ACT_DYN_Q) && !defined(STABILIZATION_INDI_ACT_DYN_R)
 #error You have to define the first order time constant of the actuator dynamics!
 #endif
@@ -288,6 +291,7 @@ static inline void finite_difference(float output[3], float new[3], float old[3]
  * @param att_err quaternion attitude error
  * @param rate_control rate control enabled, otherwise attitude control
  */
+struct RateReference rateRef;
 static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct Int32Quat *att_err, bool rate_control)
 {
   // Propagate the filter on the gyroscopes and actuators
@@ -319,11 +323,28 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
 
   indi.angular_accel_ref.q = indi.reference_acceleration.err_q * QUAT1_FLOAT_OF_BFP(att_err->qy)
                              - indi.reference_acceleration.rate_q * rates_for_feedback.q;
-
+  // Shuo add for NN ----------------------------------------------------------------------------------------------------
+  
+  if(flagNN == true)
+  {
+	  float rate_ref_q = nn_cmd.rate_ref;
+	  //BoundAbs(rate_ref_r, indi.attitude_max_yaw_rate);
+	  rateRef.q_ref = rate_ref_q;
+	  indi.angular_accel_ref.q = indi.reference_acceleration.rate_q * (rate_ref_q - rates_for_feedback.q);
+	  rateRef.q_ref = nn_cmd.rate_ref;  
+	  printf("NN rate control is running\n");
+  }
+  else
+  {
+	  rateRef.q_ref = indi.reference_acceleration.err_q * QUAT1_FLOAT_OF_BFP(att_err->qy) / indi.reference_acceleration.rate_q; 
+  }
+  rateRef.p_ref = indi.reference_acceleration.err_p * QUAT1_FLOAT_OF_BFP(att_err->qx) / indi.reference_acceleration.rate_q ;
+  //---------------------------------------------------------------------------------------------------------------------
 //  printf("[stabilization indi] indi is running\n");
   //This separates the P and D controller and lets you impose a maximum yaw rate.
   float rate_ref_r = indi.reference_acceleration.err_r * QUAT1_FLOAT_OF_BFP(att_err->qz) / indi.reference_acceleration.rate_r;
   BoundAbs(rate_ref_r, indi.attitude_max_yaw_rate);
+  rateRef.r_ref = rate_ref_r;
   indi.angular_accel_ref.r = indi.reference_acceleration.rate_r * (rate_ref_r - rates_for_feedback.r);
 
   /* Check if we are running the rate controller and overwrite */

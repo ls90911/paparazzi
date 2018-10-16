@@ -39,24 +39,24 @@
 enum ControllerInUse {NO_CONTROLLER,CONTROLLER_HOVER_WITH_OPTITRACK,CONTROLLER_NN_CONTROLLER,CONTROLLER_GO_TO_POINT} ;
 
 struct NN_CMD {
-    double thrust_ref;
-    double rate_ref;
+    float thrust_ref;
+    float rate_ref;
 };
 
 struct NN_STATE
 {
-	double x;
-	double y;
-	double z;
-	double vx;
-	double vy;
-	double vz;
-	double theta;
-	double phi;
-	double psi;
-	double p;
-	double q;
-	double r;
+	float x;
+	float y;
+	float z;
+	float vx;
+	float vy;
+	float vz;
+	float theta;
+	float phi;
+	float psi;
+	float p;
+	float q;
+	float r;
 };
 
 struct ADAPT_HOVER_COEFFCIENT

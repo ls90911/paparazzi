@@ -98,7 +98,8 @@ bool hover_with_optitrack(float hoverTime)
    hover_coefficient.counter ++;
    hover_coefficient.sumDeltaT += guidance_v_delta_t;
    
-   printf("[guidance_loop_controller] guidance_v_nominal_throttle = %f\n",hover_coefficient.sumDeltaT/hover_coefficient.counter);
+   //printf("[guidance_loop_controller] guidance_v_nominal_throttle = %f\n",(float)hover_coefficient.sumDeltaT/hover_coefficient.counter);
+   //printf("[guidance_loop_controller] guidance_v_delta_t = %d\n",guidance_v_delta_t);
 
     if(getTime(2)>hoverTime)
     {
@@ -138,7 +139,7 @@ void nn_controller(void)
 	    guidance_loop_set_y(0.0);
 	    guidance_h_set_guided_heading(0);
 	    guidance_v_set_guided_z(-1.5);
-	    guidance_v_nominal_throttle = (float)hover_coefficient.sumDeltaT/(hover_coefficient.counter-1);
+	    guidance_v_nominal_throttle = (float)hover_coefficient.sumDeltaT/(hover_coefficient.counter-1)/MAX_PPRZ;
     }
 
     // First use pid to hover, then hack p and thrust using NN. 

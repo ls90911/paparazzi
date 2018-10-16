@@ -64,4 +64,5 @@ void guidance_v_module_run(bool in_flight)
 
   /* bound the result */
   Bound(guidance_v_delta_t, 0, MAX_PPRZ);
+  printf("nn vertical control is running\n");
 }

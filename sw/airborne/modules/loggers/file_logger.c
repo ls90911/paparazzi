@@ -33,6 +33,7 @@
 #include "firmwares/rotorcraft/stabilization.h"
 #include "state.h"
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
+#include "firmwares/rotorcraft/stabilization/stabilization_indi_simple.h"
 
 /** Set the default File logger path to the USB drive */
 #ifndef FILE_LOGGER_PATH
@@ -85,7 +86,7 @@ void file_logger_periodic(void)
   static uint32_t counter;
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f\n",
+  fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f\n",
           counter,
 stateGetPositionNed_f()->x,
 stateGetPositionNed_f()->y,
@@ -112,7 +113,11 @@ vel_NWU.y,
 vel_NWU.z,
 guidance_v_delta_t,
 nn_time,
-psi_c
+psi_c,
+
+rateRef.p_ref,
+rateRef.q_ref,
+rateRef.r_ref
          );
   counter++;
 }
