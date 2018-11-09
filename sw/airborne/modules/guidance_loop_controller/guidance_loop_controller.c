@@ -140,7 +140,7 @@ void nn_controller(void)
 	    guidance_loop_set_x(0.0);
 	    guidance_loop_set_y(0.0);
 	    guidance_h_set_guided_heading(0);
-	    guidance_v_set_guided_z(-0.5);
+	    guidance_v_set_guided_z(-1.5);
 	    guidance_v_nominal_throttle = (float)hover_coefficient.sumDeltaT/(hover_coefficient.counter-1)/MAX_PPRZ;
 	    gettimeofday(&NN_start, 0);
     }
@@ -154,7 +154,9 @@ void nn_controller(void)
     temp_time = timedifference_msec(NN_start,t1);
     time_int = temp_time/1000;
     int temp = time_int/10%10;
-    guidance_v_set_guided_z(-0.5-0.5*(temp));
+    //guidance_v_set_guided_z(-0.5-0.5*(temp));
+    
+    guidance_v_set_guided_z(-1.5-sin(getTime(2)*3.14/5));
     printf("[nn controller] nn controller is run\n");
 
     // transform coordinate from Optitrack frame to NED frame of cyberzoo and then to North-west-up frame
