@@ -58,7 +58,7 @@ bool hover_with_optitrack(float hoverTime)
     {
             controllerInUse= CONTROLLER_HOVER_WITH_OPTITRACK;
             clearClock(2);
-            guidance_h_mode_changed(GUIDANCE_H_MODE_MODULE);
+            guidance_h_mode_changed(GUIDANCE_H_MODE_GUIDED);
             guidance_v_mode_changed(GUIDANCE_V_MODE_GUIDED);
             hoverPos.x = stateGetPositionNed_f()->x;
             hoverPos.y= stateGetPositionNed_f()->y;
@@ -90,8 +90,8 @@ bool hover_with_optitrack(float hoverTime)
    // ----------------------------------------------
    
   
-   guidance_loop_set_x(0.0);
-   guidance_loop_set_y(0.0);
+   //guidance_loop_set_x(0.0);
+   //guidance_loop_set_y(0.0);
    //psi_c = 30.0/180.0*3.14*sin(3.14/6*getTime(2));
    //guidance_h_set_guided_heading(psi_c);
    guidance_loop_set_heading(0.0);

@@ -74,7 +74,7 @@ PRINT_CONFIG_VAR(GUIDANCE_H_USE_SPEED_REF)
 #endif
 
 #ifndef GUIDANCE_INDI
-#define GUIDANCE_INDI FALSE 
+#define GUIDANCE_INDI TRUE 
 #endif
 
 struct HorizontalGuidance guidance_h;
