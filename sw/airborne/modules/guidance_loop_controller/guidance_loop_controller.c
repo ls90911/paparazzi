@@ -29,6 +29,7 @@
 #include "stdio.h"
 #include "state.h"
 #include<sys/time.h>
+#include "firmwares/rotorcraft/guidance/guidance_indi.h"
 //#include "modules/nn/nn_params.h"
 
 
@@ -67,8 +68,6 @@ bool hover_with_optitrack(float hoverTime)
             printf("hover is initialized\n");
             printf("time 2 is %f\n",getTime(2));
             flagNN = false;
-	    hover_coefficient.counter = 0;
-	    hover_coefficient.sumDeltaT = 0;
     }
 
     // -------------for log -----------------------
@@ -89,19 +88,10 @@ bool hover_with_optitrack(float hoverTime)
    float_rmat_transp_vmult(&vel_NWU, &R_NED_2_NWU, &vel_NED);
    // ----------------------------------------------
    
-  
-   //guidance_loop_set_x(0.0);
-   //guidance_loop_set_y(0.0);
-   //psi_c = 30.0/180.0*3.14*sin(3.14/6*getTime(2));
-   //guidance_h_set_guided_heading(psi_c);
-   guidance_loop_set_heading(0.0);
-   guidance_v_set_guided_z(-0.5);
-
-   hover_coefficient.counter ++;
-   hover_coefficient.sumDeltaT += guidance_v_delta_t;
-   
-   //printf("[guidance_loop_controller] guidance_v_nominal_throttle = %f\n",(float)hover_coefficient.sumDeltaT/hover_coefficient.counter);
-   //printf("[guidance_loop_controller] guidance_v_delta_t = %d\n",guidance_v_delta_t);
+   guidance_h_set_guided_pos(hoverPos.x, hoverPos.y); 
+   guidance_v_set_guided_z(-1.5);
+   set_z_ref(-1.5);
+   guidance_h_set_guided_heading(0.0);
 
     if(getTime(2)>hoverTime)
     {

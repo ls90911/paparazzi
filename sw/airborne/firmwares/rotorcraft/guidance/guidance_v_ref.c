@@ -94,6 +94,8 @@ void gv_set_ref(int32_t alt, int32_t speed, int32_t accel)
 
 void gv_update_ref_from_z_sp(int32_t z_sp)
 {
+    printf("[guidance_v] z_sp = %f\n",POS_FLOAT_OF_BFP(z_sp));
+    printf("[guidance_v] gv_z_ref = %f\n",FLOAT_OF_BFP(gv_z_ref,GV_Z_REF_FRAC));
 
   gv_z_ref  += gv_zd_ref;
   gv_zd_ref += gv_zdd_ref;

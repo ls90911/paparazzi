@@ -115,6 +115,8 @@ float time_of_accel_sp_3d = 0.0;
 struct FloatEulers guidance_euler_cmd;
 float thrust_in;
 
+int32_t z_ref;
+
 static void guidance_indi_propagate_filters(struct FloatEulers *eulers);
 static void guidance_indi_calcG(struct FloatMat33 *Gmat);
 static void guidance_indi_calcG_yxz(struct FloatMat33 *Gmat, struct FloatEulers *euler_yxz);
@@ -153,6 +155,7 @@ void guidance_indi_enter(void)
  */
 void guidance_indi_run(float heading_sp)
 {
+    printf("[guidance_h_indi] outerloop indi is running\n");
   struct FloatEulers eulers_yxz;
   struct FloatQuat * statequat = stateGetNedToBodyQuat_f();
   float_eulers_of_quat_yxz(&eulers_yxz, statequat);
@@ -160,10 +163,15 @@ void guidance_indi_run(float heading_sp)
   //filter accel to get rid of noise and filter attitude to synchronize with accel
   guidance_indi_propagate_filters(&eulers_yxz);
 
+  guidance_v_z_ref = z_ref;
+
   //Linear controller to find the acceleration setpoint from position and velocity
   float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
   float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
   float pos_z_err = POS_FLOAT_OF_BFP(guidance_v_z_ref - stateGetPositionNed_i()->z);
+  
+  printf("[guidance_h_indi] error z = %f\n",pos_z_err);
+  printf("[guidance_h_indi] guidance_v_z_ref = %f\n",POS_FLOAT_OF_BFP(guidance_v_z_ref));
 
   float speed_sp_x = pos_x_err * guidance_indi_pos_gain;
   float speed_sp_y = pos_y_err * guidance_indi_pos_gain;
@@ -208,6 +216,7 @@ void guidance_indi_run(float heading_sp)
   sp_accel.z = -(radio_control.values[RADIO_THROTTLE] - 4500) * 8.0 / 9600.0;
 #endif
 
+  printf("[guidance_h_indi] sp_accel_z = %f\n",sp_accel.z);
   //Calculate matrix of partial derivatives
   guidance_indi_calcG_yxz(&Ga, &eulers_yxz);
 
@@ -375,3 +384,7 @@ static void accel_sp_cb(uint8_t sender_id __attribute__((unused)), uint8_t flag,
   }
 }
 
+void set_z_ref(float z_ref)
+{
+    z_ref = POS_BFP_OF_REAL(z_ref); 
+}

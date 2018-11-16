@@ -43,5 +43,6 @@ extern float guidance_indi_thrust_specific_force_gain;
 extern float guidance_indi_pos_gain;
 extern float guidance_indi_speed_gain;
 extern float guidance_indi_max_bank;
+extern void set_z_ref(float z_ref);
 
 #endif /* GUIDANCE_INDI_H */
