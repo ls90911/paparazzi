@@ -117,6 +117,7 @@ struct FloatEulers guidance_euler_cmd;
 float thrust_in;
 
 int32_t z_ref;
+struct Debug_indi debug_indi;
 
 static void guidance_indi_propagate_filters(struct FloatEulers *eulers);
 static void guidance_indi_calcG(struct FloatMat33 *Gmat);
@@ -167,14 +168,13 @@ void guidance_indi_run(float heading_sp)
   guidance_indi_propagate_filters(&eulers_yxz);
 
   //------------------------------------------------------------------------------------
-//  guidance_v_z_ref = z_ref;
+  guidance_v_z_ref = z_ref;
   //------------------------------------------------------------------------------------
 
   //Linear controller to find the acceleration setpoint from position and velocity
   float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
   float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
   float pos_z_err = POS_FLOAT_OF_BFP(guidance_v_z_ref - stateGetPositionNed_i()->z);
-  printf("[guidance_indi] pos_z_err = %f\n",pos_z_err);
 
 
   float speed_sp_x = pos_x_err * guidance_indi_pos_gain;
@@ -208,8 +208,15 @@ void guidance_indi_run(float heading_sp)
     // this is running
   }
 
+  debug_indi.z_sp = -1.5;
+  debug_indi.z_ref = POS_FLOAT_OF_BFP(guidance_v_z_ref);
+  debug_indi.z_error = pos_z_err;
+  debug_indi.vz_sp = speed_sp_z;
+  debug_indi.az_sp = sp_accel.z;
+
   //---------------------------------------------------------------------------------------------------------
   //   test acceleration loop
+/*
  if(counter%500 <250)
  {
   sp_accel.x = 0.0;
@@ -224,17 +231,18 @@ void guidance_indi_run(float heading_sp)
  }
      
 
+ */
 
 
   //---------------------------------------------------------------------------------------------------------
   
   //---------------------------------------------------------------------------------------------------------
-  /*
   if(flagNN == true)
   {
-      sp_accel.z = -nn_cmd.thrust_ref/0.389;
+      float theta = stateGetNedToBodyEulers_f()->theta;
+      sp_accel.z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
   }
-  */
+
   //---------------------------------------------------------------------------------------------------------
 #if GUIDANCE_INDI_RC_DEBUG
 #warning "GUIDANCE_INDI_RC_DEBUG lets you control the accelerations via RC, but disables autonomous flight!"
@@ -416,7 +424,7 @@ static void accel_sp_cb(uint8_t sender_id __attribute__((unused)), uint8_t flag,
   }
 }
 
-void set_z_ref(float z_ref)
+void set_z_ref(float m_z_ref)
 {
-    z_ref = POS_BFP_OF_REAL(z_ref); 
+    z_ref = POS_BFP_OF_REAL(m_z_ref); 
 }

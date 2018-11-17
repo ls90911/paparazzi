@@ -32,6 +32,18 @@
 #include "math/pprz_algebra_int.h"
 #include "math/pprz_algebra_float.h"
 
+struct Debug_indi
+{
+    float z_sp;
+    float z_ref;
+    float z_error;
+    float vz_sp;
+    float vz_error;
+    float az_sp;
+};
+
+extern struct Debug_indi debug_indi;
+
 extern void guidance_indi_enter(void);
 extern void guidance_indi_run(float heading_sp);
 extern void stabilization_attitude_set_setpoint_rp_quat_f(struct FloatEulers* indi_rp_cmd, bool in_flight, float heading);

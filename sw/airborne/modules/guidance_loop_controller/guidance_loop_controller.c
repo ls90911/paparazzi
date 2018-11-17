@@ -140,9 +140,8 @@ void nn_controller(void)
     temp_time = timedifference_msec(NN_start,t1);
     time_int = temp_time/1000;
     int temp = time_int/10%10;
-    set_z_ref(-1.5-0.5*(temp));
+    set_z_ref(-1.5);
 	    //guidance_v_set_guided_z(-0.5-0.5*(temp));
-    printf("[nn controller] z_ref = %f\n",-0.5-0.5*(temp));
 
     // transform coordinate from Optitrack frame to NED frame of cyberzoo and then to North-west-up frame
 
