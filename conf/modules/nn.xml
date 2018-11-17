@@ -6,6 +6,8 @@
   </doc>
   <header>
     <file name="nn.h"/>
+    <file name="nn_params.h"/>
+    <file name="pd_gains.h"/>
   </header>
   <makefile>
     <file name="nn.c"/>

@@ -45,4 +45,5 @@ extern float guidance_indi_speed_gain;
 extern float guidance_indi_max_bank;
 extern void set_z_ref(float z_ref);
 
+extern struct FloatVect3 sp_accel;
 #endif /* GUIDANCE_INDI_H */

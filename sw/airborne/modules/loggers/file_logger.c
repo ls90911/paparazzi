@@ -34,6 +34,7 @@
 #include "state.h"
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
 #include "firmwares/rotorcraft/stabilization/stabilization_indi_simple.h"
+#include "firmwares/rotorcraft/guidance/guidance_indi.h"
 
 /** Set the default File logger path to the USB drive */
 #ifndef FILE_LOGGER_PATH
@@ -86,7 +87,7 @@ void file_logger_periodic(void)
   static uint32_t counter;
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f\n",
+  fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f\n",
           counter,
 stateGetPositionNed_f()->x,
 stateGetPositionNed_f()->y,
@@ -119,7 +120,12 @@ rateRef.p_ref,
 rateRef.q_ref,
 rateRef.r_ref,
 guidance_v_delta_t,
-guidance_v_nominal_throttle
+guidance_v_nominal_throttle,
+sp_accel.z,
+
+stateGetAccelNed_f()->x,
+stateGetAccelNed_f()->y,
+stateGetAccelNed_f()->z
          );
   counter++;
 }

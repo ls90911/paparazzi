@@ -1,4 +1,5 @@
 /*
+stateGetAccelNed_f()->z,
  * Copyright (C) 2011-2012 Felix Ruess <felix.ruess@gmail.com>
  *
  * This file is part of paparazzi.

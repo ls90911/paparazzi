@@ -26,6 +26,7 @@
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
 #include "modules/guidance_h_module/guidance_h_module.h"
 #include "modules/nn/nn.h"
+#include "modules/nn/nn_params.h"
 #include "stdio.h"
 #include "state.h"
 #include<sys/time.h>
@@ -115,7 +116,7 @@ void nn_controller(void)
     {
             controllerInUse = CONTROLLER_NN_CONTROLLER;
             clearClock(2);
-            guidance_h_mode_changed(GUIDANCE_H_MODE_MODULE);
+            guidance_h_mode_changed(GUIDANCE_H_MODE_GUIDED);
             guidance_v_mode_changed(GUIDANCE_V_MODE_GUIDED);
             flagNN = true;
             printf("[nn controle] nn controller is activated]");
@@ -127,27 +128,21 @@ void nn_controller(void)
 	    hoverPos.y = stateGetPositionNed_f()->y;
 	    hoverPos.z = stateGetPositionNed_f()->z;
 
-	    guidance_loop_set_x(0.0);
-	    guidance_loop_set_y(0.0);
 	    guidance_h_set_guided_heading(0);
 	    guidance_v_set_guided_z(-1.5);
-	    guidance_v_nominal_throttle = (float)hover_coefficient.sumDeltaT/(hover_coefficient.counter-1)/MAX_PPRZ;
 	    gettimeofday(&NN_start, 0);
     }
 
-    // First use pid to hover, then hack p and thrust using NN. 
-    guidance_loop_set_y(hoverPos.y);
-    guidance_loop_set_x(hoverPos.x);
-    guidance_loop_set_heading(0.0);
+   guidance_h_set_guided_pos(0.0,0.0); 
+   guidance_h_set_guided_heading(0.0);
     int time_int;
     gettimeofday(&t1, 0);
     temp_time = timedifference_msec(NN_start,t1);
     time_int = temp_time/1000;
     int temp = time_int/10%10;
-    //guidance_v_set_guided_z(-0.5-0.5*(temp));
-    
-    guidance_v_set_guided_z(-1.5-sin(getTime(2)*3.14/5));
-    printf("[nn controller] nn controller is run\n");
+    set_z_ref(-1.5-0.5*(temp));
+	    //guidance_v_set_guided_z(-0.5-0.5*(temp));
+    printf("[nn controller] z_ref = %f\n",-0.5-0.5*(temp));
 
     // transform coordinate from Optitrack frame to NED frame of cyberzoo and then to North-west-up frame
 
@@ -168,7 +163,7 @@ void nn_controller(void)
     float state[NUM_STATE_VARS] = {pos_NWU.x, vel_NWU.x, pos_NWU.z-1.5, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta};
     float control[NUM_CONTROL_VARS];
     gettimeofday(&t0, 0);
-    nn(state, control);
+    nn_stable(state, control);
     gettimeofday(&t1, 0);
     nn_time = timedifference_msec(t0,t1);
 

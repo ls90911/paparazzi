@@ -47,6 +47,7 @@
 #include "firmwares/rotorcraft/stabilization.h"
 #include "filters/low_pass_filter.h"
 #include "subsystems/abi.h"
+#include "modules/guidance_loop_controller/guidance_loop_controller.h"
 
 // The acceleration reference is calculated with these gains. If you use GPS,
 // they are probably limited by the update rate of your GPS. The default
@@ -153,9 +154,11 @@ void guidance_indi_enter(void)
  *
  * main indi guidance function
  */
+
+int counter = 0;
 void guidance_indi_run(float heading_sp)
 {
-    printf("[guidance_h_indi] outerloop indi is running\n");
+    counter ++;
   struct FloatEulers eulers_yxz;
   struct FloatQuat * statequat = stateGetNedToBodyQuat_f();
   float_eulers_of_quat_yxz(&eulers_yxz, statequat);
@@ -163,15 +166,16 @@ void guidance_indi_run(float heading_sp)
   //filter accel to get rid of noise and filter attitude to synchronize with accel
   guidance_indi_propagate_filters(&eulers_yxz);
 
-  guidance_v_z_ref = z_ref;
+  //------------------------------------------------------------------------------------
+//  guidance_v_z_ref = z_ref;
+  //------------------------------------------------------------------------------------
 
   //Linear controller to find the acceleration setpoint from position and velocity
   float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
   float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
   float pos_z_err = POS_FLOAT_OF_BFP(guidance_v_z_ref - stateGetPositionNed_i()->z);
-  
-  printf("[guidance_h_indi] error z = %f\n",pos_z_err);
-  printf("[guidance_h_indi] guidance_v_z_ref = %f\n",POS_FLOAT_OF_BFP(guidance_v_z_ref));
+  printf("[guidance_indi] pos_z_err = %f\n",pos_z_err);
+
 
   float speed_sp_x = pos_x_err * guidance_indi_pos_gain;
   float speed_sp_y = pos_y_err * guidance_indi_pos_gain;
@@ -201,8 +205,37 @@ void guidance_indi_run(float heading_sp)
     sp_accel.x = (speed_sp_x - stateGetSpeedNed_f()->x) * guidance_indi_speed_gain;
     sp_accel.y = (speed_sp_y - stateGetSpeedNed_f()->y) * guidance_indi_speed_gain;
     sp_accel.z = (speed_sp_z - stateGetSpeedNed_f()->z) * guidance_indi_speed_gain;
+    // this is running
   }
 
+  //---------------------------------------------------------------------------------------------------------
+  //   test acceleration loop
+ if(counter%500 <250)
+ {
+  sp_accel.x = 0.0;
+  sp_accel.y = -0.0;
+  sp_accel.z = -0.5;
+ }
+ else
+ {
+  sp_accel.x = 0.0;
+  sp_accel.y = -0.0;
+  sp_accel.z = 0.5;
+ }
+     
+
+
+
+  //---------------------------------------------------------------------------------------------------------
+  
+  //---------------------------------------------------------------------------------------------------------
+  /*
+  if(flagNN == true)
+  {
+      sp_accel.z = -nn_cmd.thrust_ref/0.389;
+  }
+  */
+  //---------------------------------------------------------------------------------------------------------
 #if GUIDANCE_INDI_RC_DEBUG
 #warning "GUIDANCE_INDI_RC_DEBUG lets you control the accelerations via RC, but disables autonomous flight!"
   //for rc control horizontal, rotate from body axes to NED
@@ -216,7 +249,6 @@ void guidance_indi_run(float heading_sp)
   sp_accel.z = -(radio_control.values[RADIO_THROTTLE] - 4500) * 8.0 / 9600.0;
 #endif
 
-  printf("[guidance_h_indi] sp_accel_z = %f\n",sp_accel.z);
   //Calculate matrix of partial derivatives
   guidance_indi_calcG_yxz(&Ga, &eulers_yxz);
 
