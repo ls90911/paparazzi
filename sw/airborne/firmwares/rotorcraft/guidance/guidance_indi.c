@@ -241,6 +241,7 @@ void guidance_indi_run(float heading_sp)
   {
       float theta = stateGetNedToBodyEulers_f()->theta;
       sp_accel.z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
+      printf("nn thrust is running\n");
   }
 
   //---------------------------------------------------------------------------------------------------------
