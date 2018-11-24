@@ -5,8 +5,8 @@ typedef enum {DENSE, RELU, TANH, SOFTPLUS} Layer;
 
 #define NUM_STATE_VARS 5
 #define NUM_CONTROL_VARS 2
-#define NUM_ALL_LAYERS 10
-#define NUM_DENSE_LAYERS 5
+#define NUM_ALL_LAYERS 12
+#define NUM_DENSE_LAYERS 6
 #define MAX_LAYER_DIMS 100
 
 extern const unsigned short LAYER_DIMS[];
