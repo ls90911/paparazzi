@@ -35,6 +35,8 @@
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
 #include "firmwares/rotorcraft/stabilization/stabilization_indi_simple.h"
 #include "firmwares/rotorcraft/guidance/guidance_indi.h"
+#include "modules/nn/nn.h"
+#include "subsystems/actuators/motor_mixing.h"
 
 /** Set the default File logger path to the USB drive */
 #ifndef FILE_LOGGER_PATH
@@ -87,8 +89,8 @@ void file_logger_periodic(void)
   static uint32_t counter;
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f ,%f,%f,%f,%f,%f\n",
-          counter,
+  fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f ,%f,%f,%f,%f,%f,%d,%d,%d,%f,"
+          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", counter,
 stateGetPositionNed_f()->x,
 stateGetPositionNed_f()->y,
 stateGetPositionNed_f()->z,
@@ -131,7 +133,32 @@ stateGetAccelNed_f()->z,
   debug_indi.z_ref,
   debug_indi.z_error,
   debug_indi.vz_sp,
-  debug_indi.az_sp
+  debug_indi.az_sp,
+  
+imu.accel.x,
+imu.accel.y,
+imu.accel.z,
+
+weight_nn,
+motor_mixing.commands[0],
+motor_mixing.commands[1],
+motor_mixing.commands[2],
+motor_mixing.commands[3],
+
+motor_cmd.trim[0],
+motor_cmd.trim[1],
+motor_cmd.trim[2],
+motor_cmd.trim[3],
+
+motor_cmd.thrust[0],
+motor_cmd.thrust[1],
+motor_cmd.thrust[2],
+motor_cmd.thrust[3],
+
+motor_cmd.pitch[0],
+motor_cmd.pitch[1],
+motor_cmd.pitch[2],
+motor_cmd.pitch[3]
          );
   counter++;
 }

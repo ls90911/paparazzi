@@ -8,8 +8,8 @@
     <file name="scheduleloop.h"/>
   </header>
   <init fun="schedule_init()"/>
-  <periodic fun="schedule_run()" freq="512"/>
-  <periodic fun="clock_run()" freq="1000"/>
+  <periodic fun="schedule_run()" freq="100"/>
+  <periodic fun="clock_run()" freq="100"/>
   <makefile>
     <file name="scheduleloop.c"/>
   </makefile>

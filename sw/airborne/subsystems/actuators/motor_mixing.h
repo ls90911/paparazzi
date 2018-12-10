@@ -42,7 +42,15 @@ struct MotorMixing {
   uint32_t nb_failure;
 };
 
+struct MotorCommands{
+    int32_t trim[MOTOR_MIXING_NB_MOTOR];
+    int32_t pitch[MOTOR_MIXING_NB_MOTOR];
+    int32_t roll[MOTOR_MIXING_NB_MOTOR];
+    int32_t thrust[MOTOR_MIXING_NB_MOTOR];
+};
+
 extern struct MotorMixing motor_mixing;
+extern struct MotorCommands motor_cmd;
 
 extern void motor_mixing_init(void);
 extern void motor_mixing_run(bool motors_on, bool override_on, pprz_t in_cmd[]);

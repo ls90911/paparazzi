@@ -105,11 +105,11 @@ void secondPartLogic(void)
  
 void clock_run(){
      clockSchedule.counterTime1++;
-     clockSchedule.time1 = clockSchedule.counterTime1 / 1000.0;
+     clockSchedule.time1 = clockSchedule.counterTime1 / 100.0;
      clockSchedule.counterTime2++;
-     clockSchedule.time2 = clockSchedule.counterTime2 / 1000.0;
+     clockSchedule.time2 = clockSchedule.counterTime2 / 100.0;
      clockSchedule.counterTime3++;
-     clockSchedule.time3 = clockSchedule.counterTime3 / 1000.0;
+     clockSchedule.time3 = clockSchedule.counterTime3 / 100.0;
  }
 
 void clearClock(int clockNum)

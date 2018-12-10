@@ -90,7 +90,7 @@ bool hover_with_optitrack(float hoverTime)
    // ----------------------------------------------
    
    guidance_h_set_guided_pos(0.0, 0.0); 
-   guidance_v_set_guided_z(-1.5);
+   //guidance_v_set_guided_z(-1.5);
    set_z_ref(-1.5);
    guidance_h_set_guided_heading(0.0);
 
@@ -163,6 +163,8 @@ void nn_controller(void)
     float control[NUM_CONTROL_VARS];
     gettimeofday(&t0, 0);
     nn_stable(state, control);
+    //nn(state, control);
+//   nested_control(state, control) ;
     gettimeofday(&t1, 0);
     nn_time = timedifference_msec(t0,t1);
 

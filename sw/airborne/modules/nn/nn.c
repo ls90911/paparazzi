@@ -100,22 +100,25 @@ void compute_control(float **ptr_arr_1, float **ptr_arr_2) {
 
 void nested_control(float state[], float control[]) {
     float phi = -KPP*state[0] - KDP*state[1];
-    control[0] = GRAV_ACC*MASS - KDZ*state[2] - KPZ*state[3];
+    control[0] = GRAV_ACC*MASS - KPZ*state[2] - KDZ*state[3];
     control[1] = KPT * (phi - state[4]);
 }
+
+float weight_nn;
 
 void patched_control(float state[], float control[]) {
     float dist_sq = 0, scale_factor = 0;
     float control_nested[NUM_CONTROL_VARS];
 
-    int i;
-    for (i = 0; i < NUM_STATE_VARS; i++) {
-        dist_sq = dist_sq + state[i]*state[i];
-    }
+    /* int i; */
+    /* for (i = 0; i < NUM_STATE_VARS; i++) { */
+    /*    dist_sq = dist_sq + state[i]*state[i]; */
+    /* } */
+    dist_sq = state[0]*state[0] + state[2]*state[2]; /* only {x,z} */
     scale_factor = exp(-SCALING_COEFF/dist_sq);
 
     nested_control(state, control_nested);
-
+    weight_nn = scale_factor;
     control[0] = control[0]*scale_factor + (1-scale_factor)*control_nested[0];
     control[1] = control[1]*scale_factor + (1-scale_factor)*control_nested[1];
 }

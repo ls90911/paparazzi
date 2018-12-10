@@ -3,5 +3,7 @@
 
 extern void nn(float *state, float *control);
 extern void nn_stable(float *state, float *control);
+extern void nested_control(float *state, float *control);
+extern float weight_nn;
 
 #endif
