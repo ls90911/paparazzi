@@ -68,8 +68,16 @@ static inline void comm_send_ch(mavlink_channel_t chan __attribute__((unused)), 
 
 
 
+struct vision_relative_position_struct {
+  int received;
+  int cnt;
+  float x;
+  float y;
+  float z;
+};
 
 
+extern struct vision_relative_position_struct jevois_vision_position;
 /*
  * Paparazzi Module functions
  */

@@ -10,14 +10,15 @@
 
 // Variables
 struct dronerace_control_struct dr_control;
+struct pid_term_struct pid_term = {0.0,0.0,0.0};
 
 // Settings
 
 
 // Slow speed
-#define CTRL_MAX_SPEED  3.5             // m/s
+#define CTRL_MAX_SPEED  2.5             // m/s
 #define CTRL_MAX_PITCH  RadOfDeg(17)    // rad
-#define CTRL_MAX_ROLL   RadOfDeg(15)    // rad
+#define CTRL_MAX_ROLL   RadOfDeg(25)    // rad
 #define CTRL_MAX_R      RadOfDeg(70)    // rad/sec
 
 /*
@@ -84,13 +85,13 @@ void control_run(float dt)
   // TODO: interestingly, we don't use the velocity correction for control: t_fit * dr_ransac.corr_vx
   if(gates[dr_fp.gate_nr].psi == RadOfDeg(0.0) || gates[dr_fp.gate_nr].psi == RadOfDeg(180))
   {
-    vxcmd = (dr_fp.x_set - (dr_state.x + dr_ransac.corr_x)) * P_FORWARD - dr_state.vx * D_FORWARD;
-    vycmd = (dr_fp.y_set - (dr_state.y+dr_ransac.corr_y)) * P_LATERAL - dr_state.vy * D_LATERAL;
+    vxcmd = (dr_fp.x_set - filteredX) * P_FORWARD - filteredVx * D_FORWARD;
+    vycmd = (dr_fp.y_set - filteredY) * P_LATERAL - filteredVy * D_LATERAL;
   }
   else
   {
-    vxcmd = (dr_fp.x_set - (dr_state.x + dr_ransac.corr_x)) * P_LATERAL- dr_state.vx * D_LATERAL;
-    vycmd = (dr_fp.y_set - (dr_state.y+dr_ransac.corr_y)) * P_FORWARD- dr_state.vy * D_FORWARD;
+    vxcmd = (dr_fp.x_set - filteredX) * P_LATERAL- filteredVx * D_LATERAL;
+    vycmd = (dr_fp.y_set - filteredY) * P_FORWARD- filteredVy * D_FORWARD;
   }
 
   if(!waypoints_dr[dr_fp.gate_nr].brake) {
@@ -105,8 +106,8 @@ void control_run(float dt)
   vycmd *= dr_fp.gate_speed;
 
   // Speed to Attitude
-  ax = (vxcmd - dr_state.vx) * 1.0f + vxcmd * RadOfDeg(10.0f) / 3.0f;
-  ay = (vycmd - dr_state.vy) * 1.0f + vycmd * RadOfDeg(10.0f) / 3.0f;
+  ax = (vxcmd - filteredVx) * 1.0f + vxcmd * RadOfDeg(10.0f) / 3.0f;
+  ay = (vycmd - filteredVy) * 1.0f + vycmd * RadOfDeg(10.0f) / 3.0f;
 
   Bound(ax, -CTRL_MAX_PITCH, CTRL_MAX_PITCH);
   Bound(ay, -CTRL_MAX_PITCH, CTRL_MAX_PITCH);

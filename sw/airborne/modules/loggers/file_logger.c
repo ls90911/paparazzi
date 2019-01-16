@@ -30,6 +30,11 @@
 #include <sys/stat.h>
 #include <time.h>
 #include "std.h"
+#include "modules/ctrl/dronerace/filter.h"
+#include "modules/ctrl/dronerace/control.h"
+#include "modules/ctrl/dronerace/flightplan.h"
+#include "modules/ctrl/dronerace/ransac.h"
+#include "modules/sensors/cameras/jevois_mavlink.h"
 
 #include "subsystems/imu.h"
 #ifdef COMMAND_THRUST
@@ -115,47 +120,66 @@ void file_logger_periodic(void)
   static uint32_t counter;
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-#ifdef COMMAND_THRUST //For example rotorcraft
-  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-          counter,
-          imu.gyro_unscaled.p,
-          imu.gyro_unscaled.q,
-          imu.gyro_unscaled.r,
+  fprintf(file_logger, "%f,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f\n",
+          dr_state.time,
           imu.accel_unscaled.x,
           imu.accel_unscaled.y,
           imu.accel_unscaled.z,
-          imu.mag_unscaled.x,
-          imu.mag_unscaled.y,
-          imu.mag_unscaled.z,
-          stabilization_cmd[COMMAND_THRUST],
-          stabilization_cmd[COMMAND_ROLL],
-          stabilization_cmd[COMMAND_PITCH],
-          stabilization_cmd[COMMAND_YAW],
-          quat->qi,
-          quat->qx,
-          quat->qy,
-          quat->qz
-         );
-#else
-  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-          counter,
           imu.gyro_unscaled.p,
           imu.gyro_unscaled.q,
           imu.gyro_unscaled.r,
-          imu.accel_unscaled.x,
-          imu.accel_unscaled.y,
-          imu.accel_unscaled.z,
-          imu.mag_unscaled.x,
-          imu.mag_unscaled.y,
-          imu.mag_unscaled.z,
-		  h_ctl_aileron_setpoint,
-		  h_ctl_elevator_setpoint,
-          quat->qi,
-          quat->qx,
-          quat->qy,
-          quat->qz
+
+          stateGetNedToBodyEulers_f()->phi,
+          stateGetNedToBodyEulers_f()->theta,
+          stateGetNedToBodyEulers_f()->psi,
+
+
+          jevois_vision_position.x,
+          jevois_vision_position.y,
+          jevois_vision_position.z,
+
+          filteredX,
+          filteredY,
+          filteredVx,
+          filteredVy,
+          0.0,
+          
+          mx,
+          my,
+          0,0,0,0,0,0,0,0,
+
+          dr_control.phi_cmd,
+          dr_control.theta_cmd,
+          dr_control.psi_cmd,
+          dr_control.z_cmd,
+          0,0,0,
+          dr_fp.gate_nr,
+
+          filteredX,
+          filteredY,
+
+          stateGetPositionNed_f()->x,
+          stateGetPositionNed_f()->y,
+          stateGetSpeedNed_f()->x,
+          stateGetSpeedNed_f()->y,
+
+          filteredVx,
+          filteredVy,
+
+          2,
+          dr_ransac.corr_x,
+          dr_ransac.corr_y,
+          dr_ransac.corr_vx,
+          dr_ransac.corr_vx,
+
+          3,
+          pid_term.p_term_x,
+          pid_term.d_term_x,
+          pid_term.p_term_y,
+          pid_term.d_term_y,
+          pid_term.vx_cmd,
+          pid_term.vy_cmd
          );
-#endif
 
   counter++;
 }

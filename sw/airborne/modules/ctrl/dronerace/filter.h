@@ -1,3 +1,5 @@
+#ifndef FILTER_H_H_
+#define FILTER_H_H_
 struct dronerace_vision_struct {
   int cnt;
   float dx;
@@ -27,8 +29,6 @@ struct dronerace_state_struct {
   int assigned_gate_index;
 };
 
-extern float log_mx, log_my;
-
 extern struct dronerace_state_struct dr_state;
 
 
@@ -40,3 +40,7 @@ extern float mx;
 extern float my;
 extern float filteredX;
 extern float filteredY;
+extern float filteredVx;
+extern float filteredVy;
+
+#endif

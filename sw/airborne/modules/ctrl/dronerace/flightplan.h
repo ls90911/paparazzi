@@ -1,3 +1,5 @@
+#ifndef FLIGHT_PLAN_H_H_
+#define FLIGHT_PLAN_H_H_
 // for jungle gate:
 #define UPPER_GATE 0
 #define LOWER_GATE 1
@@ -70,3 +72,5 @@ extern void flightplan_reset(void);
 extern void flightplan_run(void);
 extern void resetJungleGate(void);
 extern void flightplan_list(void);
+
+#endif

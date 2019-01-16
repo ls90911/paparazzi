@@ -6,7 +6,6 @@
 #include "stdio.h"
 
 // RANSAC Measurement buffer size
-#define  RANSAC_BUF_SIZE   30
 
 
 // NOTE: the following defines determine how often there will be a RANSAC fit and a correction.
@@ -23,20 +22,6 @@
 // WARNING: UPDATE std.h in windows if buffer size is increased
 
 // Buffer Data Type
-struct dronerace_ransac_buf_struct
-{
-    // Settings
-    float time;
-
-    // Predicted States
-    float x;
-    float y;
-
-    // Measured States
-    float mx;
-    float my;
-};
-
 // Variables
 struct dronerace_ransac_buf_struct ransac_buf[RANSAC_BUF_SIZE];
 struct dronerace_ransac_struct dr_ransac;
@@ -48,7 +33,7 @@ struct dronerace_ransac_struct dr_ransac;
 // The RANSAC buffer is a rolling buffer. The index wraps arround zero.
 // @param[in]: From newest (0) to oldest (RANSAC_BUF_SIZE)
 // @param[out]: the index of the element
-inline int get_index(int element)
+int get_index(int element)
 {
     int ind = dr_ransac.buf_index_of_last - element;
     if (ind < 0) { ind += RANSAC_BUF_SIZE; }
@@ -123,6 +108,12 @@ void ransac_propagate( void )
         {
           //printf("\n\n*** RESET DUE TO NO VISION ***\n\n");
           //correct_state();
+          float deltaT = dr_state.time-ransac_buf[get_index(0)].time;
+          dr_state.x += dr_ransac.corr_x+dr_ransac.corr_vx*deltaT;
+          dr_state.y += dr_ransac.corr_y+dr_ransac.corr_vy*deltaT;
+          dr_state.vx += dr_ransac.corr_vx;
+          dr_state.vy += dr_ransac.corr_vy;
+          ransac_reset();
         }
     }
 }

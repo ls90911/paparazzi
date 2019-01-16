@@ -98,7 +98,7 @@ void flightplan_list(void)
           && ((yaw > -RadOfDeg(90.0f)) && (yaw < RadOfDeg(90.0f)))
          ) {
         float px = view * 340.0f + 320.0f;
-        printf("Expected gates: %d  %.1f s=%.1f heading %.1f rot %.1f\n", i, dist, size, px, yaw * 57.6f);
+        //printf("Expected gates: %d  %.1f s=%.1f heading %.1f rot %.1f\n", i, dist, size, px, yaw * 57.6f);
       }
     }
   }

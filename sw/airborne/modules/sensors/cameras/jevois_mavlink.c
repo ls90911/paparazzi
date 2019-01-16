@@ -78,13 +78,7 @@ struct visual_target_struct {
   int source;
 } jevois_visual_target = {false, 0, 0, 0, 0, 0, 0};
 
-struct vision_relative_position_struct {
-  int received;
-  int cnt;
-  float x;
-  float y;
-  float z;
-} jevois_vision_position = {false, 0, 0.0f, 0.0f, 0.0f};
+struct vision_relative_position_struct jevois_vision_position = {false, 0, 0.0f, 0.0f, 0.0f};
 
 /*
  * Paparazzi Module functions : filter functions

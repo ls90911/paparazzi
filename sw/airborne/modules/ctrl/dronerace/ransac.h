@@ -1,4 +1,6 @@
 
+#ifndef RANSAC_H_H_
+#define RANSAC_H_H_
 // Datatype
 struct dronerace_ransac_struct
 {
@@ -18,6 +20,22 @@ struct dronerace_ransac_struct
     int ransac_cnt;     ///< How many times was RANSAC run
 };
 
+struct dronerace_ransac_buf_struct
+{
+    // Settings
+    float time;
+
+    // Predicted States
+    float x;
+    float y;
+
+    // Measured States
+    float mx;
+    float my;
+};
+
+#define  RANSAC_BUF_SIZE   30
+
 // Variables
 extern struct dronerace_ransac_struct dr_ransac;
 
@@ -33,3 +51,7 @@ extern void ransac_propagate(void);
 
 // On new vision update: PUSH a measurement update
 extern void ransac_push(float time, float x, float y, float mx, float my);
+
+extern struct dronerace_ransac_buf_struct ransac_buf[RANSAC_BUF_SIZE];
+extern int get_index(int element);
+#endif

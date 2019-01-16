@@ -7,6 +7,7 @@
 #include <math.h>
 #include "std.h"
 #include "stdio.h"
+#include "ransac.h"
 
 // to know if we are simulating:
 #include "generated/airframe.h"
@@ -38,7 +39,7 @@ void filter_reset()
   ransac_reset();
 }
 
-float filteredX, filteredY;
+float filteredX, filteredY, filteredVx,filteredVy;
 
 
 // PREDICTION MODEL
@@ -85,9 +86,11 @@ void filter_predict(float phi, float theta, float psi, float dt)
   // Check if Ransac buffer is empty
   ransac_propagate();
 
-  filteredX = dr_state.x;
-  filteredY = dr_state.y;
-
+  float deltaT = dr_state.time - ransac_buf[get_index(0)].time;
+  filteredX = dr_state.x + dr_ransac.corr_x + dr_ransac.corr_vx*deltaT;
+  filteredY = dr_state.y + dr_ransac.corr_y + dr_ransac.corr_vy*deltaT;
+  filteredVx = dr_state.vx + dr_ransac.corr_vx;
+  filteredVy = dr_state.vy + dr_ransac.corr_vy;
 }
 
 float log_mx, log_my;
@@ -125,6 +128,8 @@ void filter_correct(void)
       // for logging the filtering result  Shuo add
       filteredX = dr_state.x + dr_ransac.corr_x;
       filteredY = dr_state.y + dr_ransac.corr_y;
+      filteredVx = dr_state.vx + dr_ransac.corr_vx;
+      filteredVy = dr_state.vy + dr_ransac.corr_vy;
 
       return;
     }
