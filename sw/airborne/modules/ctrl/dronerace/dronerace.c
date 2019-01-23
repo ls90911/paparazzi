@@ -50,6 +50,7 @@ volatile float input_dx = 0;
 volatile float input_dy = 0;
 volatile float input_dz = 0;
 
+uint8_t previous_autopilot_mode;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,7 +196,7 @@ void dronerace_init(void)
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_OPTICAL_FLOW_HOVER, send_dronerace);
 
   // Start Logging
-  open_log();
+//  open_log();
 
   // Compute waypoints
   dronerace_enter();
@@ -208,6 +209,7 @@ void dronerace_enter(void)
   psi0 = stateGetNedToBodyEulers_f()->psi;
   filter_reset();
   control_reset();
+  previous_autopilot_mode = autopilot.mode;
 
   for (int i=0;i<MAX_GATES;i++)
   {
@@ -233,6 +235,10 @@ void dronerace_enter(void)
 
 void dronerace_periodic(void)
 {
+    if(previous_autopilot_mode != autopilot.mode)
+    {
+        control_reset();
+    }
 
   float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
   float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);
@@ -257,7 +263,7 @@ void dronerace_periodic(void)
   }
 
   //printf("before write log\n");
-  write_log();
+  //write_log();
   //printf("after write log\n");
 
   {
@@ -269,10 +275,12 @@ void dronerace_periodic(void)
     if (autopilot.mode_auto2 == AP_MODE_MODULE) {
       ENU_BFP_OF_REAL(navigation_carrot, target_ned);
       ENU_BFP_OF_REAL(navigation_target, target_ned);
+
     }
   }
 
 
+  previous_autopilot_mode = autopilot.mode;
   // Show position on the map
   /*
   struct NedCoor_f pos;

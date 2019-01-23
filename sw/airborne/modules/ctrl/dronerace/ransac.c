@@ -105,14 +105,12 @@ void ransac_propagate( void )
         // IF the oldest vision sample is from X seconds ago, then reset
         float age = (dr_state.time - ransac_buf[dr_ransac.buf_index_of_last].time);
         if (age > dr_ransac.dt_novision)
-        {
-          //printf("\n\n*** RESET DUE TO NO VISION ***\n\n");
-          //correct_state();
-          float deltaT = dr_state.time-ransac_buf[get_index(0)].time;
-          dr_state.x += dr_ransac.corr_x+dr_ransac.corr_vx*deltaT;
-          dr_state.y += dr_ransac.corr_y+dr_ransac.corr_vy*deltaT;
-          dr_state.vx += dr_ransac.corr_vx;
-          dr_state.vy += dr_ransac.corr_vy;
+        { 
+            float deltaT = dr_state.time-ransac_buf[get_index(0)].time;
+            dr_state.x += dr_ransac.corr_x+dr_ransac.corr_vx*deltaT;
+            dr_state.y += dr_ransac.corr_y+dr_ransac.corr_vy*deltaT;
+            dr_state.vx += dr_ransac.corr_vx;
+            dr_state.vy += dr_ransac.corr_vy;
           ransac_reset();
         }
     }
@@ -199,7 +197,7 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my)
 #define DEBUG_RANSAC
 #ifdef DEBUG_RANSAC
 
-        if(dr_ransac.ransac_cnt % 3 == 0)
+        if(dr_ransac.ransac_cnt % 1 == 0)
         {
             char filename[128];
             FILE* fp;

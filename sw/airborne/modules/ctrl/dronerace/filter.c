@@ -117,20 +117,17 @@ void filter_correct(void)
 
     if (assigned_gate == dr_fp.gate_nr) {
 
-      pushJungleGateDetection();
+      //pushJungleGateDetection();
 
-      log_mx = dr_fp.gate_x;
-      log_my = dr_fp.gate_y;
 
       // Push to RANSAC
       ransac_push(dr_state.time, dr_state.x, dr_state.y, mx, my);
 
-      // for logging the filtering result  Shuo add
       filteredX = dr_state.x + dr_ransac.corr_x;
       filteredY = dr_state.y + dr_ransac.corr_y;
       filteredVx = dr_state.vx + dr_ransac.corr_vx;
       filteredVy = dr_state.vy + dr_ransac.corr_vy;
-
+      
       return;
     }
   }

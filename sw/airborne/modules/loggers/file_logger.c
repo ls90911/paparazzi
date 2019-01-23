@@ -120,8 +120,8 @@ void file_logger_periodic(void)
   static uint32_t counter;
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%f,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f\n",
-          dr_state.time,
+  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f\n",
+          counter,
           imu.accel_unscaled.x,
           imu.accel_unscaled.y,
           imu.accel_unscaled.z,
@@ -138,10 +138,10 @@ void file_logger_periodic(void)
           jevois_vision_position.y,
           jevois_vision_position.z,
 
-          filteredX,
-          filteredY,
-          filteredVx,
-          filteredVy,
+          dr_state.x,
+          dr_state.y,
+          dr_state.vx,
+          dr_state.vy,
           0.0,
           
           mx,
@@ -170,7 +170,7 @@ void file_logger_periodic(void)
           dr_ransac.corr_x,
           dr_ransac.corr_y,
           dr_ransac.corr_vx,
-          dr_ransac.corr_vx,
+          dr_ransac.corr_vy,
 
           3,
           pid_term.p_term_x,
