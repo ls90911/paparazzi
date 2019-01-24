@@ -184,8 +184,8 @@ void guidance_loop_pid()
 	+ guidance_module.theta_igain * guidance_module.err_vx_int
 	+guidance_module.theta_dgain * guidance_module.err_vx_deri);
 	float psi = stateGetNedToBodyEulers_f()->psi;
-	float s_psi = sinf(psi);
-	float c_psi = cosf(psi);
+    float s_psi = sinf(psi);
+    float c_psi = cosf(psi);
 	phi_desired_f = s_psi * cmd_f.x + c_psi * cmd_f.y;
 	theta_desired_f = c_psi * cmd_f.x - s_psi * cmd_f.y;
 	
