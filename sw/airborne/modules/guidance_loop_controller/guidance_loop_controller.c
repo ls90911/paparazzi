@@ -52,6 +52,7 @@ float psi_c;
 struct timeval t0;
 struct timeval t1;
 struct timeval NN_start;
+float nn_x_sp,nn_z_sp;
 
 
 bool hover_with_optitrack(float hoverTime)
@@ -110,7 +111,7 @@ float timedifference_msec(struct timeval t0, struct timeval t1)
 	return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
 }
 
-void nn_controller(void)
+void nn_controller(float desired_x,float desired_z)
 {
     if(controllerInUse!= CONTROLLER_NN_CONTROLLER)
     {
@@ -129,9 +130,12 @@ void nn_controller(void)
 	    hoverPos.z = stateGetPositionNed_f()->z;
 
 	    guidance_h_set_guided_heading(0);
-	    guidance_v_set_guided_z(-1.5);
+	    guidance_v_set_guided_z(desired_z);
 	    gettimeofday(&NN_start, 0);
     }
+
+    nn_x_sp = desired_x;
+    nn_z_sp = desired_z;
 
    guidance_h_set_guided_pos(0.0,0.0); 
    guidance_h_set_guided_heading(0.0);
@@ -140,7 +144,7 @@ void nn_controller(void)
     temp_time = timedifference_msec(NN_start,t1);
     time_int = temp_time/1000;
     int temp = time_int/10%10;
-    set_z_ref(-1.5);
+    set_z_ref(desired_z);
 	    //guidance_v_set_guided_z(-0.5-0.5*(temp));
 
     // transform coordinate from Optitrack frame to NED frame of cyberzoo and then to North-west-up frame
@@ -159,7 +163,7 @@ void nn_controller(void)
     float_rmat_transp_vmult(&vel_NWU, &R_NED_2_NWU, &vel_NED);
 
    // prepare current states to feed NN
-    float state[NUM_STATE_VARS] = {pos_NWU.x-0.0, vel_NWU.x, pos_NWU.z-1.5, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta};
+    float state[NUM_STATE_VARS] = {pos_NWU.x-desired_x, vel_NWU.x, pos_NWU.z+desired_z, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta};
     float control[NUM_CONTROL_VARS];
     gettimeofday(&t0, 0);
     //nn_stable(state, control);
@@ -189,6 +193,7 @@ bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_h
     float error_x =fabs(stateGetPositionNed_f()->x - desired_x);
     float error_y =fabs(stateGetPositionNed_f()->y - desired_y);
     float error_z =fabs(stateGetPositionNed_f()->z - desired_z);
+    set_z_ref(desired_z);
     if(error_x+error_y+error_z < 0.2)
     {
         return true;

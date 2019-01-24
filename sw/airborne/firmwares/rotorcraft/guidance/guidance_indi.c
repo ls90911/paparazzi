@@ -214,33 +214,16 @@ void guidance_indi_run(float heading_sp)
   debug_indi.vz_sp = speed_sp_z;
   debug_indi.az_sp = sp_accel.z;
 
-  //---------------------------------------------------------------------------------------------------------
-  //   test acceleration loop
-/*
- if(counter%500 <250)
- {
-  sp_accel.x = 0.0;
-  sp_accel.y = -0.0;
-  sp_accel.z = -0.5;
- }
- else
- {
-  sp_accel.x = 0.0;
-  sp_accel.y = -0.0;
-  sp_accel.z = 0.5;
- }
-     
-
- */
-
-
-  //---------------------------------------------------------------------------------------------------------
-  
-  //---------------------------------------------------------------------------------------------------------
   if(flagNN == true)
   {
+      float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+
+            (stateGetPositionNed_f()->y)*(stateGetPositionNed_f()->y)+
+            (stateGetPositionNed_f()->z-nn_z_sp)*(stateGetPositionNed_f()->z-nn_z_sp);
+      float scale_factor = exp(-SCALING_COEFF/dist_square);
       float theta = stateGetNedToBodyEulers_f()->theta;
-      sp_accel.z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
+      float nn_accel_z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
+      sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_accel_z;
+      //sp_accel.z = nn_accel_z;
       printf("nn thrust is running\n");
   }
 

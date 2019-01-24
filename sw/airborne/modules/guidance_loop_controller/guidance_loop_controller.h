@@ -35,6 +35,9 @@
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
 
+#ifndef SCALING_COEDD
+#define SCALING_COEFF 1.0  /* squared neighbourhood radius for using the PD */
+#endif
 
 enum ControllerInUse {NO_CONTROLLER,CONTROLLER_HOVER_WITH_OPTITRACK,CONTROLLER_NN_CONTROLLER,CONTROLLER_GO_TO_POINT} ;
 
@@ -66,7 +69,7 @@ struct ADAPT_HOVER_COEFFCIENT
 };
 
 extern bool hover_with_optitrack(float hoverTime);
-extern void nn_controller(void);
+extern void nn_controller(float desired_x,float desired_z);
 extern bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_heading);
 
 extern bool flagNN;
@@ -82,5 +85,7 @@ extern struct FloatVect3 vel_NWU;
 extern float nn_time;
 
 extern float psi_c;
+float nn_x_sp;
+float nn_z_sp;
 #endif
 
