@@ -331,7 +331,15 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
       float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+
             (stateGetPositionNed_f()->y)*(stateGetPositionNed_f()->y)+
             (stateGetPositionNed_f()->z-nn_z_sp)*(stateGetPositionNed_f()->z-nn_z_sp);
-      float scale_factor = exp(-SCALING_COEFF/dist_square);
+      float scale_factor;
+      if(NN_PLUS_PD)
+      {
+         scale_factor = exp(-SCALING_COEFF/dist_square);
+      }
+      else
+      {
+          scale_factor = 1.0;
+      }
 	  //BoundAbs(rate_ref_r, indi.attitude_max_yaw_rate);
 	  rateRef.q_ref = rate_ref_q;
 	  //indi.angular_accel_ref.q = indi.reference_acceleration.rate_q * (rate_ref_q - rates_for_feedback.q);

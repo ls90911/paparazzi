@@ -39,6 +39,10 @@
 #define SCALING_COEFF 1.0  /* squared neighbourhood radius for using the PD */
 #endif
 
+#ifndef NN_PLUS_PD
+#define NN_PLUS_PD FALSE 
+#endif
+
 enum ControllerInUse {NO_CONTROLLER,CONTROLLER_HOVER_WITH_OPTITRACK,CONTROLLER_NN_CONTROLLER,CONTROLLER_GO_TO_POINT} ;
 
 struct NN_CMD {
@@ -85,7 +89,7 @@ extern struct FloatVect3 vel_NWU;
 extern float nn_time;
 
 extern float psi_c;
-float nn_x_sp;
-float nn_z_sp;
+extern float nn_x_sp;
+extern float nn_z_sp;
 #endif
 
