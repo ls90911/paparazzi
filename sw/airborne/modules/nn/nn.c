@@ -119,8 +119,14 @@ void patched_control(float state[], float control[]) {
 
     nested_control(state, control_nested);
     weight_nn = scale_factor;
+    /*  combine nn with pid
     control[0] = control[0]*scale_factor + (1-scale_factor)*control_nested[0];
     control[1] = control[1]*scale_factor + (1-scale_factor)*control_nested[1];
+    */
+
+    // fully nn
+    control[0] = control[0]*scale_factor;
+    control[1] = control[1]*scale_factor;
 }
 
 void compute_control_patched(float state[], float **ptr_arr_1, float **ptr_arr_2) {

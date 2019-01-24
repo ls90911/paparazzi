@@ -159,11 +159,11 @@ void nn_controller(void)
     float_rmat_transp_vmult(&vel_NWU, &R_NED_2_NWU, &vel_NED);
 
    // prepare current states to feed NN
-    float state[NUM_STATE_VARS] = {pos_NWU.x-5.0, vel_NWU.x, pos_NWU.z-2.5, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta};
+    float state[NUM_STATE_VARS] = {pos_NWU.x-0.0, vel_NWU.x, pos_NWU.z-1.5, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta};
     float control[NUM_CONTROL_VARS];
     gettimeofday(&t0, 0);
-    nn_stable(state, control);
-    //nn(state, control);
+    //nn_stable(state, control);
+    nn(state, control);
 //   nested_control(state, control) ;
     gettimeofday(&t1, 0);
     nn_time = timedifference_msec(t0,t1);
