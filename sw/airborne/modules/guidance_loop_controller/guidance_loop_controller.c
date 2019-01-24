@@ -137,14 +137,14 @@ void nn_controller(float desired_x,float desired_z)
     nn_x_sp = desired_x;
     nn_z_sp = desired_z;
 
-   guidance_h_set_guided_pos(0.0,0.0); 
+   guidance_h_set_guided_pos(desired_x,0.0); 
    guidance_h_set_guided_heading(0.0);
+    set_z_ref(desired_z);
     int time_int;
     gettimeofday(&t1, 0);
     temp_time = timedifference_msec(NN_start,t1);
     time_int = temp_time/1000;
     int temp = time_int/10%10;
-    set_z_ref(desired_z);
 	    //guidance_v_set_guided_z(-0.5-0.5*(temp));
 
     // transform coordinate from Optitrack frame to NED frame of cyberzoo and then to North-west-up frame

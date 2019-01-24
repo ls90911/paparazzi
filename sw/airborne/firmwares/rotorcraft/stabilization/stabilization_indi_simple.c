@@ -328,9 +328,16 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
   if(flagNN == true)
   {
 	  float rate_ref_q = nn_cmd.rate_ref;
+      float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+
+            (stateGetPositionNed_f()->y)*(stateGetPositionNed_f()->y)+
+            (stateGetPositionNed_f()->z-nn_z_sp)*(stateGetPositionNed_f()->z-nn_z_sp);
+      float scale_factor = exp(-SCALING_COEFF/dist_square);
 	  //BoundAbs(rate_ref_r, indi.attitude_max_yaw_rate);
 	  rateRef.q_ref = rate_ref_q;
-	  indi.angular_accel_ref.q = indi.reference_acceleration.rate_q * (rate_ref_q - rates_for_feedback.q);
+	  //indi.angular_accel_ref.q = indi.reference_acceleration.rate_q * (rate_ref_q - rates_for_feedback.q);
+      float nn_accel_ref_q = indi.reference_acceleration.rate_q * (rate_ref_q - rates_for_feedback.q);
+      indi.angular_accel_ref.q = indi.angular_accel_ref.q*(1-scale_factor)+scale_factor*nn_accel_ref_q; 
+      //indi.angular_accel_ref.q = nn_accel_ref_q; 
 	  rateRef.q_ref = nn_cmd.rate_ref;  
 	  printf("NN rate control is running\n");
   }
