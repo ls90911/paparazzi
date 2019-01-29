@@ -172,9 +172,11 @@ void jevois_mavlink_periodic(void)
 #endif
 
 
+int mavlink_cnt = 0;
 
 void jevois_mavlink_event(void)
 {
+    mavlink_cnt++;
   mavlink_message_t msg;
   mavlink_status_t status;
 
@@ -222,6 +224,7 @@ void jevois_mavlink_event(void)
                                      jevois_visual_target.quality,    // quality
                                      jevois_visual_target.source);
 
+          if(mavlink_cnt %10 == 0)
           DEBUG_PRINT("[jevois mavlink] VISUAL_DETECTION %f,%f\n", jevois_mavlink_visual_target.xacc,
                       jevois_mavlink_visual_target.yacc);
 

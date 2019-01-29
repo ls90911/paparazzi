@@ -16,7 +16,7 @@ struct pid_term_struct pid_term = {0.0,0.0,0.0};
 
 
 // Slow speed
-#define CTRL_MAX_SPEED  2.5             // m/s
+#define CTRL_MAX_SPEED  2.0             // m/s
 #define CTRL_MAX_PITCH  RadOfDeg(17)    // rad
 #define CTRL_MAX_ROLL   RadOfDeg(25)    // rad
 #define CTRL_MAX_R      RadOfDeg(70)    // rad/sec
@@ -102,8 +102,13 @@ void control_run(float dt)
   Bound(vxcmd, -CTRL_MAX_SPEED, CTRL_MAX_SPEED);
   Bound(vycmd, -CTRL_MAX_SPEED, CTRL_MAX_SPEED);
 
+  pid_term.vx_cmd = vxcmd;
+  pid_term.vy_cmd = vycmd;
+
+  /*
   vxcmd *= dr_fp.gate_speed;
   vycmd *= dr_fp.gate_speed;
+  */
 
   // Speed to Attitude
   ax = (vxcmd - filteredVx) * 1.0f + vxcmd * RadOfDeg(10.0f) / 3.0f;

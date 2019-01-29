@@ -42,5 +42,7 @@ extern float filteredX;
 extern float filteredY;
 extern float filteredVx;
 extern float filteredVy;
+extern int get_time_stamp(void);
+extern int detection_time_stamp;
 
 #endif

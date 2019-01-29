@@ -172,7 +172,7 @@ void file_logger_periodic(void)
           dr_ransac.corr_vx,
           dr_ransac.corr_vy,
 
-          3,
+          detection_time_stamp,
           pid_term.p_term_x,
           pid_term.d_term_x,
           pid_term.p_term_y,

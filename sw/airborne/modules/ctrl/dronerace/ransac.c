@@ -131,7 +131,7 @@ void correct_state() {
 // @param[time]: Filter time
 // @param[x,y]: Filter predictions
 // @param[mx,my]: Vision measurements
-void ransac_push(float time, float _x, float _y, float _mx, float _my)
+void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_stamp)
 {
     int i = 0;
 
@@ -146,6 +146,7 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my)
     ransac_buf[dr_ransac.buf_index_of_last].y = _y;
     ransac_buf[dr_ransac.buf_index_of_last].mx = _mx;
     ransac_buf[dr_ransac.buf_index_of_last].my = _my;
+    ransac_buf[dr_ransac.buf_index_of_last].time_stamp = _time_stamp;
 
     // If sufficient items in buffer
     if (dr_ransac.buf_size > RANSAC_MIN_SAMPLES_FOR_FIT)
@@ -197,7 +198,7 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my)
 #define DEBUG_RANSAC
 #ifdef DEBUG_RANSAC
 
-        if(dr_ransac.ransac_cnt % 1 == 0)
+        if(dr_ransac.ransac_cnt % 1000 == 0)
         {
             char filename[128];
             FILE* fp;
@@ -208,19 +209,20 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my)
             for (i=0;i<dr_ransac.buf_size;i++)
             {
                 float t_fit = (ransac_buf[get_index(i)].time - dr_state.time);
-                fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f\n",i,ransac_buf[get_index(i)].time,
+                fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n",i,ransac_buf[get_index(i)].time,
                         ransac_buf[get_index(i)].x,
                         ransac_buf[get_index(i)].y,
                         ransac_buf[get_index(i)].mx,
                         ransac_buf[get_index(i)].my,
                         ransac_buf[get_index(i)].x + dr_ransac.corr_x + t_fit * dr_ransac.corr_vx,
-                        ransac_buf[get_index(i)].y + dr_ransac.corr_y + t_fit * dr_ransac.corr_vy
+                        ransac_buf[get_index(i)].y + dr_ransac.corr_y + t_fit * dr_ransac.corr_vy,
+                        ransac_buf[get_index(i)].time_stamp
                 );
             }
 			{
 			  float gate = (float) dr_fp.gate_nr;
 			  float assigned = (float) dr_state.assigned_gate_index;
-	          fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f\n", -1 , gate, assigned,  params_x[0], params_x[1], params_y[0], params_y[1] ,0.0f);
+	          fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n", -1 , gate, assigned,  params_x[0], params_x[1], params_y[0], params_y[1] ,0.0f);
 			}
 
             // fprintf(fp,"\n\n X = %f %f Y = %f  %f \n",params_x[0], params_x[1], params_y[0], params_y[1] );

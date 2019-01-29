@@ -200,6 +200,7 @@ void dronerace_init(void)
 
   // Compute waypoints
   dronerace_enter();
+  filter_reset();
 }
 
 float psi0 = 0;
@@ -235,10 +236,6 @@ void dronerace_enter(void)
 
 void dronerace_periodic(void)
 {
-    if(previous_autopilot_mode != autopilot.mode)
-    {
-        control_reset();
-    }
 
   float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
   float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);
@@ -306,5 +303,6 @@ void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
   *alt = - dr_control.z_cmd;
 
   guidance_v_z_sp = POS_BFP_OF_REAL(dr_control.z_cmd);
+  
 }
 

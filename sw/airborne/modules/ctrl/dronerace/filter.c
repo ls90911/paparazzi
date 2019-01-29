@@ -8,13 +8,15 @@
 #include "std.h"
 #include "stdio.h"
 #include "ransac.h"
-
+#include <time.h>
 // to know if we are simulating:
 #include "generated/airframe.h"
 
 
 struct dronerace_state_struct dr_state;
 struct dronerace_vision_struct dr_vision;
+int detection_time_stamp;
+void calibrate_detection(float *mx,float *my);
 
 
 
@@ -68,6 +70,7 @@ void filter_predict(float phi, float theta, float psi, float dt)
   float ay =  sinf(psi) * abx + cosf(psi) * aby - dr_state.vy * DR_FILTER_DRAG;
 
 
+  get_time_stamp();
   // Velocity and Position
   dr_state.vx += ax * dt;
   dr_state.vy += ay * dt;
@@ -111,6 +114,9 @@ void filter_correct(void)
   //  && dr_vision.dz > -2.5
   if (gates[dr_fp.gate_nr].type != VIRTUAL) {
 
+
+
+    calibrate_detection(&mx,&my);
     int assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
 
     //printf("assigned gate = %d, gate nr = %d.\n", assigned_gate, dr_fp.gate_nr);
@@ -121,7 +127,8 @@ void filter_correct(void)
 
 
       // Push to RANSAC
-      ransac_push(dr_state.time, dr_state.x, dr_state.y, mx, my);
+      detection_time_stamp = get_time_stamp();
+      ransac_push(dr_state.time, dr_state.x, dr_state.y, mx, my,detection_time_stamp);
 
       filteredX = dr_state.x + dr_ransac.corr_x;
       filteredY = dr_state.y + dr_ransac.corr_y;
@@ -244,4 +251,34 @@ void pushJungleGateDetection(void)
       }
     }
   }
+}
+
+
+int get_time_stamp()
+{
+  struct timeval te;
+  gettimeofday(&te, NULL); // get current time
+  long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
+  int timeStamp = milliseconds%100000;
+  //printf("Timestamp: %d\n",timeStamp);
+  return timeStamp;
+}
+
+
+void calibrate_detection(float *mx,float *my)
+{
+    float k0_x = -0.0;
+    float k1_x = 0.0;
+    float k2_x = -0.0;
+
+    float k0_y = 0.0;
+    float k1_y = 0.0;
+    float k2_y = -0.0;
+
+    float x = *mx;
+    float y = *my;
+
+    *mx = x + k0_x + k1_x*x+k2_x*x*x;
+    *my = y + k0_y + k1_y*y+k2_y*y*y;
+
 }

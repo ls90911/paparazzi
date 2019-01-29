@@ -32,6 +32,8 @@ struct dronerace_ransac_buf_struct
     // Measured States
     float mx;
     float my;
+
+    int time_stamp;
 };
 
 #define  RANSAC_BUF_SIZE   30
@@ -50,7 +52,7 @@ void correct_state(void);
 extern void ransac_propagate(void);
 
 // On new vision update: PUSH a measurement update
-extern void ransac_push(float time, float x, float y, float mx, float my);
+extern void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_stamp);
 
 extern struct dronerace_ransac_buf_struct ransac_buf[RANSAC_BUF_SIZE];
 extern int get_index(int element);
