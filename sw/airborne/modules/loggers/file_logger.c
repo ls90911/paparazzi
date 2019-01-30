@@ -35,6 +35,8 @@
 #include "modules/ctrl/dronerace/flightplan.h"
 #include "modules/ctrl/dronerace/ransac.h"
 #include "modules/sensors/cameras/jevois_mavlink.h"
+#include "firmwares/rotorcraft/guidance/guidance_h.h"
+#include "firmwares/rotorcraft/guidance/guidance_v.h"
 
 #include "subsystems/imu.h"
 #ifdef COMMAND_THRUST
@@ -120,7 +122,7 @@ void file_logger_periodic(void)
   static uint32_t counter;
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f\n",
+  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
           counter,
           imu.accel_unscaled.x,
           imu.accel_unscaled.y,
@@ -178,7 +180,13 @@ void file_logger_periodic(void)
           pid_term.p_term_y,
           pid_term.d_term_y,
           pid_term.vx_cmd,
-          pid_term.vy_cmd
+          pid_term.vy_cmd,
+          POS_FLOAT_OF_BFP(guidance_h.sp.pos.x),
+          POS_FLOAT_OF_BFP(guidance_h.sp.pos.y),
+          POS_FLOAT_OF_BFP(guidance_v_z_sp),
+          guidance_h.sp.heading,
+          POS_FLOAT_OF_BFP(guidance_h.ref.pos.x), 
+          POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) 
          );
 
   counter++;

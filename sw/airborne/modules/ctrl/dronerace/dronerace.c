@@ -35,6 +35,7 @@
 #include "ransac.h"
 #include "flightplan.h"
 #include "subsystems/datalink/telemetry.h"
+#include "firmwares/rotorcraft/autopilot_guided.h"
 
 // to know if we are simulating:
 #include "generated/airframe.h"
@@ -52,7 +53,16 @@ volatile float input_dz = 0;
 
 uint8_t previous_autopilot_mode;
 
+struct GUIDANCE_INDI_VAR
+{
+    bool flag_wp_set;
+    int counter_time;
+};
 
+
+struct GUIDANCE_INDI_VAR gui_indi_var;
+
+void test_guidance_indi_temp_run();
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // LOGGING
 
@@ -240,8 +250,11 @@ void dronerace_periodic(void)
     if(previous_autopilot_mode != autopilot.mode)
     {
         control_reset();
+        gui_indi_var.counter_time = 0;
+        gui_indi_var.flag_wp_set = false;
     }
 
+    test_guidance_indi_temp_run();
   float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
   float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);
 
@@ -311,3 +324,20 @@ void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
   
 }
 
+void test_guidance_indi_temp_run()
+{
+   gui_indi_var.counter_time++; 
+   float time = gui_indi_var.counter_time / 512.0;
+   if( time < 3.0)
+       autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(0.0));
+   else if(time<8.0)
+       autopilot_guided_goto_ned(4.0,0.0,-1.5,RadOfDeg(0.0));
+   else if(time<13.0)
+       autopilot_guided_goto_ned(4.0,4.0,-1.5,RadOfDeg(90.0));
+   else if(time<18.0)
+       autopilot_guided_goto_ned(0.0,4.0,-1.5,RadOfDeg(180.0));
+   else if(time<23.0)
+       autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(270.0));
+   else
+       autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(0.0));
+}
