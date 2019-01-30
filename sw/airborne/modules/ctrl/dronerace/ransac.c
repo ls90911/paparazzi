@@ -106,12 +106,7 @@ void ransac_propagate( void )
         float age = (dr_state.time - ransac_buf[dr_ransac.buf_index_of_last].time);
         if (age > dr_ransac.dt_novision)
         { 
-            float deltaT = dr_state.time-ransac_buf[get_index(0)].time;
-            dr_state.x += dr_ransac.corr_x+dr_ransac.corr_vx*deltaT;
-            dr_state.y += dr_ransac.corr_y+dr_ransac.corr_vy*deltaT;
-            dr_state.vx += dr_ransac.corr_vx;
-            dr_state.vy += dr_ransac.corr_vy;
-          ransac_reset();
+            prediction_correct();
         }
     }
 }
@@ -233,4 +228,12 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
     }
 }
 
-
+void prediction_correct()
+{
+    float deltaT = dr_state.time-ransac_buf[get_index(0)].time;
+    dr_state.x += dr_ransac.corr_x+dr_ransac.corr_vx*deltaT;
+    dr_state.y += dr_ransac.corr_y+dr_ransac.corr_vy*deltaT;
+    dr_state.vx += dr_ransac.corr_vx;
+    dr_state.vy += dr_ransac.corr_vy;
+    ransac_reset();
+}

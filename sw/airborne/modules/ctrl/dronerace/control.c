@@ -12,6 +12,20 @@
 struct dronerace_control_struct dr_control;
 struct pid_term_struct pid_term = {0.0,0.0,0.0};
 
+float k_p_vel_x = 0.5;
+float k_d_vel_x = 0.1;
+float k_p_vel_y = 0.5;
+float k_d_vel_y = 0.1;
+
+float k_p_pos_x = 0.5;
+float k_d_pos_x = 0.0;
+float k_p_pos_y = 0.5;
+float k_d_pos_y = 0.0;
+float vx_error_previous = 0.0;
+float vy_error_previous = 0.0;
+
+
+
 // Settings
 
 
@@ -46,6 +60,8 @@ void control_reset(void)
   // Reset own variables
   dr_control.psi_ref = 0;
   dr_control.psi_cmd = 0;
+  vx_error_previous = 0.0;
+  vy_error_previous = 0.0;
 }
 
 static float angle180(float r)
@@ -85,19 +101,25 @@ void control_run(float dt)
   // TODO: interestingly, we don't use the velocity correction for control: t_fit * dr_ransac.corr_vx
   if(gates[dr_fp.gate_nr].psi == RadOfDeg(0.0) || gates[dr_fp.gate_nr].psi == RadOfDeg(180))
   {
-    vxcmd = (dr_fp.x_set - filteredX) * P_FORWARD - filteredVx * D_FORWARD;
-    vycmd = (dr_fp.y_set - filteredY) * P_LATERAL - filteredVy * D_LATERAL;
+    vxcmd = (dr_fp.x_set - filteredX) * k_p_pos_x - filteredVx * D_FORWARD;
+    vycmd = (dr_fp.y_set - filteredY) * k_p_pos_y - filteredVy * D_LATERAL;
   }
   else
   {
-    vxcmd = (dr_fp.x_set - filteredX) * P_LATERAL- filteredVx * D_LATERAL;
-    vycmd = (dr_fp.y_set - filteredY) * P_FORWARD- filteredVy * D_FORWARD;
+    vxcmd = (dr_fp.x_set - filteredX) * k_p_pos_x - filteredVx * D_LATERAL;
+    vycmd = (dr_fp.y_set - filteredY) * k_p_pos_y - filteredVy * D_FORWARD;
   }
 
   if(!waypoints_dr[dr_fp.gate_nr].brake) {
       vxcmd += 10.0f * cosf(waypoints_dr[dr_fp.gate_nr].psi);
       vycmd += 10.0f * sinf(waypoints_dr[dr_fp.gate_nr].psi);
   }
+
+  /*
+  vxcmd = 0.0;
+  vycmd = 0.5;
+  */
+
 
   Bound(vxcmd, -CTRL_MAX_SPEED, CTRL_MAX_SPEED);
   Bound(vycmd, -CTRL_MAX_SPEED, CTRL_MAX_SPEED);
@@ -111,8 +133,13 @@ void control_run(float dt)
   */
 
   // Speed to Attitude
-  ax = (vxcmd - filteredVx) * 1.0f + vxcmd * RadOfDeg(10.0f) / 3.0f;
-  ay = (vycmd - filteredVy) * 1.0f + vycmd * RadOfDeg(10.0f) / 3.0f;
+  float vx_err = vxcmd-filteredVx;
+  float vy_err = vycmd-filteredVy;
+  float dv_x = (vx_err-vx_error_previous)*512.0;
+  float dv_y = (vy_err-vy_error_previous)*512.0;
+
+  ax = vx_err * k_p_vel_x + dv_x * k_d_vel_x + vxcmd * RadOfDeg(10.0f) / 3.0f;
+  ay = vy_err * k_p_vel_y + dv_y * k_d_vel_y + vycmd * RadOfDeg(10.0f) / 3.0f;
 
   Bound(ax, -CTRL_MAX_PITCH, CTRL_MAX_PITCH);
   Bound(ay, -CTRL_MAX_PITCH, CTRL_MAX_PITCH);
@@ -122,5 +149,7 @@ void control_run(float dt)
   dr_control.psi_cmd   = dr_control.psi_ref;
   dr_control.z_cmd   = dr_fp.z_set;
 
+  vx_error_previous = vx_err;
+  vy_error_previous = vy_err;
 }
 

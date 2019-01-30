@@ -208,7 +208,8 @@ float psi0 = 0;
 void dronerace_enter(void)
 {
   psi0 = stateGetNedToBodyEulers_f()->psi;
-  filter_reset();
+  //filter_reset();
+  prediction_correct(); // it is called by module_enter(), when the mode is changed, the prediction should go to estimation instead of 0
   control_reset();
   previous_autopilot_mode = autopilot.mode;
 
@@ -236,6 +237,10 @@ void dronerace_enter(void)
 
 void dronerace_periodic(void)
 {
+    if(previous_autopilot_mode != autopilot.mode)
+    {
+        control_reset();
+    }
 
   float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
   float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);

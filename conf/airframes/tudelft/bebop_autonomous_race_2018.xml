@@ -155,12 +155,13 @@
     <define name="BODY_TO_IMU_PHI" value="0." unit="deg"/>
     <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
     <define name="BODY_TO_IMU_PSI" value="0." unit="deg"/>
-<define name="ACCEL_X_NEUTRAL" value="76"/>
-<define name="ACCEL_Y_NEUTRAL" value="53"/>
-<define name="ACCEL_Z_NEUTRAL" value="142"/>
-<define name="ACCEL_X_SENS" value="2.43118129066" integer="16"/>
-<define name="ACCEL_Y_SENS" value="2.41799779881" integer="16"/>
-<define name="ACCEL_Z_SENS" value="2.43695027489" integer="16"/>
+<define name="ACCEL_X_NEUTRAL" value="63"/>
+<define name="ACCEL_Y_NEUTRAL" value="69"/>
+<define name="ACCEL_Z_NEUTRAL" value="275"/>
+<define name="ACCEL_X_SENS" value="2.43029150524" integer="16"/>
+<define name="ACCEL_Y_SENS" value="2.43567943685" integer="16"/>
+<define name="ACCEL_Z_SENS" value="2.43154277664" integer="16"/>
+
   </section>
 
   <!-- local magnetic field -->

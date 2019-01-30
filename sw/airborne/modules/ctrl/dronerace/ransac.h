@@ -56,4 +56,5 @@ extern void ransac_push(float time, float _x, float _y, float _mx, float _my,int
 
 extern struct dronerace_ransac_buf_struct ransac_buf[RANSAC_BUF_SIZE];
 extern int get_index(int element);
+extern void prediction_correct(void);
 #endif
