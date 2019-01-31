@@ -47,6 +47,7 @@
 #include "firmwares/rotorcraft/stabilization.h"
 #include "filters/low_pass_filter.h"
 #include "subsystems/abi.h"
+#include "modules/ctrl/dronerace/filter.h"
 
 // The acceleration reference is calculated with these gains. If you use GPS,
 // they are probably limited by the update rate of your GPS. The default
@@ -161,8 +162,10 @@ void guidance_indi_run(float heading_sp)
   guidance_indi_propagate_filters(&eulers_yxz);
 
   //Linear controller to find the acceleration setpoint from position and velocity
-  float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
-  float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
+  //float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
+  //float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
+  float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - filteredX;
+  float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - filteredY;
   float pos_z_err = POS_FLOAT_OF_BFP(guidance_v_z_ref - stateGetPositionNed_i()->z);
 
   float speed_sp_x = pos_x_err * guidance_indi_pos_gain;
@@ -195,6 +198,8 @@ void guidance_indi_run(float heading_sp)
     sp_accel.z = (speed_sp_z - stateGetSpeedNed_f()->z) * guidance_indi_speed_gain;
   }
 
+    sp_accel.x = (speed_sp_x - filteredVx) * guidance_indi_speed_gain;
+    sp_accel.y = (speed_sp_y - filteredVy) * guidance_indi_speed_gain;
 #if GUIDANCE_INDI_RC_DEBUG
 #warning "GUIDANCE_INDI_RC_DEBUG lets you control the accelerations via RC, but disables autonomous flight!"
   //for rc control horizontal, rotate from body axes to NED

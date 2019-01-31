@@ -254,7 +254,7 @@ void dronerace_periodic(void)
         gui_indi_var.flag_wp_set = false;
     }
 
-    test_guidance_indi_temp_run();
+  //  test_guidance_indi_temp_run();
   float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
   float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);
 
@@ -313,7 +313,7 @@ void dronerace_set_rc(UNUSED float rt, UNUSED float rx, UNUSED float ry, UNUSED 
 void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
 {
 
-  control_run(dt);
+  control_run();
 
   *phi = dr_control.phi_cmd;
   *theta = dr_control.theta_cmd;

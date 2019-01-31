@@ -35,7 +35,7 @@ static const int32_t gh_max_accel = BFP_OF_REAL(GUIDANCE_H_REF_MAX_ACCEL, GH_ACC
 
 /** default second order model natural frequency */
 #ifndef GUIDANCE_H_REF_OMEGA
-#define GUIDANCE_H_REF_OMEGA RadOfDeg(200.)
+#define GUIDANCE_H_REF_OMEGA RadOfDeg(150.)
 #endif
 /** default second order model damping */
 #ifndef GUIDANCE_H_REF_ZETA

@@ -42,7 +42,7 @@ extern struct dronerace_control_struct dr_control;
 extern struct pid_term_struct pid_term;
 
 extern void control_reset(void);
-extern void control_run(float dt);
+extern void control_run(void);
 
 extern float k_p_vel_x;
 extern float k_d_vel_x;

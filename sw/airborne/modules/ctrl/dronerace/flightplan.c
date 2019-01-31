@@ -87,8 +87,8 @@ void flightplan_reset()
 }
 
 
-#define DISTANCE_GATE_NOT_IN_SIGHT  1.5f
-#define DISTANCE_ARRIVED_AT_WP    1.0f
+#define DISTANCE_GATE_NOT_IN_SIGHT  0.5f
+#define DISTANCE_ARRIVED_AT_WP    0.5f
 
 void flightplan_run(void)
 {
