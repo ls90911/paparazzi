@@ -72,5 +72,6 @@ extern void flightplan_reset(void);
 extern void flightplan_run(void);
 extern void resetJungleGate(void);
 extern void flightplan_list(void);
+//extern struct dronerace_flightplan_item_struct waypoints_dr[MAX_GATES];
 
 #endif

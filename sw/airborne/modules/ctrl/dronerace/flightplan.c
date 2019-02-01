@@ -5,6 +5,7 @@
 #include "std.h"
 #include "stdio.h"
 #include "state.h"
+#include "control.h"
 
 struct dronerace_fp_struct dr_fp;
 
@@ -140,6 +141,7 @@ void flightplan_run(void)
   // If close to desired position, switch to next
   if (dist < DISTANCE_ARRIVED_AT_WP) {
     dr_fp.gate_nr ++;
+    reset_local_reference();
     if (dr_fp.gate_nr >= MAX_GATES) {
       dr_fp.gate_nr = (MAX_GATES - 1);
     }

@@ -48,6 +48,7 @@
 #include "filters/low_pass_filter.h"
 #include "subsystems/abi.h"
 #include "modules/ctrl/dronerace/filter.h"
+#include "modules/ctrl/dronerace/control.h"
 
 // The acceleration reference is calculated with these gains. If you use GPS,
 // they are probably limited by the update rate of your GPS. The default
@@ -56,13 +57,13 @@
 #ifdef GUIDANCE_INDI_POS_GAIN
 float guidance_indi_pos_gain = GUIDANCE_INDI_POS_GAIN;
 #else
-float guidance_indi_pos_gain = 2.0;
+float guidance_indi_pos_gain = 1.0;
 #endif
 
 #ifdef GUIDANCE_INDI_SPEED_GAIN
 float guidance_indi_speed_gain = GUIDANCE_INDI_SPEED_GAIN;
 #else
-float guidance_indi_speed_gain = 2.5;
+float guidance_indi_speed_gain = 1.8;
 #endif
 
 #ifndef GUIDANCE_INDI_ACCEL_SP_ID
@@ -164,8 +165,8 @@ void guidance_indi_run(float heading_sp)
   //Linear controller to find the acceleration setpoint from position and velocity
   //float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
   //float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
-  float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - filteredX;
-  float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - filteredY;
+  float pos_x_err = ref.pos.x - filteredX;
+  float pos_y_err = ref.pos.y - filteredY;
   float pos_z_err = POS_FLOAT_OF_BFP(guidance_v_z_ref - stateGetPositionNed_i()->z);
 
   float speed_sp_x = pos_x_err * guidance_indi_pos_gain;

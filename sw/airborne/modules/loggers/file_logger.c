@@ -185,8 +185,8 @@ void file_logger_periodic(void)
           POS_FLOAT_OF_BFP(guidance_h.sp.pos.y),
           POS_FLOAT_OF_BFP(guidance_v_z_sp),
           guidance_h.sp.heading,
-          POS_FLOAT_OF_BFP(guidance_h.ref.pos.x), 
-          POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) 
+          ref.pos.x, 
+          ref.pos.y 
          );
 
   counter++;

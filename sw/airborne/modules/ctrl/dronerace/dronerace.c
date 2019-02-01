@@ -209,6 +209,7 @@ void dronerace_init(void)
 //  open_log();
 
   // Compute waypoints
+  reference_init();
   dronerace_enter();
   filter_reset();
 }
@@ -253,6 +254,7 @@ void dronerace_periodic(void)
         gui_indi_var.counter_time = 0;
         gui_indi_var.flag_wp_set = false;
     }
+
 
   //  test_guidance_indi_temp_run();
   float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
