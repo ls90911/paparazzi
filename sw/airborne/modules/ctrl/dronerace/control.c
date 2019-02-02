@@ -13,6 +13,7 @@
 struct dronerace_control_struct dr_control;
 struct pid_term_struct pid_term = {0.0,0.0,0.0};
 struct reference_generator_struct ref;
+struct indi_controller_struct indi_ctrl;
 
 float k_p_vel_x = 0.5;
 float k_d_vel_x = 0.1;
@@ -129,7 +130,7 @@ void reset_local_reference()
 {
     float deltaX = filteredX- waypoints_dr[dr_fp.gate_nr].x;
     float deltaY = filteredY- waypoints_dr[dr_fp.gate_nr].y;
-    float psi = dr_fp.gate_psi;
+    float psi = waypoints_dr[dr_fp.gate_nr].psi;
     ref.pos_local.x= cos(psi)*deltaX+sin(psi)*deltaY;
     ref.pos_local.y= -sin(psi)*deltaX+cos(psi)*deltaY;
 }
@@ -146,7 +147,7 @@ void update_reference_run()
    ref.vel_local.y += 1.0/512*a_y_local;
 
    // transform to global frame
-   float psi = dr_fp.gate_psi;
+   float psi = waypoints_dr[dr_fp.gate_nr].psi;
    ref.pos.x = cos(psi)*ref.pos_local.x - sin(psi)*ref.pos_local.y+waypoints_dr[dr_fp.gate_nr].x;
    ref.pos.y = sin(psi)*ref.pos_local.x + cos(psi)*ref.pos_local.y+waypoints_dr[dr_fp.gate_nr].y;
 }

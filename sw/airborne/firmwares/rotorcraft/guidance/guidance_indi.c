@@ -57,13 +57,13 @@
 #ifdef GUIDANCE_INDI_POS_GAIN
 float guidance_indi_pos_gain = GUIDANCE_INDI_POS_GAIN;
 #else
-float guidance_indi_pos_gain = 1.0;
+float guidance_indi_pos_gain = 0.7;
 #endif
 
 #ifdef GUIDANCE_INDI_SPEED_GAIN
 float guidance_indi_speed_gain = GUIDANCE_INDI_SPEED_GAIN;
 #else
-float guidance_indi_speed_gain = 1.8;
+float guidance_indi_speed_gain = 2.0;
 #endif
 
 #ifndef GUIDANCE_INDI_ACCEL_SP_ID
@@ -173,6 +173,10 @@ void guidance_indi_run(float heading_sp)
   float speed_sp_y = pos_y_err * guidance_indi_pos_gain;
   float speed_sp_z = pos_z_err * guidance_indi_pos_gain;
 
+  // -------------for log--------------
+  indi_ctrl.vx_cmd = speed_sp_x;
+  indi_ctrl.vy_cmd = speed_sp_y;
+  //-------------------------------
   // If the acceleration setpoint is set over ABI message
   if (indi_accel_sp_set_2d) {
     sp_accel.x = indi_accel_sp.x;
@@ -201,6 +205,11 @@ void guidance_indi_run(float heading_sp)
 
     sp_accel.x = (speed_sp_x - filteredVx) * guidance_indi_speed_gain;
     sp_accel.y = (speed_sp_y - filteredVy) * guidance_indi_speed_gain;
+    // for log
+    indi_ctrl.ax_cmd = sp_accel.x;
+    indi_ctrl.ay_cmd = sp_accel.y;
+
+    //
 #if GUIDANCE_INDI_RC_DEBUG
 #warning "GUIDANCE_INDI_RC_DEBUG lets you control the accelerations via RC, but disables autonomous flight!"
   //for rc control horizontal, rotate from body axes to NED

@@ -122,7 +122,7 @@ void file_logger_periodic(void)
   static uint32_t counter;
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
+  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
           counter,
           imu.accel_unscaled.x,
           imu.accel_unscaled.y,
@@ -175,18 +175,21 @@ void file_logger_periodic(void)
           dr_ransac.corr_vy,
 
           detection_time_stamp,
-          pid_term.p_term_x,
-          pid_term.d_term_x,
+          indi_ctrl.ax_cmd,
+          indi_ctrl.ay_cmd,
           pid_term.p_term_y,
           pid_term.d_term_y,
-          pid_term.vx_cmd,
-          pid_term.vy_cmd,
+          indi_ctrl.vx_cmd,
+          indi_ctrl.vy_cmd,
           POS_FLOAT_OF_BFP(guidance_h.sp.pos.x),
           POS_FLOAT_OF_BFP(guidance_h.sp.pos.y),
           POS_FLOAT_OF_BFP(guidance_v_z_sp),
           guidance_h.sp.heading,
           ref.pos.x, 
-          ref.pos.y 
+          ref.pos.y,
+          dist_2_gate,
+          ref.pos_local.x,
+          ref.pos_local.y
          );
 
   counter++;

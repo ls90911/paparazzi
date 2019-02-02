@@ -66,6 +66,7 @@ struct dronerace_flightplan_item_struct
 extern const struct dronerace_flightplan_item_struct gates[MAX_GATES];
 extern struct dronerace_flightplan_item_struct waypoints_dr[MAX_GATES];
 extern struct jungle_gate_struct jungleGate;
+extern float dist_2_gate;
 
 // Functions
 extern void flightplan_reset(void);

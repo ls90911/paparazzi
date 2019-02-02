@@ -14,6 +14,7 @@ void checkJungleGate(void);
 void generate_waypoints_from_gates(void);
 
 int flagHighOrLowGate;
+float dist_2_gate;
 
 // X, Y, ALT, PSI
 /*
@@ -88,14 +89,13 @@ void flightplan_reset()
 }
 
 
-#define DISTANCE_GATE_NOT_IN_SIGHT  0.5f
-#define DISTANCE_ARRIVED_AT_WP    0.5f
+#define DISTANCE_GATE_NOT_IN_SIGHT  0.2f
+#define DISTANCE_ARRIVED_AT_WP    0.1f
 
 void flightplan_run(void)
 {
   float dist = 0.0;
   float correctedX, correctedY;
-  float dist_2_gate;
   float dx, dy;
 
   // Get current gate position
@@ -124,16 +124,16 @@ void flightplan_run(void)
   // Align with current gate
   dr_fp.psi_set = dr_fp.gate_psi;
 
-  dist_2_gate = (dr_fp.gate_x - correctedX) * (dr_fp.gate_x - correctedX) + (dr_fp.gate_y - correctedY) *
-                (dr_fp.gate_y - correctedY);
+  dist_2_gate = (dr_fp.x_set- filteredX) * (dr_fp.x_set- filteredX) + (dr_fp.y_set- filteredY) *
+                (dr_fp.y_set- filteredY);
 
   // If too close to the gate to see the gate, heading to next gate
   if (dist_2_gate < DISTANCE_GATE_NOT_IN_SIGHT) {
     if ((dr_fp.gate_nr + 1) < MAX_GATES) {
-      dx = gates[dr_fp.gate_nr + 1].x - correctedX;
-      dy = gates[dr_fp.gate_nr + 1].y - correctedY;
-      dr_fp.psi_set = atan2(dy, dx);
-      //dr_fp.psi_set = gates[dr_fp.gate_nr+1].psi;
+      //dx = gates[dr_fp.gate_nr + 1].x - filteredX;
+      //dy = gates[dr_fp.gate_nr + 1].y - filteredY;
+      //dr_fp.psi_set = atan2(dy, dx);
+      dr_fp.psi_set = gates[dr_fp.gate_nr+1].psi;
     }
   }
 

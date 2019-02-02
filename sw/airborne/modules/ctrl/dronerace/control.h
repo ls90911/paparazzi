@@ -69,9 +69,18 @@ struct reference_generator_struct
     float k_v_y_local;
 };
 
+struct indi_controller_struct
+{
+    float vx_cmd;
+    float vy_cmd;
+    float ax_cmd;
+    float ay_cmd;
+};
+
 extern struct dronerace_control_struct dr_control;
 extern struct pid_term_struct pid_term;
 extern struct reference_generator_struct ref;
+extern struct indi_controller_struct indi_ctrl;
 
 extern void control_reset(void);
 extern void control_run(void);
