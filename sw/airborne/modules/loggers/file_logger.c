@@ -122,7 +122,7 @@ void file_logger_periodic(void)
   static uint32_t counter;
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
+  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
           counter,
           imu.accel_unscaled.x,
           imu.accel_unscaled.y,
@@ -152,7 +152,7 @@ void file_logger_periodic(void)
 
           dr_control.phi_cmd,
           dr_control.theta_cmd,
-          dr_control.psi_cmd,
+          dr_control.psi_ref,
           dr_control.z_cmd,
           0,0,0,
           dr_fp.gate_nr,
@@ -189,7 +189,11 @@ void file_logger_periodic(void)
           ref.pos.y,
           dist_2_gate,
           ref.pos_local.x,
-          ref.pos_local.y
+          ref.pos_local.y,
+
+          indi_ctrl.r_ref,
+          indi_ctrl.psi_err,
+          indi_ctrl.r_bound
          );
 
   counter++;

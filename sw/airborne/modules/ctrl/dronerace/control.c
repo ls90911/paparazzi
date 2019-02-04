@@ -34,9 +34,9 @@ float vy_error_previous = 0.0;
 
 // Slow speed
 #define CTRL_MAX_SPEED  2.0             // m/s
-#define CTRL_MAX_PITCH  RadOfDeg(17)    // rad
+#define CTRL_MAX_PITCH  RadOfDeg(35)    // rad
 #define CTRL_MAX_ROLL   RadOfDeg(25)    // rad
-#define CTRL_MAX_R      RadOfDeg(70)    // rad/sec
+#define CTRL_MAX_R      RadOfDeg(225)    // rad/sec
 
 /*
 // Max speed for bebop
@@ -95,10 +95,10 @@ void control_run(void)
   psi = dr_state.psi;
 
   // Heading controller
-  r_cmd = dr_fp.psi_set - dr_control.psi_ref;
+  r_cmd = 2.0*(dr_fp.psi_set - dr_control.psi_ref);
 
   // Find shortest turn
-  r_cmd = angle180(r_cmd);
+  //r_cmd = angle180(r_cmd);
 
   // Apply rate limit
   Bound(r_cmd, -CTRL_MAX_R, CTRL_MAX_R);

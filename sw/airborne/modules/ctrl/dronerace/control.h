@@ -75,6 +75,10 @@ struct indi_controller_struct
     float vy_cmd;
     float ax_cmd;
     float ay_cmd;
+    float r_ref;
+    float r_k_p;
+    float psi_err;
+    float r_bound;
 };
 
 extern struct dronerace_control_struct dr_control;
