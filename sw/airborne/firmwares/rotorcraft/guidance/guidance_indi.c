@@ -49,6 +49,7 @@
 #include "subsystems/abi.h"
 #include "modules/ctrl/dronerace/filter.h"
 #include "modules/ctrl/dronerace/control.h"
+#include "modules/ctrl/dronerace/flightplan.h"
 
 // The acceleration reference is calculated with these gains. If you use GPS,
 // they are probably limited by the update rate of your GPS. The default
@@ -169,9 +170,33 @@ void guidance_indi_run(float heading_sp)
   float pos_y_err = ref.pos.y - filteredY;
   float pos_z_err = POS_FLOAT_OF_BFP(guidance_v_z_ref - stateGetPositionNed_i()->z);
 
+  indi_ctrl.x_err = pos_x_err;
+  indi_ctrl.y_err = pos_y_err;
+
   float speed_sp_x = pos_x_err * guidance_indi_pos_gain;
   float speed_sp_y = pos_y_err * guidance_indi_pos_gain;
   float speed_sp_z = pos_z_err * guidance_indi_pos_gain;
+
+  if(dr_fp.gate_nr ==0)
+  {
+      //speed_sp_x = pos_x_err * 1.0;
+      speed_sp_x = 1.5;
+      speed_sp_y = pos_y_err * guidance_indi_pos_gain;
+  }
+  else if(dr_fp.gate_nr == 1)
+  {
+      speed_sp_x = pos_x_err * guidance_indi_pos_gain;
+      //speed_sp_y = pos_y_err * 1.0;
+      speed_sp_y = 1.5;
+  }
+
+  else
+
+  {
+      speed_sp_x = -1.5;
+      speed_sp_y = pos_y_err * guidance_indi_pos_gain;
+
+  }
 
   // -------------for log--------------
   indi_ctrl.vx_cmd = speed_sp_x;

@@ -268,7 +268,7 @@ void dronerace_periodic(void)
 
   // Vision update
   // printf("input count, vision count: %d, %d\n", input_cnt, dr_vision.cnt);
-  if (input_cnt > dr_vision.cnt) {
+  if (input_cnt > dr_vision.cnt && fabs(stateGetNedToBodyEulers_f()->psi-dr_fp.psi_set)<RadOfDeg(5.0)) {
     dr_vision.cnt = input_cnt;
     dr_vision.dx = input_dx;
     dr_vision.dy = input_dy;

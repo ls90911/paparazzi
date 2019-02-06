@@ -224,7 +224,7 @@ void jevois_mavlink_event(void)
                                      jevois_visual_target.quality,    // quality
                                      jevois_visual_target.source);
 
-          if(mavlink_cnt %10 == 0)
+          if(mavlink_cnt % 50 == 0)
           DEBUG_PRINT("[jevois mavlink] VISUAL_DETECTION %f,%f\n", jevois_mavlink_visual_target.xacc,
                       jevois_mavlink_visual_target.yacc);
 

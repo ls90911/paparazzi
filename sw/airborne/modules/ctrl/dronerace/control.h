@@ -79,6 +79,8 @@ struct indi_controller_struct
     float r_k_p;
     float psi_err;
     float r_bound;
+	float x_err;
+	float y_err;
 };
 
 extern struct dronerace_control_struct dr_control;

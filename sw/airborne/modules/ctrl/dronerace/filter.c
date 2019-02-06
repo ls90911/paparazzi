@@ -15,10 +15,11 @@
 
 struct dronerace_state_struct dr_state;
 struct dronerace_vision_struct dr_vision;
+struct calibrate_ahrs_struct cali_ahrs = {0,0,0,0};
 int detection_time_stamp;
 void calibrate_detection(float *mx,float *my);
-
-
+void calibrate_ahrs(void);
+void calibrate_ahrs_init(void);
 
 void filter_reset()
 {
@@ -39,6 +40,7 @@ void filter_reset()
   // Vision latency
   fifo_reset();
   ransac_reset();
+  calibrate_ahrs_init();
 }
 
 float filteredX, filteredY, filteredVx,filteredVy;
@@ -57,8 +59,15 @@ float filteredX, filteredY, filteredVx,filteredVy;
 
 void filter_predict(float phi, float theta, float psi, float dt)
 {
+	if (cali_ahrs.is_ahrs_calibrated == 0)
+	{
+		calibrate_ahrs();
+	}
   ////////////////////////////////////////////////////////////////////////
   // Body accelerations
+  
+	phi -= cosf(psi) *cali_ahrs.bias_north - sinf(psi)*cali_ahrs.bias_east;
+	theta -= sinf(psi) *cali_ahrs.bias_north + cosf(psi)*cali_ahrs.bias_east;
   BoundAbs(phi, RadOfDeg(50));
   BoundAbs(theta, RadOfDeg(50));
   float az = DR_FILTER_GRAVITY / cosf(theta * DR_FILTER_THRUSTCORR) / cosf(phi * DR_FILTER_THRUSTCORR);
@@ -281,4 +290,40 @@ void calibrate_detection(float *mx,float *my)
     *mx = x + k0_x + k1_x*x+k2_x*x*x;
     *my = y + k0_y + k1_y*y+k2_y*y*y;
 
+}
+
+void calibrate_ahrs_init()
+{
+    cali_ahrs.sum_bias_north = 0.0;
+    cali_ahrs.sum_bias_east = 0.0;
+    cali_ahrs.counter= 0;
+    cali_ahrs.is_ahrs_calibrated = 0;
+}
+
+void calibrate_ahrs()
+{
+	int counter_start = 1000;
+	int counter_end = 2000;
+
+	if(cali_ahrs.counter<counter_start)
+	{
+		if(cali_ahrs.counter%10==0)
+			printf("Calibrating AHRS [%.1f %%]\n",0.0);
+	}
+
+	if(cali_ahrs.counter > counter_start && cali_ahrs.counter < counter_end)
+	{
+		cali_ahrs.sum_bias_east += stateGetNedToBodyEulers_f()->phi;
+		cali_ahrs.sum_bias_north += stateGetNedToBodyEulers_f()->theta;
+		if(cali_ahrs.counter%10==0)
+			printf("Calibrating AHRS [%.1f %%]\n",((float)cali_ahrs.counter-(float)counter_start)/(counter_end-counter_start)*100.0);
+	}
+	if(cali_ahrs.counter > counter_end)
+	{
+		cali_ahrs.bias_north = cali_ahrs.sum_bias_north/(counter_end-counter_start);
+		cali_ahrs.bias_east = cali_ahrs.sum_bias_east/(counter_end-counter_start);
+		cali_ahrs.is_ahrs_calibrated = 1;
+		printf("ahrs calibration is done\n");
+	}
+	cali_ahrs.counter ++;
 }
