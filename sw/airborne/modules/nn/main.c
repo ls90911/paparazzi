@@ -9,8 +9,7 @@ int main() {
     float control[NUM_CONTROL_VARS];
     int i;
 
-    /* nn_stable(state, control); */
-    nested_control(state, control);
+    nn_stable(state, control);
     for (i = 0; i < NUM_CONTROL_VARS; i++) {
         printf("%.12f\n", control[i]);
     }

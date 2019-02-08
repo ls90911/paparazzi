@@ -41,6 +41,7 @@ bool flagNN;
 struct NN_CMD nn_cmd;
 struct NN_STATE nn_state;
 struct ADAPT_HOVER_COEFFCIENT hover_coefficient;
+float scale_factor;
 
 struct FloatRMat R_OPTITRACK_2_NED, R_NED_2_NWU;
 struct FloatEulers eulersOT2NED = {0.0,0.0,-0.0/180.0*3.14};
@@ -172,8 +173,13 @@ void nn_controller(float desired_x,float desired_z)
     gettimeofday(&t1, 0);
     nn_time = timedifference_msec(t0,t1);
 
-    nn_cmd.thrust_ref = control[0] ;
-    nn_cmd.rate_ref = -control[1] ;
+    //nn_cmd.thrust_ref = control[0] ;
+    //nn_cmd.rate_ref = -control[1] ;
+	float F_min = 1.76;
+	float F_max = 2.35;
+	
+	nn_cmd.FL = F_min+(F_max-F_min)*control[0];
+	nn_cmd.FR = F_min+(F_max-F_min)*control[1];
 }
 
 bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_heading)

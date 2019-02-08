@@ -54,7 +54,9 @@ void layer_tanh(float activation[], int dense_layer_count) {
 void layer_softplus(float activation[], int dense_layer_count) {
     int i;
     for (i = 0; i < LAYER_DIMS[dense_layer_count]; i++) {
-        activation[i]  = log(exp(activation[i]) + 1);
+        if (activation[i] < 30.0) {
+            activation[i]  = log(exp(activation[i]) + 1);
+        }
     }
 }
 
@@ -104,29 +106,20 @@ void nested_control(float state[], float control[]) {
     control[1] = KPT * (phi - state[4]);
 }
 
-float weight_nn;
-
 void patched_control(float state[], float control[]) {
     float dist_sq = 0, scale_factor = 0;
     float control_nested[NUM_CONTROL_VARS];
 
-    /* int i; */
-    /* for (i = 0; i < NUM_STATE_VARS; i++) { */
-    /*    dist_sq = dist_sq + state[i]*state[i]; */
-    /* } */
-    dist_sq = state[0]*state[0] + state[2]*state[2]; /* only {x,z} */
+    int i;
+    for (i = 0; i < NUM_STATE_VARS; i++) {
+        dist_sq = dist_sq + state[i]*state[i];
+    }
     scale_factor = exp(-SCALING_COEFF/dist_sq);
 
     nested_control(state, control_nested);
-    weight_nn = scale_factor;
-    /*  combine nn with pid
+
     control[0] = control[0]*scale_factor + (1-scale_factor)*control_nested[0];
     control[1] = control[1]*scale_factor + (1-scale_factor)*control_nested[1];
-    */
-
-    // fully nn
-    control[0] = control[0]*scale_factor;
-    control[1] = control[1]*scale_factor;
 }
 
 void compute_control_patched(float state[], float **ptr_arr_1, float **ptr_arr_2) {

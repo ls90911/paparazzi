@@ -90,7 +90,7 @@ void file_logger_periodic(void)
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
   fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f ,%f,%f,%f,%f,%f,%d,%d,%d,%f,"
-          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", counter,
+          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f\n", counter,
 stateGetPositionNed_f()->x,
 stateGetPositionNed_f()->y,
 stateGetPositionNed_f()->z,
@@ -139,7 +139,7 @@ imu.accel.x,
 imu.accel.y,
 imu.accel.z,
 
-weight_nn,
+scale_factor,
 motor_mixing.commands[0],
 motor_mixing.commands[1],
 motor_mixing.commands[2],
@@ -158,7 +158,10 @@ motor_cmd.thrust[3],
 motor_cmd.pitch[0],
 motor_cmd.pitch[1],
 motor_cmd.pitch[2],
-motor_cmd.pitch[3]
+motor_cmd.pitch[3],
+nn_cmd.FL,
+nn_cmd.FR,
+nn_cmd.dq
          );
   counter++;
 }

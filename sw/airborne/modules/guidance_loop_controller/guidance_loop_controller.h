@@ -35,7 +35,7 @@
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
 
-#ifndef SCALING_COEDD
+#ifndef SCALING_COEFF
 #define SCALING_COEFF 1.0  /* squared neighbourhood radius for using the PD */
 #endif
 
@@ -48,6 +48,9 @@ enum ControllerInUse {NO_CONTROLLER,CONTROLLER_HOVER_WITH_OPTITRACK,CONTROLLER_N
 struct NN_CMD {
     float thrust_ref;
     float rate_ref;
+	float FL;
+	float FR;
+	float dq;
 };
 
 struct NN_STATE
@@ -91,5 +94,6 @@ extern float nn_time;
 extern float psi_c;
 extern float nn_x_sp;
 extern float nn_z_sp;
+extern float scale_factor;
 #endif
 

@@ -219,7 +219,6 @@ void guidance_indi_run(float heading_sp)
       float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+
             (stateGetPositionNed_f()->y)*(stateGetPositionNed_f()->y)+
             (stateGetPositionNed_f()->z-nn_z_sp)*(stateGetPositionNed_f()->z-nn_z_sp);
-      float scale_factor;
       if(NN_PLUS_PD)
       {
          scale_factor = exp(-SCALING_COEFF/dist_square);
@@ -229,7 +228,8 @@ void guidance_indi_run(float heading_sp)
           scale_factor = 1.0;
       }
       float theta = stateGetNedToBodyEulers_f()->theta;
-      float nn_accel_z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
+      //float nn_accel_z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
+      float nn_accel_z = -(nn_cmd.FL+nn_cmd.FR)/0.389*cos(theta)+9.8;
       sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_accel_z;
       //sp_accel.z = nn_accel_z;
       printf("nn thrust is running\n");
