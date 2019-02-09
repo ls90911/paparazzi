@@ -81,6 +81,12 @@ struct indi_controller_struct
     float r_bound;
 	float x_err;
 	float y_err;
+	float previous_x_err;
+	float previous_y_err;
+	float z_sp;
+	float vz_sp;
+	float previous_vx_err;
+	float previous_vy_err;
 };
 
 extern struct dronerace_control_struct dr_control;

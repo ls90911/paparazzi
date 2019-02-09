@@ -66,6 +66,10 @@ void control_reset(void)
   dr_control.psi_cmd = 0;
   vx_error_previous = 0.0;
   vy_error_previous = 0.0;
+  indi_ctrl.previous_x_err = 0.0;
+  indi_ctrl.previous_y_err = 0.0;
+  indi_ctrl.previous_vx_err = 0.0;
+  indi_ctrl.previous_vy_err = 0.0;
 }
 
 static float angle180(float r)
