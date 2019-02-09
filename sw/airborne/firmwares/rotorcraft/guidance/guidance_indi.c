@@ -66,8 +66,8 @@ float guidance_indi_pos_d_gain = 0.5;
 float guidance_indi_speed_gain = GUIDANCE_INDI_SPEED_GAIN;
 float guindace_indi_speed_ff_gain = 0.00;
 #else
-float guidance_indi_speed_gain = 2.0;
-float guidance_indi_speed_d_gain = 1.0;
+float guidance_indi_speed_gain = 3.0;
+float guidance_indi_speed_d_gain = 1.5;
 float guidance_indi_speed_ff_gain = 0.0;
 #endif
 
@@ -189,14 +189,14 @@ void guidance_indi_run(float heading_sp)
   if(dr_fp.gate_nr ==0)
   {
       //speed_sp_x = pos_x_err * 1.0;
-      speed_sp_x = 1.5;
+      speed_sp_x = 2.0;
       speed_sp_y = pos_y_err * guidance_indi_pos_gain;
   }
   else if(dr_fp.gate_nr == 1)
   {
       speed_sp_x = pos_x_err * guidance_indi_pos_gain;
       //speed_sp_y = pos_y_err * 1.0;
-      speed_sp_y = 1.5;
+      speed_sp_y = 2.0;
   }
 
   else
@@ -239,10 +239,8 @@ void guidance_indi_run(float heading_sp)
 
     float vx_err = speed_sp_x - filteredVx;
     float vy_err = speed_sp_y - filteredVy;
-    sp_accel.x = vx_err * guidance_indi_speed_gain;//
-   //	+ guidance_indi_speed_d_gain * (vx_err-indi_ctrl.previous_vx_err)*512.0;
-    sp_accel.y = vy_err * guidance_indi_speed_gain;//
-   //	+ guidance_indi_speed_d_gain * (vy_err-indi_ctrl.previous_vy_err)*512.0;
+    sp_accel.x = vx_err * guidance_indi_speed_gain	+ guidance_indi_speed_d_gain * (vx_err-indi_ctrl.previous_vx_err)*512.0;
+    sp_accel.y = vy_err * guidance_indi_speed_gain	+ guidance_indi_speed_d_gain * (vy_err-indi_ctrl.previous_vy_err)*512.0;
     // for log
     indi_ctrl.ax_cmd = sp_accel.x;
     indi_ctrl.ay_cmd = sp_accel.y;
@@ -296,8 +294,8 @@ void guidance_indi_run(float heading_sp)
 
 
   // feed-forward term from velocity error to attitude
-  guidance_euler_cmd.theta += (speed_sp_x-filteredVx) * guidance_indi_speed_ff_gain;
-  guidance_euler_cmd.phi   += (speed_sp_y-filteredVy) * guidance_indi_speed_ff_gain;
+  //guidance_euler_cmd.theta += (speed_sp_x-filteredVx) * guidance_indi_speed_ff_gain;
+  //guidance_euler_cmd.phi   += (speed_sp_y-filteredVy) * guidance_indi_speed_ff_gain;
 
 #ifdef GUIDANCE_INDI_SPECIFIC_FORCE_GAIN
   guidance_indi_filter_thrust();
