@@ -125,7 +125,7 @@ void filter_correct(void)
 
 
 
-    calibrate_detection(&mx,&my);
+    //calibrate_detection(&mx,&my);
     int assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
 
     //printf("assigned gate = %d, gate nr = %d.\n", assigned_gate, dr_fp.gate_nr);
@@ -157,28 +157,11 @@ void filter_correct(void)
 int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float dy)
 {
   int i, j;
-  // TODO: reintroduce vision scale?
   float min_distance = 9999;
 
   dr_state.assigned_gate_index = -1;
 
   for (i = 0; i < MAX_GATES; i++) {
-    if (gates[i].type != VIRTUAL) {
-      float exp_dx = gates[i].x - dr_state.x;
-      float exp_dy = gates[i].y - dr_state.y;
-      float exp_yaw = gates[i].psi - dr_state.psi;
-      float exp_dist = sqrtf(exp_dx * exp_dx + exp_dy * exp_dy);
-      if (exp_dist == 0.0) {
-        exp_dist = 0.0001f;
-      }
-      float exp_size =  1.4f * 340.0f / exp_dist;
-      // dist = 1.4f * 340.0f / ((float)size);
-      float exp_bearing = atan2(exp_dy, exp_dx);
-      float exp_view = exp_bearing - dr_state.psi;
-      if ((exp_view > -320.0f / 340.0f) && (exp_view < 320.0f / 340.0f)
-          && ((exp_yaw > -RadOfDeg(60.0f)) && (exp_yaw < RadOfDeg(60.0f)))
-         ) {
-
         float rot_dx = cosf(dr_state.psi) * dx -sinf(dr_state.psi) * dy;
         float rot_dy = sinf(dr_state.psi) * dx + cosf(dr_state.psi) * dy;
 
@@ -192,53 +175,13 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
           min_distance = distance_measured_2_drone;
           *_mx = x;
           *_my = y;
-          //printf("Mx = %f, my = %f\n", *_mx, *_my);
         }
-          //printf("Expected gates: %d  %.1f s=%.1f heading %.1f rot %.1f\n", i, dist, size, px, yaw * 57.6f);
-      }
-    }
   }
 
   if(dr_state.assigned_gate_index == -1) {
     dr_state.assigned_gate_index = dr_fp.gate_nr;
   }
 
-  //printf("Final assigned gate = %d: mx,my = %f,%f\n", dr_state.assigned_gate_index, *_mx, *_my);
-
-
-
-  /*
-  for (i = 0; i < MAX_GATES; i++) {
-    if (gates[i].type == VIRTUAL) {
-      continue;
-    }
-    // we can detect the gate from the back side, so not only check one gate in front. But also check back
-    for (j = 0; j < 2; j++) {
-      if (j == 1 && !gates[dr_fp.gate_nr].both_side) {
-        break;
-        //if the drone are at the back side of the gate and there is white paper on the gate,
-        // we should not consider this gate
-      }
-      {
-        float psi = gates[i].psi - j * RadOfDeg(180);
-        float rotx = cosf(psi) * dx - sinf(psi) * dy;
-        float roty = sinf(psi) * dx + cosf(psi) * dy;
-
-        float x = gates[i].x + rotx;
-        float y = gates[i].y + roty;
-        float distance_measured_2_drone = 0;
-        distance_measured_2_drone = (x - (dr_state.x + dr_ransac.corr_x)) * (x - (dr_state.x + dr_ransac.corr_x)) +
-                                    (y - (dr_state.y + dr_ransac.corr_y)) * (y - (dr_state.y + dr_ransac.corr_y));
-        if (distance_measured_2_drone < min_distance) {
-          dr_state.assigned_gate_index = i;
-          min_distance = distance_measured_2_drone;
-          *_mx = x;
-          *_my = y;
-        }
-      }
-    }
-  }*/
-  // printf("Assigned gate = %d, (dx,dy) = (%f,%f), (mx,my) = (%f,%f).\n", dr_state.assigned_gate_index, dx, dy, (*_mx), (*_my));
   return dr_state.assigned_gate_index;
 }
 

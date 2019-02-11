@@ -152,8 +152,10 @@ void update_reference_run()
 
    // transform to global frame
    float psi = waypoints_dr[dr_fp.gate_nr].psi;
-   ref.pos.x = cos(psi)*ref.pos_local.x - sin(psi)*ref.pos_local.y+waypoints_dr[dr_fp.gate_nr].x;
-   ref.pos.y = sin(psi)*ref.pos_local.x + cos(psi)*ref.pos_local.y+waypoints_dr[dr_fp.gate_nr].y;
+   ref.pos.x = waypoints_dr[dr_fp.gate_nr].x;
+   ref.pos.y = waypoints_dr[dr_fp.gate_nr].y;
+   //ref.pos.x = cos(psi)*ref.pos_local.x - sin(psi)*ref.pos_local.y+waypoints_dr[dr_fp.gate_nr].x;
+   //ref.pos.y = sin(psi)*ref.pos_local.x + cos(psi)*ref.pos_local.y+waypoints_dr[dr_fp.gate_nr].y;
 }
 
 void clear_reference()

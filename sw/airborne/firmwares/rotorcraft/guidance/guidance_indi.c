@@ -50,6 +50,7 @@
 #include "modules/ctrl/dronerace/filter.h"
 #include "modules/ctrl/dronerace/control.h"
 #include "modules/ctrl/dronerace/flightplan.h"
+#include "modules/ctrl/dronerace/ransac.h"
 
 // The acceleration reference is calculated with these gains. If you use GPS,
 // they are probably limited by the update rate of your GPS. The default
@@ -202,9 +203,8 @@ void guidance_indi_run(float heading_sp)
   else
 
   {
-      speed_sp_x = -1.5;
+	  speed_sp_x = dr_ransac.buf_size>10?-2.0:0.0; 
       speed_sp_y = pos_y_err * guidance_indi_pos_gain;
-
   }
 
   // -------------for log--------------
