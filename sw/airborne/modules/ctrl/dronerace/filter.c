@@ -20,6 +20,7 @@ int detection_time_stamp;
 void calibrate_detection(float *mx,float *my);
 void calibrate_ahrs(void);
 void calibrate_ahrs_init(void);
+int assigned_gate = 0;
 
 void filter_reset()
 {
@@ -126,7 +127,8 @@ void filter_correct(void)
 
 
     //calibrate_detection(&mx,&my);
-    int assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
+    assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
+	printf("[filter] measured position is x = %f, y = %f\n",mx,my);
 
     //printf("assigned gate = %d, gate nr = %d.\n", assigned_gate, dr_fp.gate_nr);
 
@@ -156,33 +158,51 @@ void filter_correct(void)
 
 int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float dy)
 {
-  int i, j;
-  float min_distance = 9999;
+	int i, j;
+	float min_distance = 9999;
 
-  dr_state.assigned_gate_index = -1;
+	dr_state.assigned_gate_index = -1;
 
-  for (i = 0; i < MAX_GATES; i++) {
-        float rot_dx = cosf(dr_state.psi) * dx -sinf(dr_state.psi) * dy;
-        float rot_dy = sinf(dr_state.psi) * dx + cosf(dr_state.psi) * dy;
+	for (i = 0; i < MAX_GATES; i++) {
+		if (gates[i].type != VIRTUAL) {
+			/*
+			float exp_dx = gates[i].x - dr_state.x;
+			float exp_dy = gates[i].y - dr_state.y;
+			float exp_yaw = gates[i].psi - dr_state.psi;
+			float exp_dist = sqrtf(exp_dx * exp_dx + exp_dy * exp_dy);
+			if (exp_dist == 0.0) {
+				exp_dist = 0.0001f;
+			}
+			float exp_size =  1.4f * 340.0f / exp_dist;
+			// dist = 1.4f * 340.0f / ((float)size);
+			float exp_bearing = atan2(exp_dy, exp_dx);
+			float exp_view = exp_bearing - dr_state.psi;
+			if ((exp_view > -320.0f / 340.0f) && (exp_view < 320.0f / 340.0f)
+					&& ((exp_yaw > -RadOfDeg(60.0f)) && (exp_yaw < RadOfDeg(60.0f)))
+			   ) {
+				*/
+				float rot_dx = cosf(dr_state.psi) * dx -sinf(dr_state.psi) * dy;
+				float rot_dy = sinf(dr_state.psi) * dx + cosf(dr_state.psi) * dy;
 
-        float x = gates[i].x + rot_dx;
-        float y = gates[i].y + rot_dy;
-        float distance_measured_2_drone = 0;
-        distance_measured_2_drone = (x - (dr_state.x + dr_ransac.corr_x)) * (x - (dr_state.x + dr_ransac.corr_x)) +
-                                    (y - (dr_state.y + dr_ransac.corr_y)) * (y - (dr_state.y + dr_ransac.corr_y));
-        if (distance_measured_2_drone < min_distance) {
-          dr_state.assigned_gate_index = i;
-          min_distance = distance_measured_2_drone;
-          *_mx = x;
-          *_my = y;
-        }
-  }
+				float x = gates[i].x + rot_dx;
+				float y = gates[i].y + rot_dy;
+				float distance_measured_2_drone = 0;
+				distance_measured_2_drone = (x - (dr_state.x + dr_ransac.corr_x)) * (x - (dr_state.x + dr_ransac.corr_x)) +
+					(y - (dr_state.y + dr_ransac.corr_y)) * (y - (dr_state.y + dr_ransac.corr_y));
+				if (distance_measured_2_drone < min_distance) {
+					dr_state.assigned_gate_index = i;
+					min_distance = distance_measured_2_drone;
+					*_mx = x;
+					*_my = y;
+				}
+			//}
+		}
+	}
+	if(dr_state.assigned_gate_index == -1) {
+		dr_state.assigned_gate_index = dr_fp.gate_nr;
+	}
 
-  if(dr_state.assigned_gate_index == -1) {
-    dr_state.assigned_gate_index = dr_fp.gate_nr;
-  }
-
-  return dr_state.assigned_gate_index;
+	return dr_state.assigned_gate_index;
 }
 
 void pushJungleGateDetection(void)

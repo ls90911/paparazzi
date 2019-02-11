@@ -203,7 +203,7 @@ void guidance_indi_run(float heading_sp)
   else
 
   {
-	  speed_sp_x = dr_ransac.buf_size>10?-2.0:0.0; 
+	  speed_sp_x = dr_ransac.buf_size>5?-2.0:0.0; 
       speed_sp_y = pos_y_err * guidance_indi_pos_gain;
   }
 
