@@ -128,7 +128,7 @@ void filter_correct(void)
 
     //calibrate_detection(&mx,&my);
     assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
-	printf("[filter] measured position is x = %f, y = %f\n",mx,my);
+	//printf("[filter] measured position is x = %f, y = %f\n",mx,my);
 
     //printf("assigned gate = %d, gate nr = %d.\n", assigned_gate, dr_fp.gate_nr);
 
@@ -165,10 +165,11 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 
 	for (i = 0; i < MAX_GATES; i++) {
 		if (gates[i].type != VIRTUAL) {
-			/*
+
 			float exp_dx = gates[i].x - dr_state.x;
 			float exp_dy = gates[i].y - dr_state.y;
-			float exp_yaw = gates[i].psi - dr_state.psi;
+			//float exp_yaw = scale_heading(gates[i].psi) - scale_heading(dr_state.psi);
+			float exp_yaw = 0;
 			float exp_dist = sqrtf(exp_dx * exp_dx + exp_dy * exp_dy);
 			if (exp_dist == 0.0) {
 				exp_dist = 0.0001f;
@@ -180,7 +181,6 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 			if ((exp_view > -320.0f / 340.0f) && (exp_view < 320.0f / 340.0f)
 					&& ((exp_yaw > -RadOfDeg(60.0f)) && (exp_yaw < RadOfDeg(60.0f)))
 			   ) {
-				*/
 				float rot_dx = cosf(dr_state.psi) * dx -sinf(dr_state.psi) * dy;
 				float rot_dy = sinf(dr_state.psi) * dx + cosf(dr_state.psi) * dy;
 
@@ -195,7 +195,7 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 					*_mx = x;
 					*_my = y;
 				}
-			//}
+			}
 		}
 	}
 	if(dr_state.assigned_gate_index == -1) {

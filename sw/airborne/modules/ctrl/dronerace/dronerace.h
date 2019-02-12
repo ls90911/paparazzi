@@ -35,6 +35,7 @@ extern void dronerace_periodic(void);
 // export
 extern void dronerace_set_rc(float t, float x, float y, float z);
 extern void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi);
+extern float scale_heading(float heading);
 
 #endif
 

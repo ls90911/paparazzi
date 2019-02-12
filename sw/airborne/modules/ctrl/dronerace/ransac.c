@@ -193,7 +193,7 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
 #define DEBUG_RANSAC
 #ifdef DEBUG_RANSAC
 
-        if(dr_ransac.ransac_cnt % 1000 == 0)
+        if(dr_ransac.ransac_cnt % 10000 == 0)
         {
             char filename[128];
             FILE* fp;

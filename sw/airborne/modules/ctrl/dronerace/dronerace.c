@@ -63,6 +63,7 @@ struct GUIDANCE_INDI_VAR
 struct GUIDANCE_INDI_VAR gui_indi_var;
 
 void test_guidance_indi_temp_run();
+float scale_heading(float heading);
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // LOGGING
 
@@ -212,6 +213,7 @@ void dronerace_init(void)
   reference_init();
   dronerace_enter();
   filter_reset();
+
 }
 
 float psi0 = 0;
@@ -219,6 +221,7 @@ float psi0 = 0;
 void dronerace_enter(void)
 {
   psi0 = stateGetNedToBodyEulers_f()->psi;
+  dr_state.psi = psi0;
   //filter_reset();
   prediction_correct(); // it is called by module_enter(), when the mode is changed, the prediction should go to estimation instead of 0
   control_reset();
@@ -268,7 +271,7 @@ void dronerace_periodic(void)
 
   // Vision update
   // printf("input count, vision count: %d, %d\n", input_cnt, dr_vision.cnt);
-  if (input_cnt > dr_vision.cnt && fabs(stateGetNedToBodyEulers_f()->psi-dr_fp.psi_set)<RadOfDeg(5.0)) {
+  if (input_cnt > dr_vision.cnt && fabs(scale_heading(stateGetNedToBodyEulers_f()->psi)-dr_fp.psi_set)<RadOfDeg(5.0)) {
     dr_vision.cnt = input_cnt;
     dr_vision.dx = input_dx;
     dr_vision.dy = input_dy;
@@ -342,4 +345,24 @@ void test_guidance_indi_temp_run()
        autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(270.0));
    else
        autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(0.0));
+}
+
+float scale_heading(float heading)
+{
+	int i = 1;
+
+	while(heading>3.14 || heading < -3.14)
+	{
+		if(heading > 3.14)
+		{
+			heading -= 2*3.14;
+		}
+		else if(heading < -3.14)
+		{
+			heading += 2*3.14;
+		}
+		i++;
+		printf("scale_heading heading = %f\n,heading");
+	}
+	return heading;
 }
