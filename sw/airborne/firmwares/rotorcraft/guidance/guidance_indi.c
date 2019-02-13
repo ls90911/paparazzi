@@ -200,11 +200,17 @@ void guidance_indi_run(float heading_sp)
       speed_sp_y = 2.0;
   }
 
-  else
+  else if(dr_fp.gate_nr == 2)
 
   {
 	  speed_sp_x = dr_ransac.buf_size>5?-2.0:0.0; 
       speed_sp_y = pos_y_err * guidance_indi_pos_gain;
+  }
+
+  else
+  {
+      speed_sp_x = pos_x_err * guidance_indi_pos_gain;
+	  speed_sp_y = dr_ransac.buf_size>5?-2.0:0.0; 
   }
 
   // -------------for log--------------
