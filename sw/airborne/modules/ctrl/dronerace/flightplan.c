@@ -145,7 +145,9 @@ void flightplan_run(void)
     dr_fp.gate_nr ++;
     reset_local_reference();
     if (dr_fp.gate_nr >= MAX_GATES) {
-      dr_fp.gate_nr = (MAX_GATES - 1);
+      //dr_fp.gate_nr = (MAX_GATES - 1);
+      dr_fp.gate_nr = 0;
+      dr_control.psi_ref = 0.0;
     }
 
     //printf("\n\n*** RESET DUE TO NEXT GATE ***\n\n");
