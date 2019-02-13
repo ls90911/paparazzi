@@ -67,8 +67,8 @@ void filter_predict(float phi, float theta, float psi, float dt)
   ////////////////////////////////////////////////////////////////////////
   // Body accelerations
   
-	phi -= cosf(psi) *cali_ahrs.bias_north - sinf(psi)*cali_ahrs.bias_east;
-	theta -= sinf(psi) *cali_ahrs.bias_north + cosf(psi)*cali_ahrs.bias_east;
+	phi -=  cali_ahrs.bias_north;
+	theta -= cali_ahrs.bias_east;
   BoundAbs(phi, RadOfDeg(50));
   BoundAbs(theta, RadOfDeg(50));
   float az = DR_FILTER_GRAVITY / cosf(theta * DR_FILTER_THRUSTCORR) / cosf(phi * DR_FILTER_THRUSTCORR);

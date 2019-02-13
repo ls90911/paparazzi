@@ -59,7 +59,7 @@
 #ifdef GUIDANCE_INDI_POS_GAIN
 float guidance_indi_pos_gain = GUIDANCE_INDI_POS_GAIN;
 #else
-float guidance_indi_pos_gain = 1.5;
+float guidance_indi_pos_gain = 1.0;
 float guidance_indi_pos_d_gain = 0.5;
 #endif
 
@@ -67,7 +67,7 @@ float guidance_indi_pos_d_gain = 0.5;
 float guidance_indi_speed_gain = GUIDANCE_INDI_SPEED_GAIN;
 float guindace_indi_speed_ff_gain = 0.00;
 #else
-float guidance_indi_speed_gain = 3.0;
+float guidance_indi_speed_gain = 4.0;
 float guidance_indi_speed_d_gain = 1.5;
 float guidance_indi_speed_ff_gain = 0.0;
 #endif
@@ -195,9 +195,8 @@ void guidance_indi_run(float heading_sp)
   }
   else if(dr_fp.gate_nr == 1)
   {
+	  speed_sp_y = dr_ransac.buf_size>5?2.0:0.0; 
       speed_sp_x = pos_x_err * guidance_indi_pos_gain;
-      //speed_sp_y = pos_y_err * 1.0;
-      speed_sp_y = 2.0;
   }
 
   else if(dr_fp.gate_nr == 2)
@@ -240,13 +239,14 @@ void guidance_indi_run(float heading_sp)
   } else {
     sp_accel.x = (speed_sp_x - stateGetSpeedNed_f()->x) * guidance_indi_speed_gain;
     sp_accel.y = (speed_sp_y - stateGetSpeedNed_f()->y) * guidance_indi_speed_gain;
-    sp_accel.z = (speed_sp_z - stateGetSpeedNed_f()->z) * 1.0;
+    sp_accel.z = (speed_sp_z - stateGetSpeedNed_f()->z) * 1.8;
   }
 
     float vx_err = speed_sp_x - filteredVx;
     float vy_err = speed_sp_y - filteredVy;
     sp_accel.x = vx_err * guidance_indi_speed_gain	+ guidance_indi_speed_d_gain * (vx_err-indi_ctrl.previous_vx_err)*512.0;
     sp_accel.y = vy_err * guidance_indi_speed_gain	+ guidance_indi_speed_d_gain * (vy_err-indi_ctrl.previous_vy_err)*512.0;
+    sp_accel.z = (speed_sp_z - stateGetSpeedNed_f()->z) * 1.8;
     // for log
     indi_ctrl.ax_cmd = sp_accel.x;
     indi_ctrl.ay_cmd = sp_accel.y;
