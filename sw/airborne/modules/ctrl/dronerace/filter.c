@@ -126,7 +126,6 @@ void filter_correct(void)
 
 
 
-	printf("assigned gate = %d\n",assigned_gate);
     //calibrate_detection(&mx,&my);
     assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
 
@@ -134,7 +133,6 @@ void filter_correct(void)
 
 
 
-		printf("detected gate: x = %f,y = %f\n",mx,my);
       // Push to RANSAC
       detection_time_stamp = get_time_stamp();
       ransac_push(dr_state.time, dr_state.x, dr_state.y, mx, my,detection_time_stamp);
