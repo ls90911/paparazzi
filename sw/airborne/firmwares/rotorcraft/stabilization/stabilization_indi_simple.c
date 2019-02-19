@@ -349,9 +349,9 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
 	  float nn_accel_ref_q = (nn_cmd.FL-nn_cmd.FR)/I_xx*L; 
 	  nn_cmd.dq = nn_accel_ref_q;
       indi.angular_accel_ref.q = indi.angular_accel_ref.q*(1-scale_factor)+scale_factor*nn_accel_ref_q; 
-      //indi.angular_accel_ref.q = nn_accel_ref_q; 
+      //indi.angular_accel_ref.q = 0.0; 
 	  rateRef.q_ref = nn_cmd.rate_ref;  
-	  printf("NN rate control is running\n");
+	//  printf("NN rate control is running\n");
   }
   else
   {

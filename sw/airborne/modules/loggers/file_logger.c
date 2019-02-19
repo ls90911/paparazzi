@@ -90,7 +90,7 @@ void file_logger_periodic(void)
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
   fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f ,%f,%f,%f,%f,%f,%d,%d,%d,%f,"
-          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f\n", counter,
+          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f\n", counter,
 stateGetPositionNed_f()->x,
 stateGetPositionNed_f()->y,
 stateGetPositionNed_f()->z,
@@ -161,7 +161,11 @@ motor_cmd.pitch[2],
 motor_cmd.pitch[3],
 nn_cmd.FL,
 nn_cmd.FR,
-nn_cmd.dq
+nn_cmd.dq,
+
+indi.angular_accel_ref.p,
+indi.angular_accel_ref.q,
+indi.angular_accel_ref.r
          );
   counter++;
 }
