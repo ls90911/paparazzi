@@ -86,6 +86,7 @@ void firstPartLogic(void)
             if(hover_with_optitrack(5.0))
             {
                 highLevelGuidanceState = SECOND_HIGH_LEVEL;
+				clearClock(3);
             }
             break;
     }
@@ -98,7 +99,9 @@ void secondPartLogic(void)
     {
         case TEMP:
             nn_controller(0.0,-1.5);
-            //go_to_point(5.0,0.0,-2.5,0.0);
+			float z_des = -1 - 0.5*sinf(2*3.14/10.0*getTime(3));
+			float x_des = 0 + 3*sinf(2*3.14/8.0*getTime(3));
+            go_to_point(x_des,0.0,z_des ,0.0);
             break;
     }
 

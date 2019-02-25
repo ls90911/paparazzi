@@ -93,12 +93,13 @@
     <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
     <define name="BODY_TO_IMU_PSI" value="0." unit="deg"/>
 
-<define name="ACCEL_X_NEUTRAL" value="10"/>
-<define name="ACCEL_Y_NEUTRAL" value="-37"/>
-<define name="ACCEL_Z_NEUTRAL" value="-20"/>
-<define name="ACCEL_X_SENS" value="2.4535157318690994" integer="16"/>
-<define name="ACCEL_Y_SENS" value="2.449210710278492" integer="16"/>
-<define name="ACCEL_Z_SENS" value="2.44527212229082" integer="16"/>
+<define name="ACCEL_X_NEUTRAL" value="12"/>
+<define name="ACCEL_Y_NEUTRAL" value="-30"/>
+<define name="ACCEL_Z_NEUTRAL" value="-39"/>
+<define name="ACCEL_X_SENS" value="2.459504208063646" integer="16"/>
+<define name="ACCEL_Y_SENS" value="2.4523184705480143" integer="16"/>
+<define name="ACCEL_Z_SENS" value="2.438228107792204" integer="16"/>
+
 
 
 

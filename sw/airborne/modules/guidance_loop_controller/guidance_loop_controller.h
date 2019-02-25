@@ -51,6 +51,7 @@ struct NN_CMD {
 	float FL;
 	float FR;
 	float dq;
+	float nn_accel_z;
 };
 
 struct NN_STATE

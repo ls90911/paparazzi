@@ -118,6 +118,7 @@ float thrust_in;
 
 int32_t z_ref;
 struct Debug_indi debug_indi;
+float nn_accel_z;
 
 static void guidance_indi_propagate_filters(struct FloatEulers *eulers);
 static void guidance_indi_calcG(struct FloatMat33 *Gmat);
@@ -214,7 +215,7 @@ void guidance_indi_run(float heading_sp)
   debug_indi.vz_sp = speed_sp_z;
   debug_indi.az_sp = sp_accel.z;
 
-  if(flagNN == true)
+  if(flagNN == true || 1)
   {
       float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+
             (stateGetPositionNed_f()->y)*(stateGetPositionNed_f()->y)+
@@ -228,10 +229,8 @@ void guidance_indi_run(float heading_sp)
           scale_factor = 1.0;
       }
       float theta = stateGetNedToBodyEulers_f()->theta;
-      //float nn_accel_z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
-      float nn_accel_z = -(nn_cmd.FL+nn_cmd.FR)/0.389*cos(theta)+9.8;
-      sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_accel_z;
-      //printf("nn thrust is running\n");
+      nn_cmd.nn_accel_z = -((nn_cmd.FL+nn_cmd.FR)/0.389)*cos(theta)+9.8;
+      //sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_cmd.nn_accel_z;
   }
 
   //---------------------------------------------------------------------------------------------------------
