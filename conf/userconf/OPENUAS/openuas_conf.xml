@@ -100,6 +100,17 @@
    gui_color="#ffffeb519c78"
   />
   <aircraft
+   name="Trashcan"
+   ac_id="233"
+   airframe="airframes/OPENUAS/openuas_trashcan.xml"
+   radio="radios/OPENUAS/openuas_R615X_cppm.xml"
+   telemetry="telemetry/default_rotorcraft.xml"
+   flight_plan="flight_plans/dummy.xml"
+   settings="settings/rotorcraft_basic.xml"
+   settings_modules="modules/ahrs_int_cmpl_quat.xml modules/ins_extended.xml modules/stabilization_indi_simple.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml modules/imu_common.xml"
+   gui_color="#fffffe72b9fd"
+  />
+  <aircraft
    name="Vivify"
    ac_id="222"
    airframe="airframes/OPENUAS/openuas_vivify.xml"
