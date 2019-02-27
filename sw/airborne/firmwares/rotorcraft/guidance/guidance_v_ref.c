@@ -97,6 +97,8 @@ void gv_update_ref_from_z_sp(int32_t z_sp)
 
   gv_z_ref  += gv_zd_ref;
   gv_zd_ref += gv_zdd_ref;
+  printf("z_sp = %f\n",POS_FLOAT_OF_BFP(z_sp));
+  printf("z_ref = %f\n",FLOAT_OF_BFP(gv_z_ref, GV_Z_REF_FRAC));
 
   // compute the "speed part" of zdd = -2*zeta*omega*zd -omega^2(z_sp - z)
   int32_t zd_zdd_res = gv_zd_ref >> (GV_ZD_REF_FRAC - GV_ZDD_REF_FRAC);

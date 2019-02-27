@@ -324,7 +324,7 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
   indi.angular_accel_ref.q = indi.reference_acceleration.err_q * QUAT1_FLOAT_OF_BFP(att_err->qy)
                              - indi.reference_acceleration.rate_q * rates_for_feedback.q;
   // Shuo add for NN ----------------------------------------------------------------------------------------------------
-  if(flagNN == true || 1)
+  if(flagNN == true)
   {
 	  float rate_ref_q = nn_cmd.rate_ref;
       float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+
@@ -348,7 +348,7 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
 	  float L = 0.08;
 	  float nn_accel_ref_q = (nn_cmd.FR-nn_cmd.FL)/I_xx*L; 
 	  nn_cmd.dq = nn_accel_ref_q;
-      //indi.angular_accel_ref.q = indi.angular_accel_ref.q*(1-scale_factor)+scale_factor*nn_accel_ref_q; 
+      indi.angular_accel_ref.q = indi.angular_accel_ref.q*(1-scale_factor)+scale_factor*nn_accel_ref_q; 
 	  rateRef.q_ref = nn_cmd.rate_ref;  
 	  //printf("NN dq = %f\n",nn_cmd.dq);
   }

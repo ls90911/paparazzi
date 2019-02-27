@@ -92,7 +92,7 @@ void file_logger_periodic(void)
   struct timeval te;
   gettimeofday(&te, NULL); // get current time
   long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
-  int timeStamp = milliseconds % 1000000;
+  int timeStamp = milliseconds % 100000000;
 
   fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f ,%f,%f,%f,%f,%f,%d,%d,%d,%f,"
           "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f\n", timeStamp,

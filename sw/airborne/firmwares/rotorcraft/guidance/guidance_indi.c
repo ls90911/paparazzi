@@ -169,7 +169,7 @@ void guidance_indi_run(float heading_sp)
   guidance_indi_propagate_filters(&eulers_yxz);
 
   //------------------------------------------------------------------------------------
-  guidance_v_z_ref = z_ref;
+  //guidance_v_z_ref = z_ref;
   //------------------------------------------------------------------------------------
 
   //Linear controller to find the acceleration setpoint from position and velocity
@@ -215,7 +215,7 @@ void guidance_indi_run(float heading_sp)
   debug_indi.vz_sp = speed_sp_z;
   debug_indi.az_sp = sp_accel.z;
 
-  if(flagNN == true || 1)
+  if(flagNN == true )
   {
       float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+
             (stateGetPositionNed_f()->y)*(stateGetPositionNed_f()->y)+
@@ -230,7 +230,8 @@ void guidance_indi_run(float heading_sp)
       }
       float theta = stateGetNedToBodyEulers_f()->theta;
       nn_cmd.nn_accel_z = -((nn_cmd.FL+nn_cmd.FR)/0.389)*cos(theta)+9.8;
-      //sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_cmd.nn_accel_z;
+	  printf("nn_accel_z = %f\n",nn_cmd.nn_accel_z);
+      sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_cmd.nn_accel_z;
   }
 
   //---------------------------------------------------------------------------------------------------------
@@ -258,7 +259,7 @@ void guidance_indi_run(float heading_sp)
   //Bound the acceleration error so that the linearization still holds
   Bound(a_diff.x, -6.0, 6.0);
   Bound(a_diff.y, -6.0, 6.0);
-  Bound(a_diff.z, -19.0, 19.0);
+  Bound(a_diff.z, -9.0, 9.0);
 
   //If the thrust to specific force ratio has been defined, include vertical control
   //else ignore the vertical acceleration error

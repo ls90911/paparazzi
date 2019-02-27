@@ -92,8 +92,8 @@ bool hover_with_optitrack(float hoverTime)
    // ----------------------------------------------
    
    guidance_h_set_guided_pos(0.0, 0.0); 
-   //guidance_v_set_guided_z(-1.5);
-   set_z_ref(-1.5);
+   guidance_v_set_guided_z(-1.5);
+   //set_z_ref(-1.5);
    guidance_h_set_guided_heading(0.0);
 
     if(getTime(2)>hoverTime)
@@ -116,12 +116,11 @@ void nn_controller(float desired_x,float desired_z)
 {
     if(controllerInUse!= CONTROLLER_NN_CONTROLLER)
     {
-            //controllerInUse = CONTROLLER_NN_CONTROLLER;
+            controllerInUse = CONTROLLER_NN_CONTROLLER;
             clearClock(2);
             guidance_h_mode_changed(GUIDANCE_H_MODE_GUIDED);
             guidance_v_mode_changed(GUIDANCE_V_MODE_GUIDED);
             flagNN = true;
-            //printf("[nn controle] nn controller is activated]");
 
 	    float_rmat_of_eulers_321(&R_OPTITRACK_2_NED,&eulersOT2NED);
 	    float_rmat_of_eulers_321(&R_NED_2_NWU,&eulersNED2BWU);
@@ -164,8 +163,8 @@ void nn_controller(float desired_x,float desired_z)
     float_rmat_transp_vmult(&vel_NWU, &R_NED_2_NWU, &vel_NED);
 
    // prepare current states to feed NN
-    float state[NUM_STATE_VARS] = {pos_NWU.x-desired_x, vel_NWU.x, pos_NWU.z+desired_z, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta, -stateGetBodyRates_f()->q};
-   //float state[NUM_STATE_VARS] = {-5.0, 0.0, 2.5, 0.0, -5.0/180*3.14,0.0};
+   //float state[NUM_STATE_VARS] = {pos_NWU.x-desired_x, vel_NWU.x, pos_NWU.z+desired_z, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta, -stateGetBodyRates_f()->q};
+   float state[NUM_STATE_VARS] = {-5.0, 0.0, 0.0, 0.0, -5.0/180*3.14,0.0};
     float control[NUM_CONTROL_VARS];
     gettimeofday(&t0, 0);
     //nn_stable(state, control);

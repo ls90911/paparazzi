@@ -98,10 +98,10 @@ void secondPartLogic(void)
     switch(lowLevelGuidanceState)
     {
         case TEMP:
-            nn_controller(0.0,-1.5);
-			float z_des = -1 - 0.5*sinf(2*3.14/10.0*getTime(3));
-			float x_des = 0 + 3*sinf(2*3.14/8.0*getTime(3));
-            go_to_point(x_des,0.0,z_des ,0.0);
+            //nn_controller(5.0,-1.5);
+			//float z_des = -1 - 0.5*sinf(2*3.14/10.0*getTime(3));
+			//float x_des = 0 + 3*sinf(2*3.14/8.0*getTime(3));
+            go_to_point(5,0.0,-1.5 ,0.0);
             break;
     }
 
