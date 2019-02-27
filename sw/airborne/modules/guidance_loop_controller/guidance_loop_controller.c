@@ -93,7 +93,7 @@ bool hover_with_optitrack(float hoverTime)
    
    guidance_h_set_guided_pos(0.0, 0.0); 
    //guidance_v_set_guided_z(-1.5);
-   set_z_ref(-1.5);
+   //set_z_ref(-1.5);
    guidance_h_set_guided_heading(0.0);
 
     if(getTime(2)>hoverTime)
@@ -140,7 +140,7 @@ void nn_controller(float desired_x,float desired_z)
 
    guidance_h_set_guided_pos(desired_x,0.0); 
    guidance_h_set_guided_heading(0.0);
-    set_z_ref(desired_z);
+    //set_z_ref(desired_z);
     int time_int;
     gettimeofday(&t1, 0);
     temp_time = timedifference_msec(NN_start,t1);
@@ -199,7 +199,7 @@ bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_h
     float error_x =fabs(stateGetPositionNed_f()->x - desired_x);
     float error_y =fabs(stateGetPositionNed_f()->y - desired_y);
     float error_z =fabs(stateGetPositionNed_f()->z - desired_z);
-    set_z_ref(desired_z);
+    //set_z_ref(desired_z);
     if(error_x+error_y+error_z < 0.2)
     {
         return true;
