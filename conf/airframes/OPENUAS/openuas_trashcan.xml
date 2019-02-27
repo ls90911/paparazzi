@@ -20,9 +20,10 @@
       <define name="HFF_PRESCALER" value="20" />
       <define name="AHRS_PROPAGATE_FREQUENCY" value="1000"/>  -->
       <!-- 2 kHz -->
+      <!--<define name="HFF_PRESCALER" value="40" />
       <configure name="PERIODIC_FREQUENCY" value="2048"/>
       <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
-
+-->
       <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!--  No Errors, not tested if it works -->
       <define name="BAT_CHECKER_DELAY" value="50"/>
       <!-- amount of time it take for the bat to check -->
@@ -30,12 +31,14 @@
       <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
     </target>
 
-     <module name="radio_control" type="ppm">
-        <!--<define name="SBUS_PORT" value="UART1"/>-->
-        <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>  -->
+     <module name="radio_control" type="sbus"> <!-- ppm / sbus-->
+        <define name="SBUS_PORT" value="UART1"/>
+        <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>
 
         <!-- for debugging PPM value the one below -->
         <!-- <define name="TELEMETRY_MODE_FBW" value="1"/> -->
+
+
         <!-- <define name="RADIO_MODE" value="RADIO_FLAP"/> -->
         <!-- <define name="RADIO_KILL_SWITCH" value="RADIO_GEAR"/>-->
       </module>
@@ -45,13 +48,15 @@
        <define name="SERVO_HZ"    value="400"/>
     </module>
 
-     <module name="telemetry"     type="transparent_usb">
-        <!-- <configure name="MODEM_BAUD" value="B57600"/> -->
-        <!-- <configure name="MODEM_PORT" value="UART1"/> -->
+     <!--<module name="telemetry"     type="transparent_usb"/>-->
+
+     <module name="telemetry"     type="transparent">
+        <configure name="MODEM_BAUD" value="B57600"/>
+        <configure name="MODEM_PORT" value="UART2"/>
      </module>
 
     <!--  Not Yet <module name="gps" type="ublox">
-      <configure name="GPS_PORT" value="UART3"/>
+      <configure name="GPS_PORT" value="I2C"/>
     </module> -->
     <module name="imu"           type="mpu6000">
        <configure name="IMU_MPU_SPI_DEV" value="spi1"/>
@@ -80,11 +85,16 @@
       <configure name="USE_MAGNETOMETER" value="FALSE" />
       <define name="AHRS_USE_GPS_HEADING" value="FALSE"/>
     </module>
-    <!--  Todo NPS
-    <target name="nps" board="pc">
+
+     <module name="actuators" type="dshot">
+       <define name="SERVO_HZ" value="400"/>
+     </module>
+
+     <target name="nps" board="pc">
       <module name="fdm" type="jsbsim"/>
       <module name="radio_control" type="ppm"/>
-    </target> -->
+    </target>
+
   </firmware>
 
   <modules>
@@ -117,44 +127,50 @@
     </target>-->
     <target name="test_sys_time_timer"      board="crazybee_f4_1.0">
       <configure name="SYS_TIME_LED" value="1"/>
-      <configure name="LED_DEFINES" value="-DLED_RED=1"/>
+      <configure name="LED_DEFINES" value="-DLED_RED=1"/> <!-- green actually ;)-->
     </target>
-    <!--
     <target name="test_sys_time_usleep"     board="crazybee_f4_1.0">
       <configure name="SYS_TIME_LED" value="none"/>
-      <configure name="LED_DEFINES" value="-DLED_GREEN=2"/>
+      <configure name="LED_DEFINES" value="-DLED_GREEN=1"/>
     </target>
     <target name="test_telemetry"           board="crazybee_f4_1.0">
       <configure name="SYS_TIME_LED" value="none"/>
-      <define name="UART_TX_LED" value="3"/>
+      <define name="UART_TX_LED" value="1"/>
     </target>
     <target name="test_actuators_pwm"       board="crazybee_f4_1.0">
       <define name="SERVO_HZ" value="400"/>
-      <define name="USE_SERVOS_7AND8"/>
     </target>
     <target name="test_actuators_pwm_sin"   board="crazybee_f4_1.0">
-      <define name="USE_SERVOS_7AND8"/>
     </target>
-    <target name="test_esc_mkk_simple"      board="crazybee_f4_1.0"/>
-    <target name="test_esc_asctecv1_simple" board="crazybee_f4_1.0"/>
+    <!--
     <target name="test_baro_board"          board="crazybee_f4_1.0">
-      <configure name="BARO_LED" value="2"/>
-    </target>
+      <configure name="BARO_LED" value="1"/>
+    </target>-->
     <target name="test_adc"                 board="crazybee_f4_1.0"/>
-    <target name="test_uart"                board="crazybee_f4_1.0">
+    <!--<target name="test_uart"                board="crazybee_f4_1.0">
+      <define name="USE_UART1"/>
+      <define name="UART1_BAUD" value="B57600"/>
       <define name="USE_UART2"/>
       <define name="UART2_BAUD" value="B57600"/>
-      <define name="USE_UART3"/>
-      <define name="UART3_BAUD" value="B57600"/>
+      <configure name="SYS_TIME_LED" value="none"/>
+      <define name="UART_TX_LED" value="1"/>
     </target>-->
   </firmware>
 
-
+<!--
   <servos driver="Pwm">
     <servo name="FL" no="0" min="1000" neutral="1500" max="2000"/>
     <servo name="FR" no="1" min="1000" neutral="1500" max="2000"/>
     <servo name="BR" no="2" min="1000" neutral="1500" max="2000"/>
     <servo name="BL" no="3" min="1000" neutral="1500" max="2000"/>
+  </servos>
+-->
+
+  <servos driver="Dshot">
+    <servo name="FL" no="0" min="47" neutral="100" max="2047"/>
+    <servo name="FR" no="1" min="47" neutral="100" max="2047"/>
+    <servo name="BR" no="2" min="47" neutral="100" max="2047"/>
+    <servo name="BL" no="3" min="47" neutral="100" max="2047"/>
   </servos>
 
   <commands>
@@ -332,6 +348,12 @@
     <define name="CRITIC_BAT_LEVEL" value="6.6" unit="V"/>
     <define name="LOW_BAT_LEVEL" value="7.0" unit="V"/>
     <define name="MAX_BAT_LEVEL" value="8.4" unit="V"/>
+  </section>
+
+  <section name="SIMULATOR" prefix="NPS_">
+    <define name="ACTUATOR_NAMES" value="front_motor, back_motor, left_motor, right_motor" type="string[]"/>
+    <define name="JSBSIM_MODEL" value="simple_quad" type="string"/>
+    <!--<define name="SENSORS_PARAMS" value="nps_sensors_params_default.h" type="string"/>-->
   </section>
 
 </airframe>

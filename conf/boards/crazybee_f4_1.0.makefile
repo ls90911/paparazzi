@@ -42,14 +42,15 @@ SYS_TIME_LED       ?= 1
 #
 # default UART configuration (RC receiver, telemetry modem, GPS)
 #
-RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT   ?= UART2
-RADIO_CONTROL_SBUS_PORT   ?= UART2
-SBUS_PORT   ?= UART2
+RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT   ?= UART1
+RADIO_CONTROL_SBUS_PORT   ?= UART1
+SBUS_PORT   ?= UART1
 
-MODEM_PORT ?= UART1
+MODEM_PORT ?= UART2
 MODEM_BAUD ?= B57600
 
-# GPS via I2C just as Baro and Magneto... no serial port left
+# GPS via I2C just as Baro and Magneto... no serial ports left on this board
+# Exept if one starts using a build in RX on SP then TX1/RX1 can be used.
 #
 # default actuator configuration
 #

@@ -1,0 +1,18 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="actuators_dshot" dir="actuators" task="actuators">
+  <doc>
+    <description>
+      Actuators Driver using DSHOT
+    </description>
+  </doc>
+  <header>
+    <file name="actuators_dshot.h" dir="subsystems/actuators"/>
+  </header>
+  <makefile target="!sim">
+    <define name="ACTUATORS"/>
+    <file_arch name="actuators_shared_arch.c" dir="subsystems/actuators" cond="ifeq ($(ARCH), stm32)"/>
+    <file_arch name="actuators_dshot_arch.c" dir="subsystems/actuators" cond="ifeq ($(ARCH), stm32)"/>
+  </makefile>
+</module>
+
