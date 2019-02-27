@@ -93,7 +93,7 @@ PRINT_CONFIG_VAR(AHRS_MAG_ZETA)
  * Don't update heading from GPS course if GPS ground speed is below is this threshold
  */
 #ifndef AHRS_HEADING_UPDATE_GPS_MIN_SPEED
-#define AHRS_HEADING_UPDATE_GPS_MIN_SPEED 5.0
+#define AHRS_HEADING_UPDATE_GPS_MIN_SPEED 0.0
 #endif
 
 /** Default Rate filter Low pass */

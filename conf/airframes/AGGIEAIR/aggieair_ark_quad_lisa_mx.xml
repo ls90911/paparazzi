@@ -62,8 +62,8 @@
       <define name="BATMON_CURRENT_SENSITIVITY" value="25.6"/>
       <define name="BATMON_TEMP_OFFSET" value="250"/>
       <define name="BATMON_TEMP_SENSITIVITY" value="10"/>
-    </module>
-  </firmware>
+    </module-->
+  </modules>
 
     <servos driver="Pwm">
     <servo name="FL" no="0" min="1000" neutral="1100" max="1900"/>

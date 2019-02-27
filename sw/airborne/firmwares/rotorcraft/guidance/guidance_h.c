@@ -74,7 +74,7 @@ PRINT_CONFIG_VAR(GUIDANCE_H_USE_SPEED_REF)
 #endif
 
 #ifndef GUIDANCE_INDI
-#define GUIDANCE_INDI FALSE
+#define GUIDANCE_INDI TRUE 
 #endif
 
 struct HorizontalGuidance guidance_h;
@@ -184,6 +184,8 @@ void guidance_h_init(void)
   transition_theta_offset = 0;
 
   gh_ref_init();
+
+#define GUIDANCE_H_MODE_MODULE_SETTING GUIDANCE_H_MODE_MODULE
 
 #if GUIDANCE_H_MODE_MODULE_SETTING == GUIDANCE_H_MODE_MODULE
   guidance_h_module_init();

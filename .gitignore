@@ -185,6 +185,10 @@ paparazzi.sublime-workspace
 
 /sw/airborne/test/ahrs/run_ahrs_on_synth
 
+# tag file
+/tags
+
+
 # Mac OS X
 .DS_Store
 
@@ -194,3 +198,6 @@ tests/results/*
 
 # K-develop
 *.kate-swp
+
+
+

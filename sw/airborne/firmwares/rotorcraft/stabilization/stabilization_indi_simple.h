@@ -91,5 +91,13 @@ extern void stabilization_indi_set_earth_cmd_i(struct Int32Vect2 *cmd, int32_t h
 extern void stabilization_indi_run(bool enable_integrator, bool rate_control);
 extern void stabilization_indi_read_rc(bool in_flight, bool in_carefree, bool coordinated_turn);
 
+struct RateReference
+{
+	float p_ref;
+	float q_ref;
+	float r_ref;
+};
+
+extern struct RateReference rateRef;
 #endif /* STABILIZATION_INDI_SIMPLE_H */
 

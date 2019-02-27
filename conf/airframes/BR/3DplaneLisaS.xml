@@ -48,7 +48,19 @@ Pin 6 on lisa/s is number 3 in airframefile = ELEVATOR
     <set servo="ELEVATOR" value="@PITCH"/>
   </command_laws>
 
-  <include href="conf/airframes/tudelft/calibrations/ladybird18.xml" />
+  <section name="MIXING" prefix="MOTOR_MIXING_">
+    <define name="TRIM_ROLL" value="0"/>
+    <define name="TRIM_PITCH" value="0"/>
+    <define name="TRIM_YAW" value="0"/>
+    <define name="NB_MOTOR" value="4"/>
+    <define name="SCALE" value="256"/>
+    <define name="ROLL_COEF" value="{  -256, -256,  256,  256 }"/>
+    <define name="PITCH_COEF" value="{  256, -256, -256,  256 }"/>
+    <define name="YAW_COEF" value="{    256, -256,  256, -256 }"/>
+    <define name="THRUST_COEF" value="{ 256,  256,  256,  256 }"/>
+  </section>
+
+  <include href="conf/airframes/TUDELFT/calibrations/ladybird18.xml" />
 
   <section name="IMU" prefix="IMU_">
     <define name="BODY_TO_IMU_PHI"   value="0." unit="deg"/>
