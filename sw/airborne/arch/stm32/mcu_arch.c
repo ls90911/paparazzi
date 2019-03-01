@@ -183,6 +183,9 @@ void mcu_arch_init(void)
 #if AHB_CLK == 84000000
   PRINT_CONFIG_MSG("Using 8MHz external clock to PLL it to 84MHz.")
   rcc_clock_setup_hse_3v3(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_84MHZ]);
+#elif AHB_CLK == 100000000
+  PRINT_CONFIG_MSG("Using 8MHz external clock to PLL it to 100MHz.")
+  rcc_clock_setup_hse_3v3(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_100MHZ]);
 #else
   PRINT_CONFIG_MSG("Using 8MHz external clock to PLL it to 168MHz.")
   rcc_clock_setup_hse_3v3(&rcc_hse_8mhz_3v3[RCC_CLOCK_3V3_168MHZ]);

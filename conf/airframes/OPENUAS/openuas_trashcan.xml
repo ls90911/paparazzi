@@ -62,16 +62,16 @@
        <configure name="IMU_MPU_SPI_DEV" value="spi1"/>
        <configure name="IMU_MPU_SPI_SLAVE_IDX" value="SPI_SLAVE0"/>
 
-       <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
-       <define name="IMU_MPU_SMPLRT_DIV" value="3"/><!-- Do not change randomly ;) -->
+       <!--<define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>-->
+       <!--<define name="IMU_MPU_SMPLRT_DIV" value="3"/>--><!-- Do not change randomly ;) -->
 
-       <define name="ICM20608" />
+       <!--define name="ICM20608"/>-->
        <!-- To be able (for now) to set AP IMU orientaion -->
-       <define name="IMU_GYRO_P_SIGN" value="1"/>
-       <define name="IMU_GYRO_Q_SIGN" value="-1"/>
+       <define name="IMU_GYRO_P_SIGN" value="-1"/>
+       <define name="IMU_GYRO_Q_SIGN" value="1"/>
        <define name="IMU_GYRO_R_SIGN" value="-1"/>
-       <define name="IMU_ACCEL_X_SIGN" value="1"/>
-       <define name="IMU_ACCEL_Y_SIGN" value="-1"/>
+       <define name="IMU_ACCEL_X_SIGN" value="-1"/>
+       <define name="IMU_ACCEL_Y_SIGN" value="1"/>
        <define name="IMU_ACCEL_Z_SIGN" value="-1"/>
     </module>
 <!-- Works
@@ -86,9 +86,13 @@
       <define name="AHRS_USE_GPS_HEADING" value="FALSE"/>
     </module>
 
-     <module name="actuators" type="dshot">
+     <module name="actuators" type="pwm">
        <define name="SERVO_HZ" value="400"/>
      </module>
+     <!-- Dshot not working (yet?), I you fix it, free cheers :-)-->
+     <!--<module name="actuators" type="dshot">
+       <define name="SERVO_HZ" value="400"/>
+     </module>-->
 
      <target name="nps" board="pc">
       <module name="fdm" type="jsbsim"/>
@@ -105,18 +109,20 @@
     <!-- <module name="send_imu_mag_current"/> -->
   </modules>
 
- <!--
+<!--
+
+WIP
   For FPV setup only
   No GPS
   No Baro
   No Magneto
   Highest loop rate
   Flip module
-  MaVlink module for OSD
+  Mavlink module for OSD
 
-    <target name="fpv" board="crazybee_f4_1.0">
-    </target>
->-->
+  <target name="fpv" board="crazybee_f4_1.0">
+  </target>
+-->
 
   <!--  To test various things for the new board -->
 
@@ -157,21 +163,22 @@
     </target>-->
   </firmware>
 
-<!--
   <servos driver="Pwm">
     <servo name="FL" no="0" min="1000" neutral="1500" max="2000"/>
     <servo name="FR" no="1" min="1000" neutral="1500" max="2000"/>
     <servo name="BR" no="2" min="1000" neutral="1500" max="2000"/>
     <servo name="BL" no="3" min="1000" neutral="1500" max="2000"/>
   </servos>
--->
 
+<!--
+DShot module code not working yet...
   <servos driver="Dshot">
     <servo name="FL" no="0" min="47" neutral="100" max="2047"/>
     <servo name="FR" no="1" min="47" neutral="100" max="2047"/>
     <servo name="BR" no="2" min="47" neutral="100" max="2047"/>
     <servo name="BL" no="3" min="47" neutral="100" max="2047"/>
   </servos>
+-->
 
   <commands>
     <axis name="ROLL"   failsafe_value="0"/>
@@ -206,9 +213,9 @@
     <define name="MAG_Y_SENS" value="8.25720085664" integer="16"/>
     <define name="MAG_Z_SENS" value="8.60009819293" integer="16"/>
   </section>
-<!--
+
   <section name="STABILIZATION_RATE" prefix="STABILIZATION_RATE_">
-    <! -- setpoints -- >
+    <!-- setpoints -->
     <define name="SP_MAX_P" value="140" unit="deg/s"/>
     <define name="SP_MAX_Q" value="140" unit="deg/s"/>
     <define name="SP_MAX_R" value="140" unit="deg/s"/>
@@ -216,7 +223,7 @@
     <define name="DEADBAND_Q" value="20"/>
     <define name="DEADBAND_R" value="200"/>
 
-    <! -- feedback -- >
+    <!-- feedback -->
     <define name="GAIN_P" value="800"/>
     <define name="GAIN_Q" value="800"/>
     <define name="GAIN_R" value="700"/>
@@ -225,7 +232,7 @@
     <define name="IGAIN_Q" value="240"/>
     <define name="IGAIN_R" value="160"/>
   </section>
--->
+
   <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
     <!-- setpoints -->
     <define name="SP_MAX_PHI"     value="45." unit="deg"/>
@@ -312,7 +319,7 @@
     <define name="HOVER_KP"    value="150"/>
     <define name="HOVER_KD"    value="80"/>
     <define name="HOVER_KI"    value="20"/>
-    <define name="NOMINAL_HOVER_THROTTLE" value="0.3"/>
+    <define name="NOMINAL_HOVER_THROTTLE" value="0.4"/>
     <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
   </section>
 
