@@ -319,14 +319,29 @@ static void jevois_parse(struct jevois_t *jv, char c)
   }
 }
 
+uint8_t uart_getch(struct uart_periph *p)
+{
+  uint8_t ret = p->rx_buf[p->rx_extract_idx];
+  p->rx_extract_idx = (p->rx_extract_idx + 1) % UART_RX_BUFFER_SIZE;
+  return ret;
+}
+
+uint16_t uart_char_available(struct uart_periph *p)
+{
+  int16_t available = p->rx_insert_idx - p->rx_extract_idx;
+  if (available < 0) {
+    available += UART_RX_BUFFER_SIZE;
+  }
+  return (uint16_t)available;
+}
 
 // UART polling function
 void jevois_event(void)
 {
   // Look for data on serial link and send to parser
   while (uart_char_available(&(JEVOIS_DEV))) {
-    uint8_t ch = uart_getch(&(JEVOIS_DEV));
-    jevois_parse(&jevois, ch);
+	uint8_t ch = uart_getch(&(JEVOIS_DEV));
+   jevois_parse(&jevois, ch);
   }
 }
 

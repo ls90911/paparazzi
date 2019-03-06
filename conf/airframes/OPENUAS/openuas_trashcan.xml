@@ -31,13 +31,12 @@
       <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
     </target>
 
-     <module name="radio_control" type="sbus"> <!-- ppm / sbus-->
-        <define name="SBUS_PORT" value="UART1"/>
-        <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>
+     <module name="radio_control" type="ppm"> <!-- ppm / sbus-->
+        <!--<define name="SBUS_PORT" value="UART1"/>-->
+       <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>-->
 
         <!-- for debugging PPM value the one below -->
-        <!-- <define name="TELEMETRY_MODE_FBW" value="1"/> -->
-
+        <!--<define name="TELEMETRY_MODE_FBW" value="1"/>-->
 
         <!-- <define name="RADIO_MODE" value="RADIO_FLAP"/> -->
         <!-- <define name="RADIO_KILL_SWITCH" value="RADIO_GEAR"/>-->
@@ -93,6 +92,8 @@
      <!--<module name="actuators" type="dshot">
        <define name="SERVO_HZ" value="400"/>
      </module>-->
+
+     <module name="jevois_mavlink"/>
 
      <target name="nps" board="pc">
       <module name="fdm" type="jsbsim"/>

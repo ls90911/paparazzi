@@ -74,7 +74,7 @@
 #define PPM_CHANNEL         TIM_IC1
 #define PPM_TIMER_INPUT     TIM_IC_IN_TI1
 #define PPM_IRQ             NVIC_TIM1_CC_IRQ
-//#define PPM_IRQ2            NVIC_TIM1_UP_TIM10_IRQ //Maybe not needed
+#define PPM_IRQ2            NVIC_TIM1_UP_TIM10_IRQ //Maybe not needed
 // Capture/Compare InteruptEnable and InterruptFlag
 #define PPM_CC_IE           TIM_DIER_CC1IE
 #define PPM_CC_IF           TIM_SR_CC1IF
@@ -117,7 +117,7 @@
 #define SPI_SELECT_SLAVE0_PIN GPIO4
 
 /* OSD on SPI2 */
-//#define SPI_SELECT_SLAVE1_PORT GPIOB??
+//#define S2100PI_SELECT_SLAVE1_PORT GPIOB??
 //#define SPI_SELECT_SLAVE1_PIN GPIO3??
 
 /* Not implemnented RX on SPI3 */
@@ -166,7 +166,7 @@
 
 /* We (mis) use PWM out set as in to read Receiver CPPM pulses */
 #ifndef USE_LED_STRIP
-#define USE_LED_STRIP 1
+#define USE_LED_STRIP 0
 #endif
 #if USE_LED_STRIP
 #define LED_STRIP_GPIO_PORT GPIOA
