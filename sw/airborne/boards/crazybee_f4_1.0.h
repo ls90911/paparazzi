@@ -7,19 +7,6 @@
 #define EXT_CLK 8000000  // 8mHz
 #define AHB_CLK 84000000 // 84mhz for now, not yet done suppord for 100Mhz see MCU Arch an libopencm3 to fix
 
-//    DEF_TIM(TIM9, CH2, PA3,  TIM_USE_PPM,   0, 0), // PPM/RX2
-//
-//    DEF_TIM(TIM2, CH3, PB10, TIM_USE_MOTOR, 0, 0), // S1_OUT - DMA1_ST1
-//    DEF_TIM(TIM4, CH1, PB6,  TIM_USE_MOTOR, 0, 0), // S2_OUT - DMA1_ST0
-//    DEF_TIM(TIM4, CH2, PB7,  TIM_USE_MOTOR, 0, 0), // S3_OUT - DMA1_ST3
-//    DEF_TIM(TIM4, CH3, PB8,  TIM_USE_MOTOR, 0, 0), // S4_OUT - DMA1_ST7
-//
-//    DEF_TIM(TIM5, CH1, PA0,  TIM_USE_LED,   0, 0), // 2812LED - DMA1_ST2
-//
-//    DEF_TIM(TIM9, CH1, PA2,  TIM_USE_PWM,   0, 0 ), // TX2
-//    DEF_TIM(TIM1, CH2, PA9,  TIM_USE_PWM,   0, 0 ), // TX1
-//DEF_TIM(TIM1, CH3, PA10, TIM_USE_PWM, 0, 0 ), // RX1
-
 /** LEDs **/
 /* Green LED on flight controller */
 #ifndef USE_LED_1
@@ -31,7 +18,7 @@
 #define LED_1_GPIO_OFF gpio_set
 #define LED_1_AFIO_REMAP ((void)0)
 
-/* TODO Is red Power LED controllable?, not on a MCU pin ?*/
+/* FIXME: Is red Power LED controllable, or not on a MCU pin ?*/
 
 /** UART's **/
 /* UART1 */
@@ -48,18 +35,18 @@
 #define UART2_GPIO_PORT_RX GPIOA //connects to built-in DSMX receiver if availabe on board
 #define UART2_GPIO_RX GPIO3
 
-/* SBUS invert on UARTx is a separate pin on the board */
+/* SBUS inverted on UARTx is a separate physical pad on the board */
 
-/*(re)setting RADIO_CONTROL_POWER_PORT not possible AFAIK on this board
+/* FIXME: (re)setting RADIO_CONTROL_POWER_PORT
 #define RADIO_CONTROL_POWER_PORT GPIOA
 #define RADIO_CONTROL_POWER_PIN GPIO10
 #define RADIO_CONTROL_POWER_ON gpio_clear // yes, inverted
 #define RADIO_CONTROL_POWER_OFF gpio_set
 */
 
-/* //TODO: Soft binding Spektrum */
+/* FIXME: Soft binding Spektrum */
 /*
-#define SPEKTRUM_UART2_RCC RCC_USART1
+#define SPEKTRUM_UART2_RCC RCC_USART1 //But uard 2 if embedded CYRF chip Speksat can be on UART1
 #define SPEKTRUM_UART2_BANK GPIOA
 #define SPEKTRUM_UART2_PIN GPIO10
 #define SPEKTRUM_UART2_AF GPIO_AF7
@@ -68,13 +55,17 @@
 #define SPEKTRUM_UART2_DEV USART1
 */
 
-/* TODO:  DEF_TIM(TIM5, CH1, PA0  // 2812LED - DMA1_ST2*/
+/* Originaly intended for 2812LED board - DMA1_ST2
+ * Now re- used for CPPM receiver input
+ * FIXME can use UART  TIM9, CH2, PA3 for PPM (or UARTRX2)
+ */
+
 //#ifdef PPM_CONFIG
 #define USE_PPM_TIM5 1
 #define PPM_CHANNEL         TIM_IC1
 #define PPM_TIMER_INPUT     TIM_IC_IN_TI1
 #define PPM_IRQ             NVIC_TIM1_CC_IRQ
-#define PPM_IRQ2            NVIC_TIM1_UP_TIM10_IRQ //Maybe not needed
+//#define PPM_IRQ2            NVIC_TIM1_UP_TIM10_IRQ //FIXME: Maybe not needed
 // Capture/Compare InteruptEnable and InterruptFlag
 #define PPM_CC_IE           TIM_DIER_CC1IE
 #define PPM_CC_IF           TIM_SR_CC1IF
@@ -82,6 +73,16 @@
 #define PPM_GPIO_PIN        GPIO0
 #define PPM_GPIO_AF         GPIO_AF2
 //#endif // PPM_CONFIG
+
+/* We (mis) use PWM out set as in to read Receiver CPPM pulses */
+#ifdef USE_LED_STRIP
+#define USE_LED_STRIP 1
+#endif
+
+#if USE_LED_STRIP
+#define LED_STRIP_GPIO_PORT GPIOA
+#define LED_STRIP_GPIO_PIN GPIO0
+#endif
 
 /** SPI **/
 /* SPI1 for MPU accel/gyro (MPU6000*/
@@ -93,7 +94,7 @@
 #define SPI1_GPIO_PORT_MOSI GPIOA
 #define SPI1_GPIO_MOSI GPIO7
 
-/* TODO SPI2 for OSD */
+/* SPI2 for embedded OSD MAX chip*/
 //#define SPI2_GPIO_AF GPIO_AF5
 //#define SPI2_GPIO_PORT_SCK GPIOB
 //#define SPI2_GPIO_SCK GPIO13
@@ -102,7 +103,7 @@
 //#define SPI2_GPIO_PORT_MOSI GPIOB
 //#define SPI2_GPIO_MOSI GPIO15
 
-/* TODO SPI3 for RX direct, if implemented in AP */
+/* Used SPI3 for RX direct, if RX solution is implemented in AP */
 //#define SPI3_GPIO_AF GPIO_AF5 //TODO check datasheet
 //#define SPI3_GPIO_PORT_SCK GPIOB
 //#define SPI3_GPIO_SCK GPIO3
@@ -126,7 +127,7 @@
 
 /** Onboard ADCs **/
 
-#define USE_AD_TIM1 1 //TODO check datasheet
+#define USE_AD_TIM1 1
 
 /* Voltage */
 #ifndef USE_ADC_1
@@ -158,20 +159,13 @@
 #define MilliAmpereOfAdc(adc)((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f)  // TODO: Calibrate
 #endif
 
-/* TODO: drag somehere from the board I2C for GPS BAR MAG, todo the I2C mapping then*/
+/* TODO: Somehere on the board find and I2C so to connect e.g. GPS BAR MAG,
+ * TODO: Finish the I2C mapping if Pins found */
+
 //#define I2C1_GPIO_AF GPIO_AF4
 //#define I2C1_GPIO_PORT GPIOB
 //#define I2C1_GPIO_SCL GPIO8
 //#define I2C1_GPIO_SDA GPIO9
-
-/* We (mis) use PWM out set as in to read Receiver CPPM pulses */
-#ifndef USE_LED_STRIP
-#define USE_LED_STRIP 0
-#endif
-#if USE_LED_STRIP
-#define LED_STRIP_GPIO_PORT GPIOA
-#define LED_STRIP_GPIO_PIN GPIO0
-#endif
 
 /* Default actuators driver */
 #define DEFAULT_ACTUATORS "subsystems/actuators/actuators_pwm.h"
@@ -248,7 +242,6 @@
 #define PWM_BUZZER
 #define PWM_BUZZER_GPIO GPIOC
 #define PWM_BUZZER_PIN GPI15
-//#define PWM_BUZZER_AF GPIO_AF1 //None
 #define PWM_BUZZER_GPIO_ON  gpio_clear
 #define PWM_BUZZER_GPIO_OFF gpio_set
 #endif

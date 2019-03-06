@@ -28,8 +28,8 @@
 MEMORY
 {
     ram (rwx) : ORIGIN = 0x20000000, LENGTH = 128K
-    /* Reserving 32kb flash (512-32=480) for persistent settings. */
-    rom (rx) : ORIGIN = 0x08000000, LENGTH = 480K
+    /* Reserving 16kb flash (512-16=496) for persistent settings. */
+    rom (rx) : ORIGIN = 0x08000000, LENGTH = 496K
     
 }
 

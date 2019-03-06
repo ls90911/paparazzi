@@ -157,6 +157,10 @@
 #define AGL_RAY_SENSOR_GAZEBO_ID 10
 #endif
 
+#ifndef AGL_LIDAR_TFMINI_ID
+#define AGL_LIDAR_TFMINI_ID 11
+#endif
+
 /*
  * IDs of magnetometer sensors (including IMUs with mag)
  */
@@ -419,6 +423,13 @@
 
 #ifndef DETECT_GATE_ABI_ID
 #define DETECT_GATE_ABI_ID 33
+#endif
+
+/*
+ * JOYSTICK message (used for payload or control, but not as a RC)
+ */
+#ifndef JOYSTICK_ID
+#define JOYSTICK_ID 1
 #endif
 
 #endif /* ABI_SENDER_IDS_H */
