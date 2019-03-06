@@ -386,8 +386,8 @@ DShot module code not working yet...
   <!-- ********************** GCS SPECIFICS ************************** -->
   <section name="GCS">
     <define name="SPEECH_NAME" value="Trashy trashy"/>
-    <define name="AC_ICON" value="x-quad"/>
-    <define name="ALT_SHIFT_PLUS_PLUS" value="2"/> <!-- f optitrc-->
+    <define name="AC_ICON" value="quadrotor_x"/>
+    <define name="ALT_SHIFT_PLUS_PLUS" value="2"/> <!-- low diff for eg optitrack -->
     <define name="ALT_SHIFT_PLUS" value="1"/>
     <define name="ALT_SHIFT_MINUS" value="-1"/>
   </section>
