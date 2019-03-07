@@ -1,6 +1,6 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
 <airframe name="Trashcan">
-  <description>
+    <description>
 * Airframe for the regular "Trashcan" Quadrotor frame equipped with to validate all onboard functionally.
      + Autopilot:   Default Crazybee F4 Pro STM32F4 and all that comes with it
      + Actuators:   Default onboard Blheli S ESCs see http://wiki.paparazziuav.org/wiki/Subsystem/actuators#PWM
@@ -13,312 +13,288 @@
   WIP:
      + RC RX:       OpenRX FrSky compatible over air 2.4Ghz CPPM out, now temporary via wifi telemetry module
      + GPS:         uBlox SAM M8Q with Magneto n Baro GNSS
-  </description>
+    </description>
 
-  <firmware name="rotorcraft">
-    <target name="ap" board="crazybee_f4_1.0">
-      <define name="AUTOPILOT_DISABLE_AHRS_KILL"/> <!--  Starts in KILL, but can now switch to NAV -->
+    <firmware name="rotorcraft">
+        <target name="ap" board="crazybee_f4_1.0">
+            <define name="AUTOPILOT_DISABLE_AHRS_KILL"/> <!--  Starts in KILL, but can now switch to NAV -->
 
-      <!-- Towards a better and no messing it all up kind of aligner when battery pluging ;)-->
-      <!--
-      <define name="AHRS_ALIGNER_SAMPLES_NB" value="200"/>
-      <define name="LOW_NOISE_THRESHOLD" value="30000"/>
-      <define name="LOW_NOISE_TIME" value="10"/>-->
+            <!-- Towards a better and no messing it all up kind of aligner when wobbly plugging in battery ;) -->
+            <!--
+            <define name="AHRS_ALIGNER_SAMPLES_NB" value="200"/>
+            <define name="LOW_NOISE_THRESHOLD" value="30000"/>
+            <define name="LOW_NOISE_TIME" value="10"/>
+            -->
 
-      <!--<define name="T_GYRO_RANGE" value="MPU60X0_GYRO_RANGE_2000"/>-->
-      <!--<define name="T_ACCEL_RANGE" value="MPU60X0_ACCEL_RANGE_16G"/>--><!-- Set to 8G maybe possible -->
-      <!--<define name="T_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>-->
-      <!--<define name="T_SMPLRT_DIV" value="3"/><!-- Do not change randomly ;) -->
+<!-- 512 Hz -->
 
-      <!--<configure name="AHRS_PROPAGATE_FREQUENCY" value="500"/>--><!--  unit="Hz" -->
-      <!--<configure name="AHRS_CORRECT_FREQUENCY" value="500"/> --><!--  unit="Hz" -->
-      <!--<configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/>--><!-- TODO: best value unit="Hz" -->
+            <configure name="PERIODIC_FREQUENCY" value="512"/>
+            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
+            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
 
-      <!--<configure name="NAVIGATION_FREQUENCY" value="16"/>--> <!--  unit="Hz" -->
-      <!--<configure name="CONTROL_FREQUENCY" value="120"/>--> <!--  unit="Hz" -->
-      <!--<configure name="TELEMETRY_FREQUENCY" value="60"/>--> <!--  unit="Hz" -->
-      <!--<configure name="MODULES_FREQUENCY" value="512"/>--> <!--  unit="Hz" -->
+<!-- see e.g. https://github.com/kriswiner/MPU9250/issues/59 -->
+<!-- 1 kHz -->
+<!-- NOT TESTED IMU_MPU_LOWPASS_FILTER and IMU_MPU_SMPLRT_DIV  TODO - ATM likely INCORRECT values-->
+        <!--in Freq in HZ
+            <configure name="PERIODIC_FREQUENCY" value="1024"/>
 
-      <!-- 512 Hz -->
-      <!-- no need to define anything -->
+            <define name="HFF_PRESCALER" value="20" />
+            <define name="AHRS_PROPAGATE_FREQUENCY" value="1000"/>
+            <configure name="AHRS_CORRECT_FREQUENCY" value="1000"/>
+            <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/>
 
-      <!-- 1 kHz -->
+            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
+            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
+
+            <configure name="NAVIGATION_FREQUENCY" value="16"/>
+            <configure name="CONTROL_FREQUENCY" value="120"/>
+            <configure name="TELEMETRY_FREQUENCY" value="60"/>
+            <configure name="MODULES_FREQUENCY" value="1024"/>
+         -->
+
+<!-- 2 kHz -->
+<!-- NOT TESTED IMU_MPU_LOWPASS_FILTER and IMU_MPU_SMPLRT_DIV  TODO - ATM likely INCORRECT values-->
 <!--
-      <configure name="PERIODIC_FREQUENCY" value="1024"/>
-      <define name="HFF_PRESCALER" value="20" />
-      <define name="AHRS_PROPAGATE_FREQUENCY" value="1000"/>
+            <configure name="PERIODIC_FREQUENCY" value="2048"/>
+
+            <define name="HFF_PRESCALER" value="40" />
+            <define name="AHRS_PROPAGATE_FREQUENCY" value="1000"/>
+            <configure name="AHRS_CORRECT_FREQUENCY" value="1000"/>
+            <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="100"/>
+
+            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
+            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
+
+            <configure name="NAVIGATION_FREQUENCY" value="16"/>
+            <configure name="CONTROL_FREQUENCY" value="240"/>
+            <configure name="TELEMETRY_FREQUENCY" value="60"/>
+            <configure name="MODULES_FREQUENCY" value="2048"/>
 -->
+            <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!--  No Errors, not tested if it works we have 16kb-->
+            <define name="BAT_CHECKER_DELAY" value="50"/> <!-- amount of time it take for the bat to be checked  -->
+            <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
+            <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
+        </target>
 
-      <!-- 2 kHz -->
+        <module name="radio_control" type="datalink"> <!--datalink(e.g. wifi) or ppm  or sbus-->
+            <!--<define name="SBUS_PORT" value="UART1"/>-->
+            <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>-->
+
+            <!-- for debugging PPM value the one below -->
+            <!--<define name="TELEMETRY_MODE_FBW" value="1"/>-->
+
+            <!-- <define name="RADIO_MODE" value="RADIO_FLAP"/> -->
+            <!-- <define name="RADIO_KILL_SWITCH" value="RADIO_GEAR"/>-->
+        </module>
+
+        <module name="motor_mixing"/>
+
+        <module name="actuators" type="pwm">
+            <define name="SERVO_HZ" value="400"/>
+        </module>
+
+        <!-- <module name="telemetry" type="transparent_usb"/>--><!-- Not working, maybe broken in LibopenCM3 ATM? -->
+
+        <module name="telemetry" type="transparent">
+            <configure name="MODEM_BAUD" value="B115200"/>
+            <configure name="MODEM_PORT" value="UART2"/>
+        </module>
+
+        <module name="imu" type="mpu6000">
+            <configure name="IMU_MPU_SPI_DEV" value="spi1"/>
+            <configure name="IMU_MPU_SPI_SLAVE_IDX" value="SPI_SLAVE0"/>
+
+            <!-- define name="ICM20608"/> --> <!-- Not used atm -->
+            <!-- To be able (for now) to set AP IMU orientaion -->
+            <define name="IMU_GYRO_P_SIGN" value="-1"/>
+            <define name="IMU_GYRO_Q_SIGN" value="1"/>
+            <define name="IMU_GYRO_R_SIGN" value="-1"/>
+            <define name="IMU_ACCEL_X_SIGN" value="-1"/>
+            <define name="IMU_ACCEL_Y_SIGN" value="1"/>
+            <define name="IMU_ACCEL_Z_SIGN" value="-1"/>
+        </module>
+
+        <module name="stabilization" type="int_quat"/>
+        <!-- <module name="stabilization" type="indi_simple" /> -->
+        <!-- <module name="stabilization" type="indi" /> -->
+
+        <module name="ins" type="extended"/>
+        <module name="ahrs" type="float_cmpl_quat">
+            <configure name="USE_MAGNETOMETER" value="FALSE" />
+            <define name="AHRS_USE_GPS_HEADING" value="FALSE"/> <!-- true for Optitrac-->
+            <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine best... Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
+            <!--<define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/>--> <!-- apply a low pass filter on rotational velocity"-->
+        </module>
+
+        <module name="actuators" type="pwm">
+            <define name="SERVO_HZ" value="400"/>
+        </module>
+
+        <!-- <module name="jevois_mavlink"> -->
+
+        <!-- No I2C yet... nned to find some good spot for I2C pins -->
+        <!--
+        <module name="gps" type="ublox">
+        <configure name="GPS_PORT" value="I2C"/>
+        </module>
+        -->
+
+        <!-- <module name="geo_mag"/> -->
+        <!-- <module name="air_data"/> -->
+
+        <!-- below temporary until tested then remove it -->
+        <!-- <module name="send_imu_mag_current"/> -->
+
 <!--
-      <configure name="PERIODIC_FREQUENCY" value="2048"/>
-      <define name="HFF_PRESCALER" value="40" />
-      <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
+        <target name="nps" board="pc">
+            <module name="fdm" type="jsbsim"/>
+            <module name="radio_control" type="ppm">
+                <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>
+            </module>
+        </target>
 -->
-      <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!--  No Errors, not tested if it works we have 16kb-->
-      <define name="BAT_CHECKER_DELAY" value="50"/> <!-- amount of time it take for the bat to be checked  -->
-      <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
-      <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
-    </target>
+        <target name="FPV Racing" board="crazybee_f4_1.0">
+            <!--
 
-    <module name="radio_control" type="datalink"> <!--datalink(e.g. wifi) or ppm  or sbus-->
-        <!--<define name="SBUS_PORT" value="UART1"/>-->
-       <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>-->
+            WIP
+              For FPV setup only
+              No GPS
+              No Baro
+              No Magneto
+              Highest loop rate
+              Flip module
+              Mavlink module for OSD
 
-        <!-- for debugging PPM value the one below -->
-        <!--<define name="TELEMETRY_MODE_FBW" value="1"/>-->
+            -->
+                  <!-- 2 kHz -->
+            <!--
+                  <define name="HFF_PRESCALER" value="40" />
+                  <configure name="PERIODIC_FREQUENCY" value="2048"/>
+                  <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
+            -->
+                <!-- <module name="stabilization" type="rate"/> -->
+                <!-- <module name="stabilization" type="indi_simple" /> -->
+                <!-- <module name="stabilization" type="indi" /> -->
+        </target>
 
-        <!-- <define name="RADIO_MODE" value="RADIO_FLAP"/> -->
-        <!-- <define name="RADIO_KILL_SWITCH" value="RADIO_GEAR"/>-->
-      </module>
+    </firmware>
 
-    <module name="motor_mixing"/>
+    <servos driver="Pwm">
+        <servo name="FL" no="3" min="1000" neutral="1030" max="2000"/>
+        <servo name="FR" no="1" min="1000" neutral="1030" max="2000"/>
+        <servo name="BR" no="0" min="1000" neutral="1030" max="2000"/>
+        <servo name="BL" no="2" min="1000" neutral="1030" max="2000"/>
+    </servos>
 
-    <module name="actuators"     type="pwm">
-       <define name="SERVO_HZ"    value="400"/>
-    </module>
+    <commands>
+        <axis name="ROLL"   failsafe_value="0"/>
+        <axis name="PITCH"  failsafe_value="0"/>
+        <axis name="YAW"    failsafe_value="0"/>
+        <axis name="THRUST" failsafe_value="0"/>
+    </commands>
 
-     <!-- <module name="telemetry" type="transparent_usb"/>--><!-- broken in LibopenCM ATM? -->
-     <module name="telemetry" type="transparent">
-        <configure name="MODEM_BAUD" value="B115200"/>
-        <configure name="MODEM_PORT" value="UART2"/>
-     </module>
+    <section name="MIXING" prefix="MOTOR_MIXING_">
+        <define name="REVERSE" value="TRUE"/>
+        <define name="TYPE" value="QUAD_X"/>
+    </section>
 
-    <!-- Not Yet <module name="gps" type="ublox">
-      <configure name="GPS_PORT" value="I2C"/>
-    </module> -->
+    <command_laws>
+        <call fun="motor_mixing_run(autopilot_get_motors_on(),FALSE,values)"/>
+        <set servo="FL" value="motor_mixing.commands[MOTOR_FRONT_LEFT]"/>
+        <set servo="FR" value="motor_mixing.commands[MOTOR_FRONT_RIGHT]"/>
+        <set servo="BR" value="motor_mixing.commands[MOTOR_BACK_RIGHT]"/>
+        <set servo="BL" value="motor_mixing.commands[MOTOR_BACK_LEFT]"/>
+    </command_laws>
 
-    <module name="imu" type="mpu6000">
-       <configure name="IMU_MPU_SPI_DEV" value="spi1"/>
-       <configure name="IMU_MPU_SPI_SLAVE_IDX" value="SPI_SLAVE0"/>
+    <section name="IMU" prefix="IMU_">
 
-       <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
-       <define name="IMU_MPU_SMPLRT_DIV" value="3"/><!-- Do not change randomly ;) -->
+        <define name="BODY_TO_IMU_PHI"   value="0." unit="deg"/>
+        <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
+        <define name="BODY_TO_IMU_PSI"   value="270." unit="deg"/>
 
-       <!--define name="ICM20608"/>-->
-       <!-- To be able (for now) to set AP IMU orientaion -->
-       <define name="IMU_GYRO_P_SIGN" value="-1"/>
-       <define name="IMU_GYRO_Q_SIGN" value="1"/>
-       <define name="IMU_GYRO_R_SIGN" value="-1"/>
-       <define name="IMU_ACCEL_X_SIGN" value="-1"/>
-       <define name="IMU_ACCEL_Y_SIGN" value="1"/>
-       <define name="IMU_ACCEL_Z_SIGN" value="-1"/>
-    </module>
+        <define name="MAG_X_SIGN" value="1"/>
+        <define name="MAG_Y_SIGN" value="1"/>
+        <define name="MAG_Z_SIGN" value="1"/>
 
-    <module name="stabilization" type="int_quat"/>
-    <!-- <module name="stabilization" type="float_quat"/> -->
-    <!-- <module name="stabilization" type="rate"/> -->
-    <!-- <module name="stabilization" type="indi_simple" /> -->
-    <!-- <module name="stabilization" type="indi" /> -->
+        <!-- replace this with your own calibration -->
+        <define name="ACCEL_X_NEUTRAL" value="0"/>
+        <define name="ACCEL_Y_NEUTRAL" value="0"/>
+        <define name="ACCEL_Z_NEUTRAL" value="0"/>
 
-    <module name="ins" type="extended"/> <!--  Yeah, why not... -->
-    <module name="ahrs" type="int_cmpl_quat"> <!-- F4 hardfloat, lets use it now if only SIMD was used ;) -->
-      <configure name="USE_MAGNETOMETER" value="FALSE" />
-      <define name="AHRS_USE_GPS_HEADING" value="FALSE"/><!-- true for Optitrac-->
-      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
-      <!--<define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/>--> <!-- apply a low pass filter on rotational velocity"-->
-    </module>
+        <!-- replace this with your own calibration -->
+        <define name="MAG_X_NEUTRAL" value="0"/>
+        <define name="MAG_Y_NEUTRAL" value="0"/>
+        <define name="MAG_Z_NEUTRAL" value="0"/>
+        <define name="MAG_X_SENS" value="8.0" integer="16"/>
+        <define name="MAG_Y_SENS" value="8.0" integer="16"/>
+        <define name="MAG_Z_SENS" value="8.0" integer="16"/>
 
-     <module name="actuators" type="pwm">
-       <define name="SERVO_HZ" value="400"/>
-     </module>
-     <!-- Dshot not working (yet?), I you fix it, free cheers :-)-->
-     <!--<module name="actuators" type="dshot">
-       <define name="SERVO_HZ" value="400"/>
-     </module>-->
+    </section>
 
-     <!-- <module name="jevois_mavlink"/>-->
+    <section name="STABILIZATION_RATE" prefix="STABILIZATION_RATE_">
+        <!-- setpoints -->
+        <define name="SP_MAX_P" value="140" unit="deg/s"/>
+        <define name="SP_MAX_Q" value="140" unit="deg/s"/>
+        <define name="SP_MAX_R" value="140" unit="deg/s"/>
+        <define name="DEADBAND_P" value="20"/>
+        <define name="DEADBAND_Q" value="20"/>
+        <define name="DEADBAND_R" value="200"/>
 
-     <!-- <module name="gps" type="ubx_ucenter"/> -->
-     <!-- <module name="geo_mag"/> -->
-     <!-- <module name="air_data"/> -->
-     <!-- below temporary until tested then remove it -->
-     <!-- <module name="send_imu_mag_current"/> -->
+        <!-- feedback -->
+        <define name="GAIN_P" value="800"/>
+        <define name="GAIN_Q" value="800"/>
+        <define name="GAIN_R" value="700"/>
 
-     <target name="nps" board="pc">
-      <module name="fdm" type="jsbsim"/>
-      <module name="radio_control" type="ppm"/>
-    </target>
+        <define name="IGAIN_P" value="240"/>
+        <define name="IGAIN_Q" value="240"/>
+        <define name="IGAIN_R" value="160"/>
+    </section>
 
-    <target name="fpv" board="crazybee_f4_1.0">
-<!--
+    <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
+        <!-- setpoints -->
+        <define name="SP_MAX_PHI"     value="25." unit="deg"/>
+        <define name="SP_MAX_THETA"   value="25." unit="deg"/>
+        <define name="SP_MAX_R"       value="80." unit="deg/s"/>
+        <define name="DEADBAND_A"     value="10"/>
+        <define name="DEADBAND_E"     value="10"/>
+        <define name="DEADBAND_R"     value="250"/>
 
-WIP
-  For FPV setup only
-  No GPS
-  No Baro
-  No Magneto
-  Highest loop rate
-  Flip module
-  Mavlink module for OSD
+        <!-- reference -->
+        <define name="REF_OMEGA_P"  value="800" unit="deg/s"/>
+        <define name="REF_ZETA_P"   value="0.85"/>
+        <define name="REF_MAX_P"    value="400." unit="deg/s"/>
+        <define name="REF_MAX_PDOT" value="RadOfDeg(8000.)"/>
 
--->
-      <!-- 2 kHz -->
-<!--
-      <define name="HFF_PRESCALER" value="40" />
-      <configure name="PERIODIC_FREQUENCY" value="2048"/>
-      <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
--->
-    </target>
+        <define name="REF_OMEGA_Q"  value="800" unit="deg/s"/>
+        <define name="REF_ZETA_Q"   value="0.85"/>
+        <define name="REF_MAX_Q"    value="400." unit="deg/s"/>
+        <define name="REF_MAX_QDOT" value="RadOfDeg(8000.)"/>
 
-  </firmware>
+        <define name="REF_OMEGA_R"  value="500" unit="deg/s"/>
+        <define name="REF_ZETA_R"   value="0.85"/>
+        <define name="REF_MAX_R"    value="180." unit="deg/s"/>
+        <define name="REF_MAX_RDOT" value="RadOfDeg(1800.)"/>
 
-  <!-- To test various things for the new board -->
-  <firmware name="test_progs">
-      <!--
-    <target name="test_module" board="px4fmu_4.0">
-      <module name="usb_serial_stm32_example1"/>
-    </target>-->
-    <target name="test_sys_time_timer"      board="crazybee_f4_1.0">
-      <configure name="SYS_TIME_LED" value="1"/>
-      <configure name="LED_DEFINES" value="-DLED_RED=1"/> <!-- green actually ;)-->
-    </target>
-    <target name="test_sys_time_usleep"     board="crazybee_f4_1.0">
-      <configure name="SYS_TIME_LED" value="none"/>
-      <configure name="LED_DEFINES" value="-DLED_GREEN=1"/>
-    </target>
-    <target name="test_telemetry"           board="crazybee_f4_1.0">
-      <configure name="SYS_TIME_LED" value="none"/>
-      <define name="UART_TX_LED" value="1"/>
-    </target>
-    <!--<target name="test_actuators_pwm"       board="crazybee_f4_1.0">
-      <define name="SERVO_HZ" value="400"/>
-    </target>-->
-    <target name="test_actuators_pwm_sin"   board="crazybee_f4_1.0">
-    </target>
-    <!--
-    <target name="test_baro_board"          board="crazybee_f4_1.0">
-      <configure name="BARO_LED" value="1"/>
-    </target>-->
-    <target name="test_adc"                 board="crazybee_f4_1.0"/>
-    <!--<target name="test_uart"                board="crazybee_f4_1.0">
-      <define name="USE_UART1"/>
-      <define name="UART1_BAUD" value="B57600"/>
-      <define name="USE_UART2"/>
-      <define name="UART2_BAUD" value="B57600"/>
-      <configure name="SYS_TIME_LED" value="none"/>
-      <define name="UART_TX_LED" value="1"/>
-    </target>-->
-  </firmware>
+        <!-- feedback -->
+        <define name="PHI_PGAIN"  value="100"/>
+        <define name="PHI_DGAIN"  value="30"/>
+        <define name="PHI_IGAIN"  value="20"/>
 
-  <servos driver="Pwm">
-    <servo name="FL" no="3" min="1000" neutral="1050" max="2000"/>
-    <servo name="FR" no="1" min="1000" neutral="1050" max="2000"/>
-    <servo name="BR" no="0" min="1000" neutral="1050" max="2000"/>
-    <servo name="BL" no="2" min="1000" neutral="1050" max="2000"/>
-  </servos>
+        <define name="THETA_PGAIN"  value="100"/>
+        <define name="THETA_DGAIN"  value="30"/>
+        <define name="THETA_IGAIN"  value="20"/>
 
-<!--
-DShot module code not working yet...-->
-<!--
-  <servos driver="Dshot">
-    <servo name="FL" no="3" min="47" neutral="100" max="2047"/>
-    <servo name="FR" no="1" min="47" neutral="100" max="2047"/>
-    <servo name="BR" no="0" min="47" neutral="100" max="2047"/>
-    <servo name="BL" no="2" min="47" neutral="100" max="2047"/>
-  </servos>
--->
+        <define name="PSI_PGAIN"  value="400"/>
+        <define name="PSI_DGAIN"  value="200"/>
+        <define name="PSI_IGAIN"  value="0"/>
 
-  <commands>
-    <axis name="ROLL"   failsafe_value="0"/>
-    <axis name="PITCH"  failsafe_value="0"/>
-    <axis name="YAW"    failsafe_value="0"/>
-    <axis name="THRUST" failsafe_value="0"/>
-  </commands>
+        <!-- feedforward -->
+        <define name="PHI_DDGAIN"   value="0"/>
+        <define name="THETA_DDGAIN" value="0"/>
+        <define name="PSI_DDGAIN"   value="0"/>
+    </section>
 
-<!-- front left (CCW), front right (CW), back right (CCW), back left (CW) -->
-  <section name="MIXING" prefix="MOTOR_MIXING_">
-    <define name="REVERSE" value="TRUE"/>
-    <define name="TYPE" value="QUAD_X"/>
-  </section>
-
-  <command_laws>
-    <call fun="motor_mixing_run(autopilot_get_motors_on(),FALSE,values)"/>
-    <set servo="FL" value="motor_mixing.commands[MOTOR_FRONT_LEFT]"/>
-    <set servo="FR" value="motor_mixing.commands[MOTOR_FRONT_RIGHT]"/>
-    <set servo="BR" value="motor_mixing.commands[MOTOR_BACK_RIGHT]"/>
-    <set servo="BL" value="motor_mixing.commands[MOTOR_BACK_LEFT]"/>
-  </command_laws>
-
-  <section name="IMU" prefix="IMU_">
-    <define name="ACCEL_X_NEUTRAL" value="0"/>
-    <define name="ACCEL_Y_NEUTRAL" value="0"/>
-    <define name="ACCEL_Z_NEUTRAL" value="0"/>
-
-    <define name="BODY_TO_IMU_PHI"   value="0." unit="deg"/>
-    <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
-    <define name="BODY_TO_IMU_PSI"   value="270." unit="deg"/>
-
-<!-- None per default -->
-    <define name="MAG_X_SENS" value="8.32441255621" integer="16"/>
-    <define name="MAG_Y_SENS" value="8.25720085664" integer="16"/>
-    <define name="MAG_Z_SENS" value="8.60009819293" integer="16"/>
-  </section>
-
-  <section name="STABILIZATION_RATE" prefix="STABILIZATION_RATE_">
-    <!-- setpoints -->
-    <define name="SP_MAX_P" value="140" unit="deg/s"/>
-    <define name="SP_MAX_Q" value="140" unit="deg/s"/>
-    <define name="SP_MAX_R" value="140" unit="deg/s"/>
-    <define name="DEADBAND_P" value="20"/>
-    <define name="DEADBAND_Q" value="20"/>
-    <define name="DEADBAND_R" value="200"/>
-
-    <!-- feedback -->
-    <define name="GAIN_P" value="800"/>
-    <define name="GAIN_Q" value="800"/>
-    <define name="GAIN_R" value="700"/>
-
-    <define name="IGAIN_P" value="240"/>
-    <define name="IGAIN_Q" value="240"/>
-    <define name="IGAIN_R" value="160"/>
-  </section>
-
-  <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
-    <!-- setpoints -->
-    <define name="SP_MAX_PHI"     value="25." unit="deg"/>
-    <define name="SP_MAX_THETA"   value="25." unit="deg"/>
-    <define name="SP_MAX_R"       value="80." unit="deg/s"/>
-    <define name="DEADBAND_A"     value="10"/>
-    <define name="DEADBAND_E"     value="10"/>
-    <define name="DEADBAND_R"     value="250"/>
-
-    <!-- reference -->
-    <define name="REF_OMEGA_P"  value="800" unit="deg/s"/>
-    <define name="REF_ZETA_P"   value="0.85"/>
-    <define name="REF_MAX_P"    value="400." unit="deg/s"/>
-    <define name="REF_MAX_PDOT" value="RadOfDeg(8000.)"/>
-
-    <define name="REF_OMEGA_Q"  value="800" unit="deg/s"/>
-    <define name="REF_ZETA_Q"   value="0.85"/>
-    <define name="REF_MAX_Q"    value="400." unit="deg/s"/>
-    <define name="REF_MAX_QDOT" value="RadOfDeg(8000.)"/>
-
-    <define name="REF_OMEGA_R"  value="500" unit="deg/s"/>
-    <define name="REF_ZETA_R"   value="0.85"/>
-    <define name="REF_MAX_R"    value="180." unit="deg/s"/>
-    <define name="REF_MAX_RDOT" value="RadOfDeg(1800.)"/>
-
-    <!-- feedback -->
-    <define name="PHI_PGAIN"  value="100"/>
-    <define name="PHI_DGAIN"  value="30"/>
-    <define name="PHI_IGAIN"  value="20"/>
-
-    <define name="THETA_PGAIN"  value="100"/>
-    <define name="THETA_DGAIN"  value="30"/>
-    <define name="THETA_IGAIN"  value="20"/>
-
-    <define name="PSI_PGAIN"  value="400"/>
-    <define name="PSI_DGAIN"  value="200"/>
-    <define name="PSI_IGAIN"  value="0"/>
-
-    <!-- feedforward -->
-    <define name="PHI_DDGAIN"   value="0"/>
-    <define name="THETA_DDGAIN" value="0"/>
-    <define name="PSI_DDGAIN"   value="0"/>
-  </section>
-
-  <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
+    <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
         <!-- control effectiveness -->
         <define name="G1_P" value="0.05" />
         <define name="G1_Q" value="0.025" />
@@ -350,71 +326,73 @@ DShot module code not working yet...-->
 
         <!-- Adaptive Learning Rate -->
         <define name="USE_ADAPTIVE" value="TRUE" />
-        <define name="ADAPTIVE_MU" value="0.0001" />
+        <define name="ADAPTIVE_MU" value="0.0003" />
 
         <!--Maxium yaw rate, to avoid instability -->
         <define name="MAX_R" value="120" unit="deg/s" />
     </section>
 
-  <section name="GUIDANCE_V" prefix="GUIDANCE_V_">
-    <define name="HOVER_KP"    value="150"/>
-    <define name="HOVER_KD"    value="80"/>
-    <define name="HOVER_KI"    value="20"/>
-    <define name="NOMINAL_HOVER_THROTTLE" value="0.4"/>
-    <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
-  </section>
+    <section name="GUIDANCE_V" prefix="GUIDANCE_V_">
+        <define name="HOVER_KP"    value="150"/>
+        <define name="HOVER_KD"    value="80"/>
+        <define name="HOVER_KI"    value="20"/>
+        <define name="NOMINAL_HOVER_THROTTLE" value="0.4"/>
+        <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
+    </section>
 
-   <section name="INS" prefix="INS_">
-   </section>
+    <section name="INS" prefix="INS_">
+    </section>
 
-   <section name="AHRS" prefix="AHRS_">
-     <define name="H_X" value=" 0.51562740288882"/>
-     <define name="H_Y" value="-0.05707735220832"/>
-     <define name="H_Z" value=" 0.85490967783446"/>
-  </section>
+    <section name="AHRS" prefix="AHRS_">
+         <define name="H_X" value=" 0.51562740288882"/>
+         <define name="H_Y" value="-0.05707735220832"/>
+         <define name="H_Z" value=" 0.85490967783446"/>
+    </section>
 
-  <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
-    <define name="MAX_BANK" value="30" unit="deg"/>
-    <define name="USE_SPEED_REF" value="TRUE"/>
-    <define name="PGAIN" value="50"/>
-    <define name="DGAIN" value="100"/>
-    <define name="AGAIN" value="70"/>
-    <define name="IGAIN" value="20"/>
-  </section>
+    <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
+        <define name="MAX_BANK" value="25." unit="deg"/>
+        <define name="USE_SPEED_REF" value="TRUE"/>
+        <define name="PGAIN" value="50"/>
+        <define name="DGAIN" value="100"/>
+        <define name="AGAIN" value="70"/>
+        <define name="IGAIN" value="20"/>
+    </section>
 
-  <section name="AUTOPILOT">
-    <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
-    <define name="MODE_AUTO1"  value="AP_MODE_ATTITUDE_DIRECT"/>
-    <define name="MODE_AUTO2"  value="AP_MODE_ATTITUDE_DIRECT"/><!-- for now...-->
-    <define name="USE_THROTTLE_FOR_MOTOR_ARMING" value="TRUE"/>
-   <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
-  </section>
+<!-- ********************** AP ************************** -->
+    <section name="AUTOPILOT">
+        <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/><!-- for now...-->
+        <define name="MODE_AUTO1"  value="AP_MODE_ATTITUDE_DIRECT"/><!-- for now...-->
+        <define name="MODE_AUTO2"  value="AP_MODE_ATTITUDE_DIRECT"/><!-- for now...-->
+        <define name="USE_THROTTLE_FOR_MOTOR_ARMING" value="TRUE"/>
+        <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
+    </section>
 
-  <!-- Flying on a 2S1P 300mAh 40/80C LiPo -->
-  <section name="BAT">
-    <define name="MAX_BAT_CAPACITY" value="300" unit="mAh"/>
-    <!-- tested at V 7.6 the avg -->  <!-- idle RPM then ?A half throttle ?A-->
-    <define name="MILLIAMP_AT_IDLE_THROTTLE" value="10" unit="mA"/>  <!-- TODO ??mA, with additional RC receiver ~??mA -->
-    <define name="MILLIAMP_AT_FULL_THROTTLE" value="40" unit="mA"/> <!-- TODO At 7.2 ?? A at 8.2v ??A rounded then to ?? to be at safe side-->
-    <define name="CATASTROPHIC_BAT_LEVEL" value="6.0" unit="V"/> <!-- TODO: test when AP board switches off -->
-    <define name="CRITIC_BAT_LEVEL" value="6.6" unit="V"/>
-    <define name="LOW_BAT_LEVEL" value="7.0" unit="V"/>
-    <define name="MAX_BAT_LEVEL" value="8.4" unit="V"/>  <!-- 2s lipo 2x4.2 = 8.4 -->
-  </section>
+    <!-- If flying on a 2S1P 300mAh 40/80C LiPo -->
+    <section name="BAT">
+        <define name="MAX_BAT_CAPACITY" value="300" unit="mAh"/>
+        <!-- tested at V 7.6 the avg -->  <!-- idle RPM then ?A half throttle ?A-->
+        <define name="MILLIAMP_AT_IDLE_THROTTLE" value="10" unit="mA"/>  <!-- TODO ??mA, with additional RC receiver ~??mA -->
+        <define name="MILLIAMP_AT_FULL_THROTTLE" value="40" unit="mA"/> <!-- TODO At 7.2 ?? A at 8.2v ??A rounded then to ?? to be at safe side-->
+        <define name="CATASTROPHIC_BAT_LEVEL" value="6.0" unit="V"/> <!-- TODO: test when AP board switches off -->
+        <define name="CRITIC_BAT_LEVEL" value="6.6" unit="V"/>
+        <define name="LOW_BAT_LEVEL" value="7.0" unit="V"/>
+        <define name="MAX_BAT_LEVEL" value="8.4" unit="V"/>  <!-- 2s lipo 2x4.2 = 8.4 -->
+    </section>
 
-  <section name="SIMULATOR" prefix="NPS_">
-    <define name="ACTUATOR_NAMES" value="front_motor, back_motor, left_motor, right_motor" type="string[]"/>
-    <define name="JSBSIM_MODEL" value="simple_quad" type="string"/>
-    <!--<define name="SENSORS_PARAMS" value="nps_sensors_params_default.h" type="string"/>-->
-  </section>
+    <section name="SIMULATOR" prefix="NPS_">
+        <define name="ACTUATOR_NAMES"  value="FL, FR, BR, BL" type="string[]"/>
+        <define name="JSBSIM_MODEL" value="simple_quad" type="string"/>
+        <define name="SENSORS_PARAMS" value="nps_sensors_params_default.h" type="string"/>
+        <!-- mode switch on joystick channel 5 (axis numbering starting at zero) -->
+        <!-- <define name="JS_AXIS_MODE" value="4"/>-->
+    </section>
 
-  <!-- ********************** GCS SPECIFICS ************************** -->
-  <section name="GCS">
-    <define name="SPEECH_NAME" value="Trashy trashy"/>
-    <define name="AC_ICON" value="quadrotor_x"/>
-    <define name="ALT_SHIFT_PLUS_PLUS" value="2"/> <!-- low diff for eg optitrack -->
-    <define name="ALT_SHIFT_PLUS" value="1"/>
-    <define name="ALT_SHIFT_MINUS" value="-1"/>
-  </section>
+    <section name="GCS">
+        <define name="SPEECH_NAME" value="Trashcan"/>
+        <define name="AC_ICON" value="quadrotor_x"/>
+        <define name="ALT_SHIFT_PLUS_PLUS" value="2"/> <!-- low diff for e.g. optitrack 10 for outside-->
+        <define name="ALT_SHIFT_PLUS" value="1"/>
+        <define name="ALT_SHIFT_MINUS" value="-1"/>
+    </section>
 
 </airframe>
