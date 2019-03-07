@@ -7,11 +7,11 @@
      + Telemetry:   Default WiFi  Via ESP8266 see
 
   NOTES:
-     + All set  to expect flying on 2s LiPo battery, 1s LiPo battery possible but not testflown ()yet)
-     + Removed Camera and Video TX to be replaced by a JeVois (www.jevois.org) camera
+     + All set to expect flying on 2s LiPo battery, 1s LiPo battery possible but no gains set (yet..)
+     + Removed Camera and Video TX to be replaced by a JeVois (www.jevois.org) camera on Uart1
 
   WIP:
-     + RC RX:       OpenRX FrSky compatible over air 2.4Ghz CPPM out, no temporary via telemetry module
+     + RC RX:       OpenRX FrSky compatible over air 2.4Ghz CPPM out, now temporary via wifi telemetry module
      + GPS:         uBlox SAM M8Q with Magneto n Baro GNSS
   </description>
 
@@ -31,8 +31,8 @@
 
       <!-- 2 kHz -->
 <!--
-      <define name="HFF_PRESCALER" value="40" />
       <configure name="PERIODIC_FREQUENCY" value="2048"/>
+      <define name="HFF_PRESCALER" value="40" />
       <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
 -->
       <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!--  No Errors, not tested if it works we have 16kb-->
@@ -52,7 +52,10 @@
         <!-- <define name="RADIO_KILL_SWITCH" value="RADIO_GEAR"/>-->
       </module>
 
-    <module name="motor_mixing"/>
+    <module name="motor_mixing">
+      <configure name="MOTOR_MIXING_REVERSE" value="TRUE"/>
+    </module>
+
     <module name="actuators"     type="pwm">
        <define name="SERVO_HZ"    value="400"/>
     </module>
@@ -83,12 +86,12 @@
        <define name="IMU_ACCEL_Y_SIGN" value="1"/>
        <define name="IMU_ACCEL_Z_SIGN" value="-1"/>
     </module>
-<!-- Works
-    <module name="stabilization" type="int_quat"/>
-    <module name="stabilization" type="rate"/>
--->
-    <module name="stabilization" type="indi_simple" />
-    <!--<module name="stabilization" type="indi" />--> <!--not yet...-->
+
+    <!--<module name="stabilization" type="int_quat"/> -->
+    <module name="stabilization" type="float_quat"/>
+    <!-- <module name="stabilization" type="rate"/> -->
+    <!-- <module name="stabilization" type="indi_simple" /> -->
+    <!-- <module name="stabilization" type="indi" /> -->
 
     <module name="ins" type="extended"/> <!--  Yeah, why not... -->
     <module name="ahrs" type="float_cmpl_quat"> <!-- F4 hardfloat, lets use it now if only SIMD was used ;) -->
@@ -179,10 +182,10 @@ WIP
   </firmware>
 
   <servos driver="Pwm">
-    <servo name="FL" no="0" min="1000" neutral="1500" max="2000"/>
-    <servo name="FR" no="1" min="1000" neutral="1500" max="2000"/>
-    <servo name="BR" no="2" min="1000" neutral="1500" max="2000"/>
-    <servo name="BL" no="3" min="1000" neutral="1500" max="2000"/>
+    <servo name="FL" no="3" min="1000" neutral="1050" max="2000"/><!--OK-->
+    <servo name="FR" no="1" min="1000" neutral="1050" max="2000"/><!--OK-->
+    <servo name="BR" no="0" min="1000" neutral="1050" max="2000"/><!--OK-->
+    <servo name="BL" no="2" min="1000" neutral="1050" max="2000"/><!--OK-->
   </servos>
 
 <!--
@@ -202,8 +205,8 @@ DShot module code not working yet...
     <axis name="THRUST" failsafe_value="0"/>
   </commands>
 
+<!-- front left (CCW), front right (CW), back right (CCW), back left (CW) -->
   <section name="MIXING" prefix="MOTOR_MIXING_">
-    <!-- front left (CW), front right (CCW), back right (CW), back left (CCW) -->
     <define name="TYPE" value="QUAD_X"/>
   </section>
 
