@@ -19,6 +19,26 @@
     <target name="ap" board="crazybee_f4_1.0">
       <define name="AUTOPILOT_DISABLE_AHRS_KILL"/> <!--  Starts in KILL, but can now switch to NAV -->
 
+      <!-- Towards a better and no messing it all up kind of aligner when battery pluging ;)-->
+      <!--
+      <define name="AHRS_ALIGNER_SAMPLES_NB" value="200"/>
+      <define name="LOW_NOISE_THRESHOLD" value="30000"/>
+      <define name="LOW_NOISE_TIME" value="10"/>-->
+
+      <!--<define name="T_GYRO_RANGE" value="MPU60X0_GYRO_RANGE_2000"/>-->
+      <!--<define name="T_ACCEL_RANGE" value="MPU60X0_ACCEL_RANGE_16G"/>--><!-- Set to 8G maybe possible -->
+      <!--<define name="T_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>-->
+      <!--<define name="T_SMPLRT_DIV" value="3"/><!-- Do not change randomly ;) -->
+
+      <!--<configure name="AHRS_PROPAGATE_FREQUENCY" value="500"/>--><!--  unit="Hz" -->
+      <!--<configure name="AHRS_CORRECT_FREQUENCY" value="500"/> --><!--  unit="Hz" -->
+      <!--<configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/>--><!-- TODO: best value unit="Hz" -->
+
+      <!--<configure name="NAVIGATION_FREQUENCY" value="16"/>--> <!--  unit="Hz" -->
+      <!--<configure name="CONTROL_FREQUENCY" value="120"/>--> <!--  unit="Hz" -->
+      <!--<configure name="TELEMETRY_FREQUENCY" value="60"/>--> <!--  unit="Hz" -->
+      <!--<configure name="MODULES_FREQUENCY" value="512"/>--> <!--  unit="Hz" -->
+
       <!-- 512 Hz -->
       <!-- no need to define anything -->
 
@@ -52,9 +72,7 @@
         <!-- <define name="RADIO_KILL_SWITCH" value="RADIO_GEAR"/>-->
       </module>
 
-    <module name="motor_mixing">
-      <configure name="MOTOR_MIXING_REVERSE" value="TRUE"/>
-    </module>
+    <module name="motor_mixing"/>
 
     <module name="actuators"     type="pwm">
        <define name="SERVO_HZ"    value="400"/>
@@ -74,8 +92,8 @@
        <configure name="IMU_MPU_SPI_DEV" value="spi1"/>
        <configure name="IMU_MPU_SPI_SLAVE_IDX" value="SPI_SLAVE0"/>
 
-       <!--<define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>-->
-       <!--<define name="IMU_MPU_SMPLRT_DIV" value="3"/>--><!-- Do not change randomly ;) -->
+       <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
+       <define name="IMU_MPU_SMPLRT_DIV" value="3"/><!-- Do not change randomly ;) -->
 
        <!--define name="ICM20608"/>-->
        <!-- To be able (for now) to set AP IMU orientaion -->
@@ -87,16 +105,18 @@
        <define name="IMU_ACCEL_Z_SIGN" value="-1"/>
     </module>
 
-    <!--<module name="stabilization" type="int_quat"/> -->
-    <module name="stabilization" type="float_quat"/>
+    <module name="stabilization" type="int_quat"/>
+    <!-- <module name="stabilization" type="float_quat"/> -->
     <!-- <module name="stabilization" type="rate"/> -->
     <!-- <module name="stabilization" type="indi_simple" /> -->
     <!-- <module name="stabilization" type="indi" /> -->
 
     <module name="ins" type="extended"/> <!--  Yeah, why not... -->
-    <module name="ahrs" type="float_cmpl_quat"> <!-- F4 hardfloat, lets use it now if only SIMD was used ;) -->
+    <module name="ahrs" type="int_cmpl_quat"> <!-- F4 hardfloat, lets use it now if only SIMD was used ;) -->
       <configure name="USE_MAGNETOMETER" value="FALSE" />
       <define name="AHRS_USE_GPS_HEADING" value="FALSE"/><!-- true for Optitrac-->
+      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
+      <!--<define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/>--> <!-- apply a low pass filter on rotational velocity"-->
     </module>
 
      <module name="actuators" type="pwm">
@@ -182,19 +202,20 @@ WIP
   </firmware>
 
   <servos driver="Pwm">
-    <servo name="FL" no="3" min="1000" neutral="1050" max="2000"/><!--OK-->
-    <servo name="FR" no="1" min="1000" neutral="1050" max="2000"/><!--OK-->
-    <servo name="BR" no="0" min="1000" neutral="1050" max="2000"/><!--OK-->
-    <servo name="BL" no="2" min="1000" neutral="1050" max="2000"/><!--OK-->
+    <servo name="FL" no="3" min="1000" neutral="1050" max="2000"/>
+    <servo name="FR" no="1" min="1000" neutral="1050" max="2000"/>
+    <servo name="BR" no="0" min="1000" neutral="1050" max="2000"/>
+    <servo name="BL" no="2" min="1000" neutral="1050" max="2000"/>
   </servos>
 
 <!--
-DShot module code not working yet...
+DShot module code not working yet...-->
+<!--
   <servos driver="Dshot">
-    <servo name="FL" no="0" min="47" neutral="100" max="2047"/>
+    <servo name="FL" no="3" min="47" neutral="100" max="2047"/>
     <servo name="FR" no="1" min="47" neutral="100" max="2047"/>
-    <servo name="BR" no="2" min="47" neutral="100" max="2047"/>
-    <servo name="BL" no="3" min="47" neutral="100" max="2047"/>
+    <servo name="BR" no="0" min="47" neutral="100" max="2047"/>
+    <servo name="BL" no="2" min="47" neutral="100" max="2047"/>
   </servos>
 -->
 
@@ -207,6 +228,7 @@ DShot module code not working yet...
 
 <!-- front left (CCW), front right (CW), back right (CCW), back left (CW) -->
   <section name="MIXING" prefix="MOTOR_MIXING_">
+    <define name="REVERSE" value="TRUE"/>
     <define name="TYPE" value="QUAD_X"/>
   </section>
 
@@ -254,46 +276,46 @@ DShot module code not working yet...
 
   <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
     <!-- setpoints -->
-    <define name="SP_MAX_PHI"     value="45." unit="deg"/>
-    <define name="SP_MAX_THETA"   value="45." unit="deg"/>
-    <define name="SP_MAX_R"       value="90." unit="deg/s"/>
-    <define name="DEADBAND_A"     value="0"/>
-    <define name="DEADBAND_E"     value="0"/>
+    <define name="SP_MAX_PHI"     value="25." unit="deg"/>
+    <define name="SP_MAX_THETA"   value="25." unit="deg"/>
+    <define name="SP_MAX_R"       value="80." unit="deg/s"/>
+    <define name="DEADBAND_A"     value="10"/>
+    <define name="DEADBAND_E"     value="10"/>
     <define name="DEADBAND_R"     value="250"/>
 
     <!-- reference -->
-    <define name="REF_OMEGA_P"  value="400" unit="deg/s"/>
+    <define name="REF_OMEGA_P"  value="800" unit="deg/s"/>
     <define name="REF_ZETA_P"   value="0.85"/>
     <define name="REF_MAX_P"    value="400." unit="deg/s"/>
     <define name="REF_MAX_PDOT" value="RadOfDeg(8000.)"/>
 
-    <define name="REF_OMEGA_Q"  value="400" unit="deg/s"/>
+    <define name="REF_OMEGA_Q"  value="800" unit="deg/s"/>
     <define name="REF_ZETA_Q"   value="0.85"/>
     <define name="REF_MAX_Q"    value="400." unit="deg/s"/>
     <define name="REF_MAX_QDOT" value="RadOfDeg(8000.)"/>
 
-    <define name="REF_OMEGA_R"  value="250" unit="deg/s"/>
+    <define name="REF_OMEGA_R"  value="500" unit="deg/s"/>
     <define name="REF_ZETA_R"   value="0.85"/>
     <define name="REF_MAX_R"    value="180." unit="deg/s"/>
     <define name="REF_MAX_RDOT" value="RadOfDeg(1800.)"/>
 
     <!-- feedback -->
-    <define name="PHI_PGAIN"  value="1000"/>
-    <define name="PHI_DGAIN"  value="400"/>
-    <define name="PHI_IGAIN"  value="200"/>
+    <define name="PHI_PGAIN"  value="100"/>
+    <define name="PHI_DGAIN"  value="30"/>
+    <define name="PHI_IGAIN"  value="20"/>
 
-    <define name="THETA_PGAIN"  value="1000"/>
-    <define name="THETA_DGAIN"  value="400"/>
-    <define name="THETA_IGAIN"  value="200"/>
+    <define name="THETA_PGAIN"  value="100"/>
+    <define name="THETA_DGAIN"  value="30"/>
+    <define name="THETA_IGAIN"  value="20"/>
 
-    <define name="PSI_PGAIN"  value="500"/>
-    <define name="PSI_DGAIN"  value="300"/>
-    <define name="PSI_IGAIN"  value="10"/>
+    <define name="PSI_PGAIN"  value="400"/>
+    <define name="PSI_DGAIN"  value="200"/>
+    <define name="PSI_IGAIN"  value="0"/>
 
     <!-- feedforward -->
-    <define name="PHI_DDGAIN"   value="300"/>
-    <define name="THETA_DDGAIN" value="300"/>
-    <define name="PSI_DDGAIN"   value="300"/>
+    <define name="PHI_DDGAIN"   value="0"/>
+    <define name="THETA_DDGAIN" value="0"/>
+    <define name="PSI_DDGAIN"   value="0"/>
   </section>
 
   <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
@@ -303,7 +325,7 @@ DShot module code not working yet...
         <define name="G1_R" value="0.0022" />
         <define name="G2_R" value="0.20" />
 
-        <!-- For the bebop2 we need to filter the roll rate due to the dampers -->
+        <!-- For some airframes, e.g. Bebop2 we need to filter the roll rate due to the dampers -->
         <define name="FILTER_ROLL_RATE" value="FALSE" />
         <define name="FILTER_PITCH_RATE" value="FALSE" />
         <define name="FILTER_YAW_RATE" value="FALSE" />

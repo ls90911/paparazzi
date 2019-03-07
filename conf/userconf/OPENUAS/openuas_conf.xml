@@ -106,8 +106,8 @@
    radio="radios/dummy.xml"
    telemetry="telemetry/default_rotorcraft.xml"
    flight_plan="flight_plans/dummy.xml"
-   settings="settings/rotorcraft_basic.xml"
-   settings_modules="modules/ahrs_float_cmpl_quat.xml modules/ins_extended.xml modules/stabilization_int_quat.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml modules/imu_common.xml"
+   settings="settings/rotorcraft_basic.xml settings/control/stabilization_att_int_quat.xml [settings/control/stabilization_rate.xml] [settings/control/stabilization_indi.xml]"
+   settings_modules="modules/ahrs_int_cmpl_quat.xml modules/ins_extended.xml modules/stabilization_int_quat.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml modules/imu_common.xml"
    gui_color="#fffffe72b9fd"
    release="63e6a09b9af166030a78a48146700d7255b40a8a"
   />
