@@ -279,8 +279,8 @@ void calibrate_ahrs()
 
 	if(cali_ahrs.counter > counter_start && cali_ahrs.counter < counter_end)
 	{
-		cali_ahrs.sum_bias_east += stateGetNedToBodyEulers_f()->phi;
-		cali_ahrs.sum_bias_north += stateGetNedToBodyEulers_f()->theta;
+		cali_ahrs.sum_bias_east += (float)3.;//stateGetNedToBodyEulers_f()->phi;
+		cali_ahrs.sum_bias_north += (float)4.;//stateGetNedToBodyEulers_f()->theta;
 		if(cali_ahrs.counter%10==0)
 			printf("Calibrating AHRS [%.1f %%]\n",((float)cali_ahrs.counter-(float)counter_start)/(counter_end-counter_start)*100.0);
 	}
