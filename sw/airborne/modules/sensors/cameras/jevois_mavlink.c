@@ -25,15 +25,12 @@
 
 #include "modules/sensors/cameras/jevois_mavlink.h"
 
-
 //#define DEBUG_PRINT printf
 #include <stdio.h>
-
 
 /*
  * MavLink protocol
  */
-
 #include <mavlink/mavlink_types.h>
 #include "mavlink/paparazzi/mavlink.h"
 
@@ -54,18 +51,14 @@ mavlink_system_t mavlink_system;
 #define MAVLINK_SYSID 1
 #endif
 
-
-
 static void mavlink_send_heartbeat(void);
 static void mavlink_send_attitude(void);
 static void mavlink_send_highres_imu(void);
 static void mavlink_send_set_mode(void);
 
-
 /*
  * Exported data
  */
-
 
 struct visual_target_struct {
   int received;
@@ -80,6 +73,8 @@ struct visual_target_struct {
 
 struct vision_relative_position_struct jevois_vision_position = {false, 0, 0.0f, 0.0f, 0.0f};
 
+
+uint8_t heart_beat = 0;
 /*
  * Paparazzi Module functions : filter functions
  */
@@ -109,6 +104,10 @@ void jevois_mavlink_filter_init(void)
  * Paparazzi Module functions : forward to telemetry
  */
 
+static void send_dronerace_debug_info(struct transport_tx *trans, struct link_device *dev)
+{
+    pprz_msg_send_DRONERACE(trans, dev, AC_ID, &heart_beat, &jevois_vision_position.x, &jevois_vision_position.y);
+}
 // Send Manual Setpoint over telemetry using ROTORCRAFT_RADIO_CONTROL message
 
 static void send_jevois_mavlink_visual_target(struct transport_tx *trans, struct link_device *dev)
@@ -142,7 +141,7 @@ static void send_jevois_mavlink_visual_position(struct transport_tx *trans, stru
 }
 
 /*
- * Paparazzi Module functions : communications
+ * Paparazzi ModMAVLINK_SYSIDule functions : communications
  */
 
 void jevois_mavlink_init(void)
@@ -157,8 +156,10 @@ void jevois_mavlink_init(void)
   // Send telemetry
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_VISUALTARGET, send_jevois_mavlink_visual_target);
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_VISION_POSITION_ESTIMATE, send_jevois_mavlink_visual_position);
+  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_DRONERACE, send_dronerace_debug_info);
 }
 
+//This goes to the JeVois camera not GCS
 void jevois_mavlink_periodic(void)
 {
   RunOnceEvery(100, mavlink_send_heartbeat());
@@ -171,15 +172,13 @@ void jevois_mavlink_periodic(void)
 #define JEVOIS_MAVLINK_ABI_ID 34
 #endif
 
-
 int mavlink_cnt = 0;
 
 void jevois_mavlink_event(void)
 {
-    mavlink_cnt++;
+  mavlink_cnt++;
   mavlink_message_t msg;
   mavlink_status_t status;
-
 
   while (MAVLinkChAvailable()) {
     uint8_t c = MAVLinkGetch();
@@ -189,8 +188,11 @@ void jevois_mavlink_event(void)
         case MAVLINK_MSG_ID_HEARTBEAT: {
           mavlink_heartbeat_t heartbeat;
           mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-          // do something with heartbeat variable
-          //DEBUG_PRINT("[jevois mavlink] heartbeat\n");
+          //Debug the heartbeat variable
+          heart_beat = 1;
+		  struct transport_tx trans;
+		  struct link_device dev;
+          send_dronerace_debug_info(&trans, &dev);
         }
         break;
 
@@ -266,8 +268,12 @@ void jevois_mavlink_event(void)
                                           0.0f,
                                           0.0f);
 
-          //if(mavlink_cnt % 10 == 0) DEBUG_PRINT("[jevois mavlink] VISION_POSITION_ESTIMATE %f,%f,%f \n", jevois_vision_position.x, jevois_vision_position.y, jevois_vision_position.z);
-
+          //if(mavlink_cnt % 10 == 0) {
+          heart_beat = 0;
+		  struct transport_tx trans;
+		  struct link_device dev;
+          send_dronerace_debug_info(&trans, &dev);
+          //}
         }
         break;
 

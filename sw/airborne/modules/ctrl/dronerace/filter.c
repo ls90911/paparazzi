@@ -124,15 +124,11 @@ void filter_correct(void)
   //  && dr_vision.dz > -2.5
   if (gates[dr_fp.gate_nr].type != VIRTUAL) {
 
-
-
 	//printf("assigned gate = %d\n",assigned_gate);
     //calibrate_detection(&mx,&my);
     assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
 
     if (assigned_gate == dr_fp.gate_nr) {
-
-
 
 	//	printf("detected gate: x = %f,y = %f\n",mx,my);
       // Push to RANSAC
@@ -143,7 +139,6 @@ void filter_correct(void)
       filteredY = dr_state.y + dr_ransac.corr_y;
       filteredVx = dr_state.vx + dr_ransac.corr_vx;
       filteredVy = dr_state.vy + dr_ransac.corr_vy;
-      
       return;
     }
   }
@@ -231,6 +226,7 @@ void pushJungleGateDetection(void)
 
 int get_time_stamp()
 {
+	//FIXME: LOWPRIORITY
   //struct timeval te;
   //gettimeofday(&te, NULL); // get current time
   //long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
@@ -238,7 +234,6 @@ int get_time_stamp()
   //printf("Timestamp: %d\n",timeStamp);
   return 1;//timeStamp;
 }
-
 
 void calibrate_detection(float *mx,float *my)
 {

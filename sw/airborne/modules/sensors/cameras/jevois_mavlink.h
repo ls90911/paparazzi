@@ -45,7 +45,6 @@
 /*
  * MavLink protocol
  */
-
 #include <mavlink/mavlink_types.h>
 
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
@@ -67,12 +66,10 @@ struct vision_relative_position_struct {
   float z;
 };
 
-
 extern struct vision_relative_position_struct jevois_vision_position;
 /*
  * Paparazzi Module functions
  */
-
 extern void jevois_mavlink_init(void);
 extern void jevois_mavlink_periodic(void);
 extern void jevois_mavlink_filter_periodic(void);
