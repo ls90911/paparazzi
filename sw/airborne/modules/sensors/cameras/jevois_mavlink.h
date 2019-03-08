@@ -33,7 +33,7 @@
 #include "mcu_periph/uart.h"
 
 #ifndef JEVOIS_DEV
-#define JEVOIS_DEV uart2
+#define JEVOIS_DEV uart3
 #endif
 
 #define MAVLinkDev (&(JEVOIS_DEV).device)

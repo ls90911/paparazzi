@@ -156,7 +156,7 @@ void jevois_mavlink_init(void)
   // Send telemetry
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_VISUALTARGET, send_jevois_mavlink_visual_target);
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_VISION_POSITION_ESTIMATE, send_jevois_mavlink_visual_position);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_DRONERACE, send_dronerace_debug_info);
+  //register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_DRONERACE, send_dronerace_debug_info);
 }
 
 //This goes to the JeVois camera not GCS
@@ -190,9 +190,7 @@ void jevois_mavlink_event(void)
           mavlink_msg_heartbeat_decode(&msg, &heartbeat);
           //Debug the heartbeat variable
           heart_beat = 1;
-		  struct transport_tx trans;
-		  struct link_device dev;
-          send_dronerace_debug_info(&trans, &dev);
+          send_dronerace_debug_info(&(DefaultChannel).trans_tx, &(DefaultDevice).device);
         }
         break;
 
@@ -270,9 +268,7 @@ void jevois_mavlink_event(void)
 
           //if(mavlink_cnt % 10 == 0) {
           heart_beat = 0;
-		  struct transport_tx trans;
-		  struct link_device dev;
-          send_dronerace_debug_info(&trans, &dev);
+          send_dronerace_debug_info(&(DefaultChannel).trans_tx, &(DefaultDevice).device);
           //}
         }
         break;
