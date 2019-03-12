@@ -124,14 +124,10 @@ void filter_correct(void)
   //  && dr_vision.dz > -2.5
   if (gates[dr_fp.gate_nr].type != VIRTUAL) {
 
-
-
     //calibrate_detection(&mx,&my);
     assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
 
     if (assigned_gate == dr_fp.gate_nr) {
-
-
 
       // Push to RANSAC
       detection_time_stamp = get_time_stamp();
@@ -141,7 +137,6 @@ void filter_correct(void)
       filteredY = dr_state.y + dr_ransac.corr_y;
       filteredVx = dr_state.vx + dr_ransac.corr_vx;
       filteredVy = dr_state.vy + dr_ransac.corr_vy;
-      
       return;
     }
   }
@@ -229,14 +224,14 @@ void pushJungleGateDetection(void)
 
 int get_time_stamp()
 {
-  struct timeval te;
-  gettimeofday(&te, NULL); // get current time
-  long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
-  int timeStamp = milliseconds%100000;
+	//FIXME: LOWPRIORITY
+  //struct timeval te;
+  //gettimeofday(&te, NULL); // get current time
+  //long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
+  //int timeStamp = milliseconds%100000;
   //printf("Timestamp: %d\n",timeStamp);
-  return timeStamp;
+  return 1;//timeStamp;
 }
-
 
 void calibrate_detection(float *mx,float *my)
 {
@@ -271,23 +266,21 @@ void calibrate_ahrs()
 
 	if(cali_ahrs.counter<counter_start)
 	{
-		if(cali_ahrs.counter%10==0)
-			printf("Calibrating AHRS [%.1f %%]\n",0.0);
-	}
+		//if(cali_ahrs.counter%10==0) printf("Calibrating AHRS [%.1f %%]\n",0.0);
+    }
 
 	if(cali_ahrs.counter > counter_start && cali_ahrs.counter < counter_end)
 	{
-		cali_ahrs.sum_bias_east += stateGetNedToBodyEulers_f()->phi;
-		cali_ahrs.sum_bias_north += stateGetNedToBodyEulers_f()->theta;
-		if(cali_ahrs.counter%10==0)
-			printf("Calibrating AHRS [%.1f %%]\n",((float)cali_ahrs.counter-(float)counter_start)/(counter_end-counter_start)*100.0);
+		cali_ahrs.sum_bias_east += (float)3.;//stateGetNedToBodyEulers_f()->phi;
+		cali_ahrs.sum_bias_north += (float)4.;//stateGetNedToBodyEulers_f()->theta;
+		//if(cali_ahrs.counter%10==0) printf("Calibrating AHRS [%.1f %%]\n",((float)cali_ahrs.counter-(float)counter_start)/(counter_end-counter_start)*100.0);
 	}
 	if(cali_ahrs.counter > counter_end)
 	{
 		cali_ahrs.bias_north = cali_ahrs.sum_bias_north/(counter_end-counter_start);
 		cali_ahrs.bias_east = cali_ahrs.sum_bias_east/(counter_end-counter_start);
 		cali_ahrs.is_ahrs_calibrated = 1;
-		printf("ahrs calibration is done\n");
+		//printf("ahrs calibration is done\n");
 	}
 	cali_ahrs.counter ++;
 }

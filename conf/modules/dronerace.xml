@@ -28,6 +28,7 @@
   <periodic fun="dronerace_periodic()"/>
   <periodic fun="control_run()"/>
   <makefile target="ap|nps">
+    <file name="pprz_syscalls.c" dir="."/>
     <file name="dronerace.c"/>
     <file name="flightplan.c"/>
     <file name="filter.c"/>
@@ -38,4 +39,3 @@
     <file name="pprz_matrix_decomp_float.c" dir="math"/>
   </makefile>
 </module>
-

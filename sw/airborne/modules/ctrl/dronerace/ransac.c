@@ -41,7 +41,7 @@ int get_index(int element)
 }
 
 // The buffer size is computed from the time of the samples.
-inline void ransac_update_buffer_size(void)
+void ransac_update_buffer_size(void)
 {
     int i;
 
@@ -196,32 +196,32 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
         if(dr_ransac.ransac_cnt % 10000 == 0)
         {
             char filename[128];
-            FILE* fp;
-            sprintf(filename,"ransac%06d.txt",dr_ransac.ransac_cnt);
-            fp = fopen(filename,"w");
+            //FILE* fp;
+            //sprintf(filename,"ransac%06d.txt",dr_ransac.ransac_cnt);
+            //fp = fopen(filename,"w");
             // fprintf(fp,"nr,time,x,y,mx,my,fitx,fity\n");
             // printf("t=%f %f\n\n",dr_state.time,dr_ransac.dt_max);
             for (i=0;i<dr_ransac.buf_size;i++)
             {
                 float t_fit = (ransac_buf[get_index(i)].time - dr_state.time);
-                fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n",i,ransac_buf[get_index(i)].time,
-                        ransac_buf[get_index(i)].x,
-                        ransac_buf[get_index(i)].y,
-                        ransac_buf[get_index(i)].mx,
-                        ransac_buf[get_index(i)].my,
-                        ransac_buf[get_index(i)].x + dr_ransac.corr_x + t_fit * dr_ransac.corr_vx,
-                        ransac_buf[get_index(i)].y + dr_ransac.corr_y + t_fit * dr_ransac.corr_vy,
-                        ransac_buf[get_index(i)].time_stamp
-                );
+//                fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n",i,ransac_buf[get_index(i)].time,
+//                        ransac_buf[get_index(i)].x,
+//                        ransac_buf[get_index(i)].y,
+//                        ransac_buf[get_index(i)].mx,
+//                        ransac_buf[get_index(i)].my,
+//                        ransac_buf[get_index(i)].x + dr_ransac.corr_x + t_fit * dr_ransac.corr_vx,
+//                        ransac_buf[get_index(i)].y + dr_ransac.corr_y + t_fit * dr_ransac.corr_vy,
+//                        ransac_buf[get_index(i)].time_stamp
+//                );
             }
 			{
 			  float gate = (float) dr_fp.gate_nr;
 			  float assigned = (float) dr_state.assigned_gate_index;
-	          fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n", -1 , gate, assigned,  params_x[0], params_x[1], params_y[0], params_y[1] ,0.0f);
+	          //fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n", -1 , gate, assigned,  params_x[0], params_x[1], params_y[0], params_y[1] ,0.0f);
 			}
 
             // fprintf(fp,"\n\n X = %f %f Y = %f  %f \n",params_x[0], params_x[1], params_y[0], params_y[1] );
-            fclose(fp);
+            //fclose(fp);
         }
 #endif
 
