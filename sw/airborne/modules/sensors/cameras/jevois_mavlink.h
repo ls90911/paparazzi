@@ -26,9 +26,6 @@
 #ifndef JEVOIS_MAVLINK_H
 #define JEVOIS_MAVLINK_H
 
-
-
-
 /*
  * Paparazzi UART over USB
  */
@@ -36,7 +33,7 @@
 #include "mcu_periph/uart.h"
 
 #ifndef JEVOIS_DEV
-//#define JEVOIS_DEV uart2
+#define JEVOIS_DEV uart3
 #endif
 
 #define MAVLinkDev (&(JEVOIS_DEV).device)
@@ -45,15 +42,10 @@
 #define MAVLinkGetch() MAVLinkDev->get_byte(MAVLinkDev->periph)
 #define MAVLinkSendMessage() MAVLinkDev->send_message(MAVLinkDev->periph, 0)
 
-
-
-
 /*
  * MavLink protocol
  */
-
 #include <mavlink/mavlink_types.h>
-
 
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
 #define MAVLINK_ALIGNED_FIELDS 0
@@ -66,28 +58,22 @@ static inline void comm_send_ch(mavlink_channel_t chan __attribute__((unused)), 
   MAVLinkTransmit(ch);
 }
 
+struct vision_relative_position_struct {
+  int received;
+  int cnt;
+  float x;
+  float y;
+  float z;
+};
 
-
-
-
+extern struct vision_relative_position_struct jevois_vision_position;
 /*
  * Paparazzi Module functions
  */
-
-
 extern void jevois_mavlink_init(void);
 extern void jevois_mavlink_periodic(void);
 extern void jevois_mavlink_filter_periodic(void);
 extern void jevois_mavlink_event(void);
-
-
-
-
-
-
-
-
-
 
 #endif
 

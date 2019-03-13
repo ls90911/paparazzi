@@ -28,10 +28,10 @@
             -->
 
 <!-- 512 Hz -->
-
+<!--
             <configure name="PERIODIC_FREQUENCY" value="512"/>
             <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
-            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
+            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>-->
 
 <!-- see e.g. https://github.com/kriswiner/MPU9250/issues/59 -->
 <!-- 1 kHz -->
