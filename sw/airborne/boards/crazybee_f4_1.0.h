@@ -55,7 +55,7 @@
 #define SPEKTRUM_UART2_DEV USART1
 */
 
-/* Originaly intended for 2812LED board - DMA1_ST2
+/* Originaly intended fo8000000r 2812LED board - DMA1_ST2
  * Now re- used for CPPM receiver input
  * FIXME can use UART  TIM9, CH2, PA3 for PPM (or UARTRX2)
  */

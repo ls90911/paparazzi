@@ -16,7 +16,7 @@ SRC_ARCH=arch/$(ARCH_DIR)
 $(TARGET).ARCHDIR = $(ARCH)
 $(TARGET).LDSCRIPT=$(SRC_ARCH)/crazybee_f4_1.0.ld 
 
-HARD_FLOAT=yes
+HARD_FLOAT=no
 
 # Default flash mode is the STM32 DFU bootloader
 # Theoreticlly possible are also SWD and JTAG_BMP
@@ -50,7 +50,7 @@ RADIO_CONTROL_SBUS_PORT   ?= UART1
 SBUS_PORT   ?= UART1
 
 MODEM_PORT ?= UART2
-MODEM_BAUD ?= B57600
+MODEM_BAUD ?= B115200
 
 #
 # GPS via I2C just as Baro and Magneto... sparec amount of uart ports left on this board

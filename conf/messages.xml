@@ -394,8 +394,6 @@
 
       <field name="accel_x" type="float" unit="m/s2"/>
       <field name="accel_y" type="float" unit="m/s2"/>
-      
-      
     </message>
 
     <message name="BARO_WORDS" id="46">
