@@ -11,7 +11,7 @@
 
 // Variables
 struct dronerace_control_struct dr_control;
-struct pid_term_struct pid_term = {0.0,0.0,0.0};
+struct pid_term_struct pid_term = {0.0,0.0,0.0,0.0,0.0,0.0};
 struct reference_generator_struct ref;
 struct indi_controller_struct indi_ctrl;
 
@@ -72,31 +72,28 @@ void control_reset(void)
   indi_ctrl.previous_vy_err = 0.0;
 }
 
-static float angle180(float r)
-{
-  if (r < RadOfDeg(-180))
-  {
-    r += RadOfDeg(360.0f);
-  }
-  else if (r > RadOfDeg(180.0f))
-  {
-    r -= RadOfDeg(360.0f);
-  }
-
-  return r;
-}
+//static float angle180(float r)
+//{
+//  if (r < RadOfDeg(-180))
+//  {
+//    r += RadOfDeg(360.0f);
+//  }
+//  else if (r > RadOfDeg(180.0f))
+//  {
+//    r -= RadOfDeg(360.0f);
+//  }
+//
+//  return r;
+//}
 
 
 void control_run(void)
 {
-  float psi, vxcmd, vycmd, r_cmd, ax, ay;
+  float r_cmd;
   float dt = 1.0/512.0;
   // Propagate the flightplan
   flightplan_run();
   update_reference_run();
-
-  // Variables
-  psi = dr_state.psi;
 
   // Heading controller
   r_cmd = 2.0*(dr_fp.psi_set - dr_control.psi_ref);
@@ -151,7 +148,7 @@ void update_reference_run()
    ref.vel_local.y += 1.0/512*a_y_local;
 
    // transform to global frame
-   float psi = waypoints_dr[dr_fp.gate_nr].psi;
+   //float psi = waypoints_dr[dr_fp.gate_nr].psi;
    ref.pos.x = waypoints_dr[dr_fp.gate_nr].x;
    ref.pos.y = waypoints_dr[dr_fp.gate_nr].y;
    //ref.pos.x = cos(psi)*ref.pos_local.x - sin(psi)*ref.pos_local.y+waypoints_dr[dr_fp.gate_nr].x;

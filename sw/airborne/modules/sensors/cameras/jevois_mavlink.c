@@ -76,7 +76,7 @@ struct visual_target_struct {
   int h;
   int quality;
   int source;
-} jevois_visual_target = {false, 0, 0, 0, 0, 0, 0};
+} jevois_visual_target = {false, 0, 0, 0, 0, 0, 0, 0};
 
 struct vision_relative_position_struct {
   int received;
@@ -177,13 +177,10 @@ void jevois_mavlink_periodic(void)
 #define JEVOIS_MAVLINK_ABI_ID 34
 #endif
 
-
-
 void jevois_mavlink_event(void)
 {
   mavlink_message_t msg;
   mavlink_status_t status;
-
 
   while (MAVLinkChAvailable()) {
     uint8_t c = MAVLinkGetch();
@@ -276,7 +273,10 @@ void jevois_mavlink_event(void)
 
         }
         break;
-
+        default:
+        {
+        	break;
+        }
       }
     }
   }

@@ -40,7 +40,7 @@ struct dronerace_ransac_buf_struct
 
 // Variables
 extern struct dronerace_ransac_struct dr_ransac;
-
+extern void ransac_update_buffer_size(void);
 
 // Reset
 extern void ransac_reset(void);

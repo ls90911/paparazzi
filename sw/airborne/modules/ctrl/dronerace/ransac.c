@@ -195,7 +195,7 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
 
         if(dr_ransac.ransac_cnt % 10000 == 0)
         {
-            char filename[128];
+            //char filename[128];
             //FILE* fp;
             //sprintf(filename,"ransac%06d.txt",dr_ransac.ransac_cnt);
             //fp = fopen(filename,"w");
@@ -203,7 +203,7 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
             // printf("t=%f %f\n\n",dr_state.time,dr_ransac.dt_max);
             for (i=0;i<dr_ransac.buf_size;i++)
             {
-                float t_fit = (ransac_buf[get_index(i)].time - dr_state.time);
+                //float t_fit = (ransac_buf[get_index(i)].time - dr_state.time);
 //                fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n",i,ransac_buf[get_index(i)].time,
 //                        ransac_buf[get_index(i)].x,
 //                        ransac_buf[get_index(i)].y,
@@ -215,8 +215,8 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
 //                );
             }
 			{
-			  float gate = (float) dr_fp.gate_nr;
-			  float assigned = (float) dr_state.assigned_gate_index;
+			  //float gate = (float) dr_fp.gate_nr;
+			  //float assigned = (float) dr_state.assigned_gate_index;
 	          //fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n", -1 , gate, assigned,  params_x[0], params_x[1], params_y[0], params_y[1] ,0.0f);
 			}
 

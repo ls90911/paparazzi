@@ -62,12 +62,10 @@ struct GUIDANCE_INDI_VAR
 
 struct GUIDANCE_INDI_VAR gui_indi_var;
 
-void test_guidance_indi_temp_run();
-float scale_heading(float heading);
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // LOGGING
 
-#include <stdio.h>
+//#include <stdio.h>
 
 /** Set the default File logger path to the USB drive */
 #ifndef FILE_LOGGER_PATH
@@ -84,65 +82,6 @@ float scale_heading(float heading);
 #define FULL_LOG 2
 #define TYPE_LOG FULL_LOG
 
-
-/** The file pointer */
-static FILE *file_logger = NULL;
-
-static void open_log(void) {
-  // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
-  /*
-  char date_time[80];
-  time_t now = time(0);
-  struct tm  tstruct;
-  tstruct = *localtime(&now);
-  strftime(date_time, sizeof(date_time), "%Y-%m-%d_%X", &tstruct);
-  */
-
-  uint32_t counter = 0;
-  char filename[512];
-  // Check for available files
-  sprintf(filename, "%s/%s.csv", STRINGIFY(FILE_LOGGER_PATH), "log_file");
-  while ((file_logger = fopen(filename, "r"))) {
-    fclose(file_logger);
-    sprintf(filename, "%s/%s_%05d.csv", STRINGIFY(FILE_LOGGER_PATH), "log_file", counter);
-    counter++;
-  }
-
-  printf("\n\n*** chosen filename log drone race: %s ***\n\n", filename);
-
-  file_logger = fopen(filename, "w");
-
-  if (file_logger != NULL) {
-    if(TYPE_LOG == CHRISTOPHE_LOG) {
-      fprintf(file_logger,"phi,theta,psi,vision_cnt,dx,dy,dz\n");
-    }
-    else if(TYPE_LOG == OLD_LOG) {
-      fprintf(file_logger,"dr_state_x,dr_state_y,dr_state_vx,dr_state_vy,vision_cnt,vision_dx,vision_dy\n");
-    }
-    else {
-      fprintf(file_logger,"phi,theta,psi,vision_cnt,ransac_buf_size,vision_dx,vision_dy,vision_dz,dr_state_x,dr_state_y,dr_state_vx,dr_state_vy,corr_x,corr_y,real_x,real_y\n");
-    }
-  }
-}
-
-static void write_log(void)
-{
-  if (file_logger != 0) {
-
-    if(TYPE_LOG == OLD_LOG) {
-      fprintf(file_logger, "%f,%f,%f,%f,%d,%f,%f\n",dr_state.x, dr_state.y, dr_state.vx, dr_state.vy,
-          dr_vision.cnt,dr_vision.dx,dr_vision.dy);
-    }
-    else if(TYPE_LOG == CHRISTOPHE_LOG) {
-      fprintf(file_logger, "%f,%f,%f,%d,%f,%f,%f\n",input_phi, input_theta, input_psi, input_cnt, input_dx, input_dy, input_dz);
-    }
-    else {
-      fprintf(file_logger, "%f,%f,%f,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",stateGetNedToBodyEulers_f()->phi, stateGetNedToBodyEulers_f()->theta, stateGetNedToBodyEulers_f()->psi,
-                      dr_vision.cnt, dr_ransac.buf_size, dr_vision.dx, dr_vision.dy, dr_vision.dz, dr_state.x, dr_state.y, dr_state.vx, dr_state.vy,
-                      dr_state.x+dr_ransac.corr_x, dr_state.y+dr_ransac.corr_y, stateGetPositionNed_f()->x, stateGetPositionNed_f()->y);
-    }
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // TELEMETRY
@@ -259,7 +198,6 @@ void dronerace_periodic(void)
     }
 
 
-  //  test_guidance_indi_temp_run();
   float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
   float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);
 
@@ -329,24 +267,6 @@ void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
   
 }
 
-void test_guidance_indi_temp_run()
-{
-   gui_indi_var.counter_time++; 
-   float time = gui_indi_var.counter_time / 512.0;
-   if( time < 3.0)
-       autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(0.0));
-   else if(time<8.0)
-       autopilot_guided_goto_ned(4.0,0.0,-1.5,RadOfDeg(0.0));
-   else if(time<13.0)
-       autopilot_guided_goto_ned(4.0,4.0,-1.5,RadOfDeg(90.0));
-   else if(time<18.0)
-       autopilot_guided_goto_ned(0.0,4.0,-1.5,RadOfDeg(180.0));
-   else if(time<23.0)
-       autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(270.0));
-   else
-       autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(0.0));
-}
-
 float scale_heading(float heading)
 {
 	int i = 1;
@@ -362,7 +282,7 @@ float scale_heading(float heading)
 			heading += 2*3.14;
 		}
 		i++;
-		printf("scale_heading heading = %f\n,heading");
+		//printf("scale_heading heading = %f\n,heading");
 	}
 	return heading;
 }

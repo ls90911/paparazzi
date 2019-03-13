@@ -1,9 +1,6 @@
-
 #include "flightplan.h"
 #include "filter.h"
 #include "ransac.h"
-#include "std.h"
-#include "stdio.h"
 #include "state.h"
 #include "control.h"
 
@@ -16,17 +13,7 @@ void generate_waypoints_from_gates(void);
 int flagHighOrLowGate;
 float dist_2_gate;
 
-// X, Y, ALT, PSI
-/*
-#define MAX_GATES 1
-const struct dronerace_flightplan_item_struct gates[MAX_GATES] = {
-    {0.0, 0.0, 1.5, RadOfDeg(0)},
-};
-*/
-
-
-
-// Note: pprz has positive Z here, while jevois has negative Z
+// Note: PPRZ has positive Z here, while jevois has negative Z
 // both_side: bool in Jevois code, 0 or 1 here.
 const struct dronerace_flightplan_item_struct gates[MAX_GATES] = {
   //  X-coordinate  Y-coordinate  Z-coordinate   Psi-gate          Speed    Type-of-gate  Brake-at-gate   Distance-after gate       both side
@@ -47,7 +34,6 @@ static void update_gate_setpoints(void)
   dr_fp.gate_speed = gates[dr_fp.gate_nr].speed;
 }
 
-
 void flightplan_list(void)
 {
   int i;
@@ -60,15 +46,12 @@ void flightplan_list(void)
       if (dist == 0.0) {
         dist = 0.0001f;
       }
-      float size =  1.4f * 340.0f / dist;
-      // dist = 1.4f * 340.0f / ((float)size);
+
       float bearing = atan2(dy, dx);
       float view = bearing - dr_state.psi;
       if ((view > -320.0f / 340.0f) && (view < 320.0f / 340.0f)
           && ((yaw > -RadOfDeg(90.0f)) && (yaw < RadOfDeg(90.0f)))
          ) {
-        float px = view * 340.0f + 320.0f;
-        //printf("Expected gates: %d  %.1f s=%.1f heading %.1f rot %.1f\n", i, dist, size, px, yaw * 57.6f);
       }
     }
   }
@@ -117,12 +100,6 @@ void flightplan_run(void)
   dy = waypoints_dr[dr_fp.gate_nr].y - correctedY;
   dist = sqrt((dx * dx) + (dy * dy));
 
-  /*
-  printf("Gate nr: %d, vision count = %d, nr msm in buffer = %d, (x,y) = (%f, %f), (cx, cy) = (%f, %f), (real_x, real_y) = (%f, %f)\n",
-         dr_fp.gate_nr, dr_vision.cnt, dr_ransac.buf_size, dr_state.x, dr_state.y, correctedX, correctedY,
-         stateGetPositionNed_f()->x, stateGetPositionNed_f()->y);
-  */
-
   // Align with current gate
   dr_fp.psi_set = dr_fp.gate_psi;
 
@@ -139,7 +116,6 @@ void flightplan_run(void)
     }
   }
 
-
   // If close to desired position, switch to next
   if (dist < DISTANCE_ARRIVED_AT_WP) {
     dr_fp.gate_nr ++;
@@ -150,9 +126,6 @@ void flightplan_run(void)
       dr_control.psi_ref = 0.0;
     }
 
-    //printf("\n\n*** RESET DUE TO NEXT GATE ***\n\n");
-    // correct the state predictions, refresh the ransac buffer:
-    //correct_state();
   }
 }
 
@@ -165,7 +138,6 @@ void checkJungleGate()
     jungleGate.flagInJungleGate = 1;
     jungleGate.timeStartJungleGate = dr_state.time; // TODO: this will compile but don't know if it is correct
   }
-
 
   // if there is no detection within 1s, it is likely to be a low gate
   // When determine the gate is in high or low position, send controller desired altitude

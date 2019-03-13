@@ -15,9 +15,9 @@
 
 struct dronerace_state_struct dr_state;
 struct dronerace_vision_struct dr_vision;
-struct calibrate_ahrs_struct cali_ahrs = {0,0,0,0};
+struct calibrate_ahrs_struct cali_ahrs = {0,0,0,0,0,0};
 int detection_time_stamp;
-void calibrate_detection(float *mx,float *my);
+void calibrate_detection(float *measured_x,float *measured_y);
 void calibrate_ahrs(void);
 void calibrate_ahrs_init(void);
 int assigned_gate = 0;
@@ -151,7 +151,8 @@ void filter_correct(void)
 
 int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float dy)
 {
-	int i, j;
+	int i;
+	//int j;
 	float min_distance = 9999;
 
 	dr_state.assigned_gate_index = -1;
@@ -233,7 +234,7 @@ int get_time_stamp()
   return 1;//timeStamp;
 }
 
-void calibrate_detection(float *mx,float *my)
+void calibrate_detection(float *measured_x,float *measured_y)
 {
     float k0_x = -0.0;
     float k1_x = 0.0;
@@ -243,11 +244,11 @@ void calibrate_detection(float *mx,float *my)
     float k1_y = 0.0;
     float k2_y = -0.0;
 
-    float x = *mx;
-    float y = *my;
+    float x = *measured_x;
+    float y = *measured_y;
 
-    *mx = x + k0_x + k1_x*x+k2_x*x*x;
-    *my = y + k0_y + k1_y*y+k2_y*y*y;
+    *measured_x = x + k0_x + k1_x*x+k2_x*x*x;
+    *measured_y = y + k0_y + k1_y*y+k2_y*y*y;
 
 }
 

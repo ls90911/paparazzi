@@ -9,7 +9,7 @@
 #endif
 
 #ifndef  P_LATERAL
-#define P_LATERAL 1.1
+#define P_Lpid_term_structATERAL 1.1
 #endif
 
 #ifndef  D_LATERAL
