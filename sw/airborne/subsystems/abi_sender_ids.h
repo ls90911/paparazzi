@@ -84,6 +84,10 @@
 #define MS45XX_SENDER_ID 40
 #endif
 
+#ifndef SDP3X_SENDER_ID
+#define SDP3X_SENDER_ID 41
+#endif
+
 /*
  * IDs of airspeed sensors (message 14)
  */
@@ -153,12 +157,20 @@
 #define AGL_RAY_SENSOR_GAZEBO_ID 10
 #endif
 
+#ifndef AGL_LIDAR_TFMINI_ID
+#define AGL_LIDAR_TFMINI_ID 11
+#endif
+
 /*
  * IDs of magnetometer sensors (including IMUs with mag)
  */
 
 #ifndef MAG_HMC58XX_SENDER_ID
 #define MAG_HMC58XX_SENDER_ID 2
+#endif
+
+#ifndef MAG_LIS3MDL_SENDER_ID
+#define MAG_LIS3MDL_SENDER_ID 3
 #endif
 
 #ifndef IMU_MAG_PITOT_ID
@@ -411,6 +423,13 @@
 
 #ifndef DETECT_GATE_ABI_ID
 #define DETECT_GATE_ABI_ID 33
+#endif
+
+/*
+ * JOYSTICK message (used for payload or control, but not as a RC)
+ */
+#ifndef JOYSTICK_ID
+#define JOYSTICK_ID 1
 #endif
 
 #endif /* ABI_SENDER_IDS_H */

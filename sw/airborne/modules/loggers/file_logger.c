@@ -122,7 +122,8 @@ void file_logger_periodic(void)
   static uint32_t counter;
   struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d\n",
+#ifdef COMMAND_THRUST //For example rotorcraft
+  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
           counter,
           imu.accel_unscaled.x,
           imu.accel_unscaled.y,
@@ -204,6 +205,26 @@ void file_logger_periodic(void)
 
 		  dr_state.assigned_gate_index
          );
+#else
+  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+          counter,
+          imu.gyro_unscaled.p,
+          imu.gyro_unscaled.q,
+          imu.gyro_unscaled.r,
+          imu.accel_unscaled.x,
+          imu.accel_unscaled.y,
+          imu.accel_unscaled.z,
+          imu.mag_unscaled.x,
+          imu.mag_unscaled.y,
+          imu.mag_unscaled.z,
+		  h_ctl_aileron_setpoint,
+		  h_ctl_elevator_setpoint,
+          quat->qi,
+          quat->qx,
+          quat->qy,
+          quat->qz
+         );
+#endif
 
   counter++;
 }

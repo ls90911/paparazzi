@@ -324,10 +324,10 @@ static void jevois_parse(struct jevois_t *jv, char c)
 void jevois_event(void)
 {
   // Look for data on serial link and send to parser
-  //while (uart_char_available(&(JEVOIS_DEV))) {
-    uint8_t ch = 2;//uart_getch(&(JEVOIS_DEV));
+  while (uart_char_available(&(JEVOIS_DEV))) {
+    uint8_t ch = uart_getch(&(JEVOIS_DEV));
     jevois_parse(&jevois, ch);
-  //}
+  }
 }
 
 // utility function to send a string

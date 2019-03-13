@@ -81,6 +81,15 @@ struct FloatVect3 indi_accel_sp = {0.0, 0.0, 0.0};
 bool indi_accel_sp_set_2d = false;
 bool indi_accel_sp_set_3d = false;
 
+#ifndef GUIDANCE_INDI_ACCEL_SP_ID
+#define GUIDANCE_INDI_ACCEL_SP_ID ABI_BROADCAST
+#endif
+abi_event accel_sp_ev;
+static void accel_sp_cb(uint8_t sender_id, uint8_t flag, struct FloatVect3 *accel_sp);
+struct FloatVect3 indi_accel_sp = {0.0, 0.0, 0.0};
+bool indi_accel_sp_set_2d = false;
+bool indi_accel_sp_set_3d = false;
+
 struct FloatVect3 sp_accel = {0.0, 0.0, 0.0};
 #ifdef GUIDANCE_INDI_SPECIFIC_FORCE_GAIN
 float thrust_in_specific_force_gain = GUIDANCE_INDI_SPECIFIC_FORCE_GAIN;
@@ -206,16 +215,6 @@ void guidance_indi_run(float heading_sp)
       speed_sp_y = pos_y_err * guidance_indi_pos_gain;
   }
 
-  else
-  {
-      speed_sp_x = pos_x_err * guidance_indi_pos_gain;
-	  speed_sp_y = dr_ransac.buf_size>5?-2.0:0.0; 
-  }
-
-  // -------------for log--------------
-  indi_ctrl.vx_cmd = speed_sp_x;
-  indi_ctrl.vy_cmd = speed_sp_y;
-  //-------------------------------
   // If the acceleration setpoint is set over ABI message
   if (indi_accel_sp_set_2d) {
     sp_accel.x = indi_accel_sp.x;
@@ -239,7 +238,7 @@ void guidance_indi_run(float heading_sp)
   } else {
     sp_accel.x = (speed_sp_x - stateGetSpeedNed_f()->x) * guidance_indi_speed_gain;
     sp_accel.y = (speed_sp_y - stateGetSpeedNed_f()->y) * guidance_indi_speed_gain;
-    sp_accel.z = (speed_sp_z - stateGetSpeedNed_f()->z) * 1.8;
+    sp_accel.z = (speed_sp_z - stateGetSpeedNed_f()->z) * guidance_indi_speed_gain;
   }
 
     float vx_err = speed_sp_x - filteredVx;
@@ -297,11 +296,6 @@ void guidance_indi_run(float heading_sp)
   guidance_euler_cmd.theta = pitch_filt.o[0] + control_increment.x;
   guidance_euler_cmd.phi = roll_filt.o[0] + control_increment.y;
   guidance_euler_cmd.psi = heading_sp;
-
-
-  // feed-forward term from velocity error to attitude
-  //guidance_euler_cmd.theta += (speed_sp_x-filteredVx) * guidance_indi_speed_ff_gain;
-  //guidance_euler_cmd.phi   += (speed_sp_y-filteredVy) * guidance_indi_speed_ff_gain;
 
 #ifdef GUIDANCE_INDI_SPECIFIC_FORCE_GAIN
   guidance_indi_filter_thrust();

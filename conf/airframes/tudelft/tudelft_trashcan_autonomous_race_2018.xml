@@ -1,15 +1,9 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
 
-<!-- this is a quadrotor frame equiped with
-     * Autopilot:   Lisa/M 2.0             http://wiki.paparazziuav.org/wiki/Lisa/M_v20
-     * IMU:         Aspirin 2.2            http://wiki.paparazziuav.org/wiki/AspirinIMU
-     * Actuators:   PWM motor controllers  http://wiki.paparazziuav.org/wiki/Subsystem/actuators#PWM_Supervision
-     * GPS:         Ublox                  http://wiki.paparazziuav.org/wiki/Subsystem/gps
-     * RC:          two Spektrum sats      http://wiki.paparazziuav.org/wiki/Subsystem/radio_control#Spektrum
--->
+<airframe name="FakeTrashcan">
+<description>
 
-<airframe name="Quadrotor LisaM_2.0 pwm">
-
+</description>
   <firmware name="rotorcraft">
     <target name="ap" board="lisa_m_2.0">
       <!-- MPU6000 is configured to output data at 2kHz, but polled at 512Hz PERIODIC_FREQUENCY -->
@@ -52,7 +46,7 @@
     <module name="gps"           type="datalink"/>
     <module name="stabilization" type="int_quat"/>
     <module name="ahrs"          type="int_cmpl_quat">
-      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="30"/>
+      <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="7"/>
     </module>
     <module name="ins"/>
 
@@ -62,7 +56,6 @@
       <!--<configure name="JEVOIS_UART" value="UART3"/>-->
       <!--<configure name="JEVOIS_BAUD" value="B115200"/>-->
     </module>
-
 
     <!--define name="KILL_ON_GROUND_DETECT" value="TRUE"/-->
   </firmware>

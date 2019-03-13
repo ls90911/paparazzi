@@ -17,10 +17,11 @@
   <makefile target="!sim|nps">
     <file   name="jevois_mavlink.c"/>
 
-    <configure name="JEVOIS_UART" default="uart3" case="upper|lower"/>
+    <configure name="JEVOIS_UART" default="uart2" case="upper|lower"/>
     <configure name="JEVOIS_BAUD" default="B115200" />
     <define name="USE_$(JEVOIS_UART_UPPER)"/>
     <define name="JEVOIS_DEV" value="$(JEVOIS_UART_LOWER)"/>
     <define name="$(JEVOIS_UART_UPPER)_BAUD" value="$(JEVOIS_BAUD)"/>
   </makefile>
 </module>
+
