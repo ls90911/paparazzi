@@ -81,15 +81,6 @@ struct FloatVect3 indi_accel_sp = {0.0, 0.0, 0.0};
 bool indi_accel_sp_set_2d = false;
 bool indi_accel_sp_set_3d = false;
 
-#ifndef GUIDANCE_INDI_ACCEL_SP_ID
-#define GUIDANCE_INDI_ACCEL_SP_ID ABI_BROADCAST
-#endif
-abi_event accel_sp_ev;
-static void accel_sp_cb(uint8_t sender_id, uint8_t flag, struct FloatVect3 *accel_sp);
-struct FloatVect3 indi_accel_sp = {0.0, 0.0, 0.0};
-bool indi_accel_sp_set_2d = false;
-bool indi_accel_sp_set_3d = false;
-
 struct FloatVect3 sp_accel = {0.0, 0.0, 0.0};
 #ifdef GUIDANCE_INDI_SPECIFIC_FORCE_GAIN
 float thrust_in_specific_force_gain = GUIDANCE_INDI_SPECIFIC_FORCE_GAIN;
