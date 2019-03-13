@@ -26,7 +26,7 @@
 #include "modules/sensors/cameras/jevois_mavlink.h"
 
 
-#define DEBUG_PRINT printf
+//#define DEBUG_PRINT printf
 #include <stdio.h>
 
 
@@ -191,7 +191,7 @@ void jevois_mavlink_event(void)
           mavlink_heartbeat_t heartbeat;
           mavlink_msg_heartbeat_decode(&msg, &heartbeat);
           // do something with heartbeat variable
-          DEBUG_PRINT("[jevois mavlink] heartbeat\n");
+         //DEBUG_PRINT("[jevois mavlink] heartbeat\n");
         }
         break;
 
@@ -199,8 +199,8 @@ void jevois_mavlink_event(void)
           mavlink_debug_t jevois_mavlink_debug;
           mavlink_msg_debug_decode(&msg, &jevois_mavlink_debug);
 
-          DEBUG_PRINT("[jevois mavlink] debug value is %f\n", jevois_mavlink_debug.value);
-          DEBUG_PRINT("[jevois mavlink] debug ind is %d\n", jevois_mavlink_debug.ind);
+          //DEBUG_PRINT("[jevois mavlink] debug value is %f\n", jevois_mavlink_debug.value);
+         // DEBUG_PRINT("[jevois mavlink] debug ind is %d\n", jevois_mavlink_debug.ind);
         }
         break;
         case MAVLINK_MSG_ID_HIGHRES_IMU: {
@@ -225,8 +225,8 @@ void jevois_mavlink_event(void)
                                      jevois_visual_target.quality,    // quality
                                      jevois_visual_target.source);
 
-          DEBUG_PRINT("[jevois mavlink] VISUAL_DETECTION %f,%f\n", jevois_mavlink_visual_target.xacc,
-                      jevois_mavlink_visual_target.yacc);
+          //DEBUG_PRINT("[jevois mavlink] VISUAL_DETECTION %f,%f\n", jevois_mavlink_visual_target.xacc,
+          //            jevois_mavlink_visual_target.yacc);
 
         }
         break;
@@ -240,10 +240,10 @@ void jevois_mavlink_event(void)
                                     jevois_mavlink_manual_setpoint.pitch,
                                     jevois_mavlink_manual_setpoint.yaw);
 
-          DEBUG_PRINT("[jevois mavlink] phi_cmd = %f\n", DegOfRad(jevois_mavlink_manual_setpoint.roll));
-          DEBUG_PRINT("[jevois mavlink] theta_cmd = %f\n", DegOfRad(jevois_mavlink_manual_setpoint.pitch));
-          DEBUG_PRINT("[jevois mavlink] psi_cmd = %f\n", DegOfRad(jevois_mavlink_manual_setpoint.yaw));
-          DEBUG_PRINT("[jevois mavlink] alt_cmd = %f\n", jevois_mavlink_manual_setpoint.thrust);
+//          DEBUG_PRINT("[jevois mavlink] phi_cmd = %f\n", DegOfRad(jevois_mavlink_manual_setpoint.roll));
+//          DEBUG_PRINT("[jevois mavlink] theta_cmd = %f\n", DegOfRad(jevois_mavlink_manual_setpoint.pitch));
+//          DEBUG_PRINT("[jevois mavlink] psi_cmd = %f\n", DegOfRad(jevois_mavlink_manual_setpoint.yaw));
+//          DEBUG_PRINT("[jevois mavlink] alt_cmd = %f\n", jevois_mavlink_manual_setpoint.thrust);
 
         }
         break;
@@ -268,8 +268,8 @@ void jevois_mavlink_event(void)
                                           0.0f,
                                           0.0f);
 
-          DEBUG_PRINT("[jevois mavlink] VISION_POSITION_ESTIMATE %f,%f,%f \n", jevois_vision_position.x,
-              jevois_vision_position.y, jevois_vision_position.z);
+      //    DEBUG_PRINT("[jevois mavlink] VISION_POSITION_ESTIMATE %f,%f,%f \n", jevois_vision_position.x,
+       //       jevois_vision_position.y, jevois_vision_position.z);
 
         }
         break;
