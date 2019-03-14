@@ -47,6 +47,7 @@
 #include "firmwares/rotorcraft/stabilization.h"
 #include "filters/low_pass_filter.h"
 #include "subsystems/abi.h"
+#include "modules/guidance_loop_controller/guidance_loop_controller.h"
 
 // The acceleration reference is calculated with these gains. If you use GPS,
 // they are probably limited by the update rate of your GPS. The default
@@ -115,6 +116,8 @@ float time_of_accel_sp_3d = 0.0;
 struct FloatEulers guidance_euler_cmd;
 float thrust_in;
 
+int32_t z_ref;
+struct Debug_indi debug_indi;
 static void guidance_indi_propagate_filters(struct FloatEulers *eulers);
 static void guidance_indi_calcG(struct FloatMat33 *Gmat);
 static void guidance_indi_calcG_yxz(struct FloatMat33 *Gmat, struct FloatEulers *euler_yxz);
@@ -151,8 +154,11 @@ void guidance_indi_enter(void)
  *
  * main indi guidance function
  */
+
+int counter = 0;
 void guidance_indi_run(float heading_sp)
 {
+    counter ++;
   struct FloatEulers eulers_yxz;
   struct FloatQuat * statequat = stateGetNedToBodyQuat_f();
   float_eulers_of_quat_yxz(&eulers_yxz, statequat);
@@ -160,10 +166,15 @@ void guidance_indi_run(float heading_sp)
   //filter accel to get rid of noise and filter attitude to synchronize with accel
   guidance_indi_propagate_filters(&eulers_yxz);
 
+  //------------------------------------------------------------------------------------
+  guidance_v_z_ref = z_ref;
+  //------------------------------------------------------------------------------------
+
   //Linear controller to find the acceleration setpoint from position and velocity
   float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
   float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
   float pos_z_err = POS_FLOAT_OF_BFP(guidance_v_z_ref - stateGetPositionNed_i()->z);
+
 
   float speed_sp_x = pos_x_err * guidance_indi_pos_gain;
   float speed_sp_y = pos_y_err * guidance_indi_pos_gain;
@@ -193,8 +204,36 @@ void guidance_indi_run(float heading_sp)
     sp_accel.x = (speed_sp_x - stateGetSpeedNed_f()->x) * guidance_indi_speed_gain;
     sp_accel.y = (speed_sp_y - stateGetSpeedNed_f()->y) * guidance_indi_speed_gain;
     sp_accel.z = (speed_sp_z - stateGetSpeedNed_f()->z) * guidance_indi_speed_gain;
+    // this is running
   }
 
+  debug_indi.z_sp = -1.5;
+  debug_indi.z_ref = POS_FLOAT_OF_BFP(guidance_v_z_ref);
+  debug_indi.z_error = pos_z_err;
+  debug_indi.vz_sp = speed_sp_z;
+  debug_indi.az_sp = sp_accel.z;
+
+  if(flagNN == true)
+  {
+      float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+
+            (stateGetPositionNed_f()->y)*(stateGetPositionNed_f()->y)+
+            (stateGetPositionNed_f()->z-nn_z_sp)*(stateGetPositionNed_f()->z-nn_z_sp);
+      if(NN_PLUS_PD)
+      {
+         scale_factor = exp(-SCALING_COEFF/dist_square);
+      }
+      else
+      {
+          scale_factor = 1.0;
+      }
+      float theta = stateGetNedToBodyEulers_f()->theta;
+      //float nn_accel_z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
+      float nn_accel_z = -(nn_cmd.FL+nn_cmd.FR)/0.389*cos(theta)+9.8;
+      sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_accel_z;
+      //printf("nn thrust is running\n");
+  }
+
+  //---------------------------------------------------------------------------------------------------------
 #if GUIDANCE_INDI_RC_DEBUG
 #warning "GUIDANCE_INDI_RC_DEBUG lets you control the accelerations via RC, but disables autonomous flight!"
   //for rc control horizontal, rotate from body axes to NED
@@ -375,3 +414,7 @@ static void accel_sp_cb(uint8_t sender_id __attribute__((unused)), uint8_t flag,
   }
 }
 
+void set_z_ref(float m_z_ref)
+{
+    z_ref = POS_BFP_OF_REAL(m_z_ref); 
+}
