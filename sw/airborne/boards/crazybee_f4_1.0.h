@@ -1,3 +1,16 @@
+//DEF_TIM(TIM9, CH2, PA3,  TIM_USE_PPM,   0, 0), // PPM/RX2
+//
+//DEF_TIM(TIM2, CH3, PB10, TIM_USE_MOTOR, 0, 0), // S1_OUT - DMA1_ST1
+//DEF_TIM(TIM4, CH1, PB6,  TIM_USE_MOTOR, 0, 0), // S2_OUT - DMA1_ST0
+//DEF_TIM(TIM4, CH2, PB7,  TIM_USE_MOTOR, 0, 0), // S3_OUT - DMA1_ST3
+//DEF_TIM(TIM4, CH3, PB8, TIM_USE_MOTOR, 0, 0), // S4_OUT - DMA1_ST7
+//
+//DEF_TIM(TIM5, CH1, PA0,  TIM_USE_LED,   0, 0), // 2812LED - DMA1_ST2
+//
+//DEF_TIM(TIM9, CH1, PA2,  TIM_USE_PWM,   0, 0 ), // TX2
+//DEF_TIM(TIM1, CH2, PA9,  TIM_USE_PWM,   0, 0 ), // TX1
+//DEF_TIM(TIM1, CH3, PA10, TIM_USE_PWM, 0, 0 ), // RX1
+
 #ifndef CONFIG_CRAZYBEE_F4_1_0_H
 #define CONFIG_CRAZYBEE_F4_1_0_H
 
@@ -55,26 +68,8 @@
 #define SPEKTRUM_UART2_DEV USART1
 */
 
-/* Originaly intended for 2812LED board - DMA1_ST2
- * Now re- used for CPPM receiver input
- * FIXME can use UART  TIM9, CH2, PA3 for PPM (or UARTRX2)
+/* FIXME to relate this to ifddefs of  PPM config possibilities
  */
-
-//#ifdef PPM_CONFIG
-#define USE_PPM_TIM5 1
-#define PPM_CHANNEL         TIM_IC1
-#define PPM_TIMER_INPUT     TIM_IC_IN_TI1
-#define PPM_IRQ             NVIC_TIM1_CC_IRQ
-//#define PPM_IRQ2            NVIC_TIM1_UP_TIM10_IRQ //FIXME: Maybe not needed
-// Capture/Compare InteruptEnable and InterruptFlag
-#define PPM_CC_IE           TIM_DIER_CC1IE
-#define PPM_CC_IF           TIM_SR_CC1IF
-#define PPM_GPIO_PORT       GPIOA
-#define PPM_GPIO_PIN        GPIO0
-#define PPM_GPIO_AF         GPIO_AF2
-//#endif // PPM_CONFIG
-
-/* We (mis) use PWM out set as in to read Receiver CPPM pulses */
 #ifdef USE_LED_STRIP
 #define USE_LED_STRIP 1
 #endif
@@ -83,6 +78,48 @@
 #define LED_STRIP_GPIO_PORT GPIOA
 #define LED_STRIP_GPIO_PIN GPIO0
 #endif
+
+/* PPM
+ *
+ * FIXME: Default is PPM config 1, alternative 2 is input on RX2 pin but than no UART RX
+ *
+ * Originaly intended for 2812LED board - DMA1_ST2
+ * Can be re- used for input to connect a receiver that spits CPPM pulsetrain
+ */
+
+#ifndef PPM_CONFIG
+#define PPM_CONFIG 1
+#endif
+
+#ifdef PPM_CONFIG == 1
+#define USE_PPM_TIM5 1
+#define PPM_CHANNEL         TIM_IC1
+#define PPM_TIMER_INPUT     TIM_IC_IN_TI1
+#define PPM_IRQ             NVIC_TIM5_IRQ
+// Capture/Compare InteruptEnable and InterruptFlag
+#define PPM_CC_IE           TIM_DIER_CC1IE
+#define PPM_CC_IF           TIM_SR_CC1IF
+#define PPM_GPIO_PORT       GPIOA
+#define PPM_GPIO_PIN        GPIO0
+#define PPM_GPIO_AF         GPIO_AF2
+
+#elif PPM_CONFIG == 2
+/* RX SBUS/Spektumserial or CPPM input on PA3 (RX2 pin) */
+#define USE_PPM_TIM9 1
+#define PPM_CHANNEL         TIM_IC2
+#define PPM_TIMER_INPUT     TIM_IC_IN_TI2
+#define PPM_IRQ             NVIC_TIM9_IRQ
+// Capture/Compare InteruptEnable and InterruptFlag
+#define PPM_CC_IE           TIM_DIER_CC2IE
+#define PPM_CC_IF           TIM_SR_CC2IF
+#define PPM_GPIO_PORT       GPIOA
+#define PPM_GPIO_PIN        GPIO3
+#define PPM_GPIO_AF         GPIO_AF3
+/* TODO: add option 3 of input on RX1 pin) */
+#else
+#error "Unknown PPM config"
+
+#endif // PPM_CONFIG
 
 /** SPI **/
 /* SPI1 for MPU accel/gyro (MPU6000*/
