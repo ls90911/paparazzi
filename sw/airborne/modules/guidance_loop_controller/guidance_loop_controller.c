@@ -164,7 +164,7 @@ void nn_controller(float desired_x,float desired_z)
     float_rmat_transp_vmult(&vel_NWU, &R_NED_2_NWU, &vel_NED);
 
    // prepare current states to feed NN
-    float state[NUM_STATE_VARS] = {pos_NWU.x-desired_x, vel_NWU.x, pos_NWU.z+desired_z, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta};
+    float state[NUM_STATE_VARS] = {pos_NWU.x-desired_x, vel_NWU.x, pos_NWU.z+desired_z, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta,-stateGetBodyRates_f()->q};
     float control[NUM_CONTROL_VARS];
     gettimeofday(&t0, 0);
     //nn_stable(state, control);

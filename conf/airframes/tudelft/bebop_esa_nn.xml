@@ -6,7 +6,8 @@
 
   <firmware name="rotorcraft">
     <target name="ap" board="bebop"/>
-
+    <define name="HARD_FLOAT"/>
+    <define name="OPT" value="1"/>
     <target name="nps" board="pc">
       <module name="fdm" type="jsbsim"/>
       <module name="udp"/>
@@ -34,10 +35,10 @@
       <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
     </module>
 
-
-    <module name="geo_mag"/>
-    <module name="air_data"/>
-    <module name="send_imu_mag_current"/>
+    <module name="sys_mon"/>
+    <!--module name="geo_mag"/-->
+    <!--module name="air_data"/-->
+    <!--module name="send_imu_mag_current"/-->
 
     <module name="nn"/>
     <module name="scheduleloop"/>
@@ -86,7 +87,7 @@
     <define name="CALC_AMSL_BARO" value="TRUE"/>
   </section>
 
-  <include href="conf/airframes/tudelft/calibrations/bebop7.xml" />
+  <!--include href="conf/airframes/tudelft/calibrations/bebop7.xml" /-->
 
   <section name="IMU" prefix="IMU_">
     <define name="BODY_TO_IMU_PHI" value="0." unit="deg"/>
@@ -114,7 +115,7 @@
     <define name="H_Z" value="0.9211303"/>
 
     <!-- For vibrating airfames -->
-    <define name="GRAVITY_HEURISTIC_FACTOR" value="0"/>
+    <define name="GRAVITY_HEURISTIC_FACTOR" value="20"/>
   </section>
 
   <section name="INS" prefix="INS_">

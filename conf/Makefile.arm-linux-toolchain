@@ -8,11 +8,11 @@
 #
 # If HARD_FLOAT is defined try to find armhf cross compiler, otherwise default to softfloat
 
-ifdef HARD_FLOAT
+#ifdef HARD_FLOAT
 PREFIX ?= arm-linux-gnueabihf
-else
-PREFIX ?= arm-linux-gnueabi
-endif
+#else
+#PREFIX ?= arm-linux-gnueabi
+#endif
 
 #
 # if gcc can't be found in path, try the codesourcery toolchain in /usr/local/codesourcery

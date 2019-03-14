@@ -230,6 +230,7 @@ void guidance_indi_run(float heading_sp)
       //float nn_accel_z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
       float nn_accel_z = -(nn_cmd.FL+nn_cmd.FR)/0.389*cos(theta)+9.8;
       sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_accel_z;
+      //sp_accel.z = 0.3;
       //printf("nn thrust is running\n");
   }
 

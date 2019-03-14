@@ -90,7 +90,7 @@ printcommands:
 	@echo ""
 
 all: printcommands build
-
+OPT ?= 3
 # depend order only for parallel make
 build: | printcommands
 

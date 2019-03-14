@@ -97,7 +97,7 @@ void secondPartLogic(void)
     switch(lowLevelGuidanceState)
     {
         case TEMP:
-            nn_controller(0.0,-1.5);
+            nn_controller(5.0,-1.5);
             //go_to_point(5.0,0.0,-2.5,0.0);
             break;
     }
