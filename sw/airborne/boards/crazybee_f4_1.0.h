@@ -1,15 +1,7 @@
-//DEF_TIM(TIM9, CH2, PA3,  TIM_USE_PPM,   0, 0), // PPM/RX2
-//
-//DEF_TIM(TIM2, CH3, PB10, TIM_USE_MOTOR, 0, 0), // S1_OUT - DMA1_ST1
-//DEF_TIM(TIM4, CH1, PB6,  TIM_USE_MOTOR, 0, 0), // S2_OUT - DMA1_ST0
-//DEF_TIM(TIM4, CH2, PB7,  TIM_USE_MOTOR, 0, 0), // S3_OUT - DMA1_ST3
-//DEF_TIM(TIM4, CH3, PB8, TIM_USE_MOTOR, 0, 0), // S4_OUT - DMA1_ST7
-//
-//DEF_TIM(TIM5, CH1, PA0,  TIM_USE_LED,   0, 0), // 2812LED - DMA1_ST2
-//
-//DEF_TIM(TIM9, CH1, PA2,  TIM_USE_PWM,   0, 0 ), // TX2
-//DEF_TIM(TIM1, CH2, PA9,  TIM_USE_PWM,   0, 0 ), // TX1
-//DEF_TIM(TIM1, CH3, PA10, TIM_USE_PWM, 0, 0 ), // RX1
+/* Since there is atm no schmatic of the board, some pins where measured
+ * But e.g. the Volt and Current values are measured for the moment
+ * Would be great if one could measure the reistor bridge true values
+ */
 
 #ifndef CONFIG_CRAZYBEE_F4_1_0_H
 #define CONFIG_CRAZYBEE_F4_1_0_H
@@ -42,15 +34,18 @@
 #define UART1_GPIO_RX GPIO10
 
 /* UART2 */
+//Can connect to built-in DSMX receiver is availabe on UART RX
+//Not to be confused with DSMX over SPI, that is unreated
 #define UART2_GPIO_AF GPIO_AF7
 #define UART2_GPIO_PORT_TX GPIOA
 #define UART2_GPIO_TX GPIO2
-#define UART2_GPIO_PORT_RX GPIOA //connects to built-in DSMX receiver if availabe on board
+#define UART2_GPIO_PORT_RX GPIOA
 #define UART2_GPIO_RX GPIO3
 
-/* SBUS inverted on UARTx is a separate physical pad on the board */
+/* SBUS inverted on UARTx is a separate physical pad on the board
+ * To be used for RX that give an inverted SBUS out*/
 
-/* FIXME: (re)setting RADIO_CONTROL_POWER_PORT
+/* FIXME: (re)setting UART based (e.g. Spektum) Serial RADIO_CONTROL_POWER_PORT
 #define RADIO_CONTROL_POWER_PORT GPIOA
 #define RADIO_CONTROL_POWER_PIN GPIO10
 #define RADIO_CONTROL_POWER_ON gpio_clear // yes, inverted
@@ -91,7 +86,7 @@
 #define PPM_CONFIG 1
 #endif
 
-#ifdef PPM_CONFIG == 1
+#ifdef PPM_CONFIG
 #define USE_PPM_TIM5 1
 #define PPM_CHANNEL         TIM_IC1
 #define PPM_TIMER_INPUT     TIM_IC_IN_TI1
@@ -103,21 +98,21 @@
 #define PPM_GPIO_PIN        GPIO0
 #define PPM_GPIO_AF         GPIO_AF2
 
-#elif PPM_CONFIG == 2
-/* RX SBUS/Spektumserial or CPPM input on PA3 (RX2 pin) */
-#define USE_PPM_TIM9 1
-#define PPM_CHANNEL         TIM_IC2
-#define PPM_TIMER_INPUT     TIM_IC_IN_TI2
-#define PPM_IRQ             NVIC_TIM9_IRQ
-// Capture/Compare InteruptEnable and InterruptFlag
-#define PPM_CC_IE           TIM_DIER_CC2IE
-#define PPM_CC_IF           TIM_SR_CC2IF
-#define PPM_GPIO_PORT       GPIOA
-#define PPM_GPIO_PIN        GPIO3
-#define PPM_GPIO_AF         GPIO_AF3
-/* TODO: add option 3 of input on RX1 pin) */
-#else
-#error "Unknown PPM config"
+//#elif PPM_CONFIG == 2
+///* RX SBUS/Spektumserial or CPPM input on PA3 (RX2 pin) */
+//#define USE_PPM_TIM9 1
+//#define PPM_CHANNEL         TIM_IC2
+//#define PPM_TIMER_INPUT     TIM_IC_IN_TI2
+//#define PPM_IRQ             NVIC_TIM9_IRQ
+//// Capture/Compare InteruptEnable and InterruptFlag
+//#define PPM_CC_IE           TIM_DIER_CC2IE
+//#define PPM_CC_IF           TIM_SR_CC2IF
+//#define PPM_GPIO_PORT       GPIOA
+//#define PPM_GPIO_PIN        GPIO3
+//#define PPM_GPIO_AF         GPIO_AF3
+///* TODO: add option 3 of input on RX1 pin) */
+//#else
+//#error "Unknown PPM config"
 
 #endif // PPM_CONFIG
 
@@ -131,7 +126,7 @@
 #define SPI1_GPIO_PORT_MOSI GPIOA
 #define SPI1_GPIO_MOSI GPIO7
 
-/* SPI2 for embedded OSD MAX chip*/
+/* SPI2 for emb0,014501953edded OSD MAX chip*/
 //#define SPI2_GPIO_AF GPIO_AF5
 //#define SPI2_GPIO_PORT_SCK GPIOB
 //#define SPI2_GPIO_SCK GPIO13
@@ -178,7 +173,7 @@
 #define ADC_1_GPIO_PIN GPIO0
 
 #define ADC_CHANNEL_VSUPPLY ADC_1
-#define DefaultVoltageOfAdc(adc) (0.009*adc) // TODO: Calibrate
+#define DefaultVoltageOfAdc(adc) (0.009*adc)// TODO: determine 100% correct value
 #endif
 
 /* Current */
@@ -193,7 +188,7 @@
 #define ADC_2_GPIO_PIN GPIO1
 
 #define ADC_CHANNEL_CURRENT ADC_2
-#define MilliAmpereOfAdc(adc)((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f)  // TODO: Calibrate
+#define MilliAmpereOfAdc(adc)((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f)// TODO: determine 100% correct value
 #endif
 
 /* TODO: Somehere on the board find and I2C so to connect e.g. GPS BAR MAG,
