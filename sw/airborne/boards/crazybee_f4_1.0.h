@@ -1,3 +1,8 @@
+/* Since there is atm no schmatic of the board, some pins where measured
+ * But e.g. the Volt and Current values are measured for the moment
+ * Would be great if one could measure the reistor bridge true values
+ */
+
 #ifndef CONFIG_CRAZYBEE_F4_1_0_H
 #define CONFIG_CRAZYBEE_F4_1_0_H
 
@@ -29,15 +34,18 @@
 #define UART1_GPIO_RX GPIO10
 
 /* UART2 */
+//Can connect to built-in DSMX receiver is availabe on UART RX
+//Not to be confused with DSMX over SPI, that is unreated
 #define UART2_GPIO_AF GPIO_AF7
 #define UART2_GPIO_PORT_TX GPIOA
 #define UART2_GPIO_TX GPIO2
-#define UART2_GPIO_PORT_RX GPIOA //connects to built-in DSMX receiver if availabe on board
+#define UART2_GPIO_PORT_RX GPIOA
 #define UART2_GPIO_RX GPIO3
 
-/* SBUS inverted on UARTx is a separate physical pad on the board */
+/* SBUS inverted on UARTx is a separate physical pad on the board
+ * To be used for RX that give an inverted SBUS out*/
 
-/* FIXME: (re)setting RADIO_CONTROL_POWER_PORT
+/* FIXME: (re)setting UART based (e.g. Spektum) Serial RADIO_CONTROL_POWER_PORT
 #define RADIO_CONTROL_POWER_PORT GPIOA
 #define RADIO_CONTROL_POWER_PIN GPIO10
 #define RADIO_CONTROL_POWER_ON gpio_clear // yes, inverted
@@ -55,26 +63,8 @@
 #define SPEKTRUM_UART2_DEV USART1
 */
 
-/* Originaly intended fo8000000r 2812LED board - DMA1_ST2
- * Now re- used for CPPM receiver input
- * FIXME can use UART  TIM9, CH2, PA3 for PPM (or UARTRX2)
+/* FIXME to relate this to ifddefs of  PPM config possibilities
  */
-
-//#ifdef PPM_CONFIG
-#define USE_PPM_TIM5 1
-#define PPM_CHANNEL         TIM_IC1
-#define PPM_TIMER_INPUT     TIM_IC_IN_TI1
-#define PPM_IRQ             NVIC_TIM1_CC_IRQ
-//#define PPM_IRQ2            NVIC_TIM1_UP_TIM10_IRQ //FIXME: Maybe not needed
-// Capture/Compare InteruptEnable and InterruptFlag
-#define PPM_CC_IE           TIM_DIER_CC1IE
-#define PPM_CC_IF           TIM_SR_CC1IF
-#define PPM_GPIO_PORT       GPIOA
-#define PPM_GPIO_PIN        GPIO0
-#define PPM_GPIO_AF         GPIO_AF2
-//#endif // PPM_CONFIG
-
-/* We (mis) use PWM out set as in to read Receiver CPPM pulses */
 #ifdef USE_LED_STRIP
 #define USE_LED_STRIP 1
 #endif
@@ -83,6 +73,49 @@
 #define LED_STRIP_GPIO_PORT GPIOA
 #define LED_STRIP_GPIO_PIN GPIO0
 #endif
+
+/* PPM
+ *
+ * FIXME: Default is PPM config 1, alternative 2 is input on RX2 pin but than no UART RX
+ *
+ * Originaly intended for 2812LED board - DMA1_ST2
+ * Can be re- used for input to connect a receiver that spits CPPM pulsetrain
+ */
+
+#ifndef PPM_CONFIG
+#define PPM_CONFIG 1
+#endif
+
+#ifdef PPM_CONFIG
+#define USE_PPM_TIM5 1
+#define PPM_CHANNEL         TIM_IC1
+#define PPM_TIMER_INPUT     TIM_IC_IN_TI1
+#define PPM_IRQ             NVIC_TIM5_IRQ
+//#define PPM_IRQ             NVIC_TIM5_CC_IRQ
+// Capture/Compare InteruptEnable and InterruptFlag
+#define PPM_CC_IE           TIM_DIER_CC1IE
+#define PPM_CC_IF           TIM_SR_CC1IF
+#define PPM_GPIO_PORT       GPIOA
+#define PPM_GPIO_PIN        GPIO0
+#define PPM_GPIO_AF         GPIO_AF2
+
+//#elif PPM_CONFIG == 2
+///* RX SBUS/Spektumserial or CPPM input on PA3 (RX2 pin) */
+//#define USE_PPM_TIM9 1
+//#define PPM_CHANNEL         TIM_IC2
+//#define PPM_TIMER_INPUT     TIM_IC_IN_TI2
+//#define PPM_IRQ             NVIC_TIM9_IRQ
+//// Capture/Compare InteruptEnable and InterruptFlag
+//#define PPM_CC_IE           TIM_DIER_CC2IE
+//#define PPM_CC_IF           TIM_SR_CC2IF
+//#define PPM_GPIO_PORT       GPIOA
+//#define PPM_GPIO_PIN        GPIO3
+//#define PPM_GPIO_AF         GPIO_AF3
+///* TODO: add option 3 of input on RX1 pin) */
+//#else
+//#error "Unknown PPM config"
+
+#endif // PPM_CONFIG
 
 /** SPI **/
 /* SPI1 for MPU accel/gyro (MPU6000*/
@@ -94,7 +127,7 @@
 #define SPI1_GPIO_PORT_MOSI GPIOA
 #define SPI1_GPIO_MOSI GPIO7
 
-/* SPI2 for embedded OSD MAX chip*/
+/* SPI2 for emb0,014501953edded OSD MAX chip*/
 //#define SPI2_GPIO_AF GPIO_AF5
 //#define SPI2_GPIO_PORT_SCK GPIOB
 //#define SPI2_GPIO_SCK GPIO13
@@ -141,7 +174,7 @@
 #define ADC_1_GPIO_PIN GPIO0
 
 #define ADC_CHANNEL_VSUPPLY ADC_1
-#define DefaultVoltageOfAdc(adc) (0.009*adc) // TODO: Calibrate
+#define DefaultVoltageOfAdc(adc) (0.009*adc)// TODO: determine 100% correct value
 #endif
 
 /* Current */
@@ -156,7 +189,7 @@
 #define ADC_2_GPIO_PIN GPIO1
 
 #define ADC_CHANNEL_CURRENT ADC_2
-#define MilliAmpereOfAdc(adc)((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f)  // TODO: Calibrate
+#define MilliAmpereOfAdc(adc)((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f)// TODO: determine 100% correct value
 #endif
 
 /* TODO: Somehere on the board find and I2C so to connect e.g. GPS BAR MAG,
