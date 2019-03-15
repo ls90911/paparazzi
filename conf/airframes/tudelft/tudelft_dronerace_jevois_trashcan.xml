@@ -137,8 +137,8 @@
         <module name="ctrl_module_outerloop_demo"/>
         <module name="dronerace"/>
         <module name="jevois_mavlink">
-            <!--<configure name="JEVOIS_UART" value="UART1"/>-->
-            <!--<configure name="JEVOIS_BAUD" value="B115200"/>-->
+            <configure name="JEVOIS_UART" value="UART1"/>
+            <configure name="JEVOIS_BAUD" value="B115200"/>
         </module>
 
         <!-- No I2C yet... need to find some good spot for I2C pins -->
