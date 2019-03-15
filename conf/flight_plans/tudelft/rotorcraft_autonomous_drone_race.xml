@@ -16,7 +16,7 @@
     <waypoint y="-4" x="0" name="G1"/>
     <waypoint y="-4" x="0" name="G2"/>
     <waypoint y="-4" x="0" name="G3"/>
-    <waypoint y="-4" x="0" name="G4"/> 
+    <waypoint y="-4" x="0" name="G4"/>
     <waypoint y="-4" x="0" name="G5"/>
     <waypoint y="-4" x="0" name="G6"/>
     <waypoint y="-4" x="0" name="G7"/>
@@ -45,12 +45,12 @@
     <waypoint y="-5" x="12" name="FA4"/>
   </waypoints>
   <sectors>
-    <sector color="red" name="Flight_Area_1">
+    <!--<sector color="red" name="Flight_Area_1">
       <corner name="FA4"/>
       <corner name="FA3"/>
       <corner name="FA2"/>
       <corner name="FA1"/>
-    </sector>
+    </sector>-->
   </sectors>
   <blocks>
     <block name="Holding point">

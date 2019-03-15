@@ -113,7 +113,7 @@
         <module name="ins" type="extended"/> <!--TODO: change later to <module name="ins" type="gps_passthrough"/>-->
 
         <module name="ahrs" type="int_cmpl_quat">
-            <configure name="USE_MAGNETOMETER" value="FALSE" />
+            <!--<configure name="USE_MAGNETOMETER" value="FALSE" />-->
             <define name="AHRS_USE_GPS_HEADING" value="FALSE"/> <!-- true for Optitrac-->
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine best... Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
             <!--<define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/>--> <!-- apply a low pass filter on rotational velocity"-->
