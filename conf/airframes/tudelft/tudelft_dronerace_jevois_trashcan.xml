@@ -112,7 +112,7 @@
 
         <module name="ins" type="extended"/> <!--TODO: change later to <module name="ins" type="gps_passthrough"/>-->
 
-        <module name="ahrs" type="float_cmpl_quat">
+        <module name="ahrs" type="int_cmpl_quat">
             <configure name="USE_MAGNETOMETER" value="FALSE" />
             <define name="AHRS_USE_GPS_HEADING" value="TRUE"/> <!-- true for Optitrac-->
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine best... Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
@@ -130,16 +130,16 @@
             <configure name="MODEM_BAUD" value="B115200"/>
         </module>
 
-        <module name="guidance" type="indi">
+        <!--module name="guidance" type="indi">
             <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
-        </module>
+        </module-->
 
         <!--module name="ctrl_module_outerloop_demo"/-->
-        <module name="dronerace"/>
-        <module name="jevois_mavlink">
+        <!--module name="dronerace"/-->
+        <!--module name="jevois_mavlink">
             <configure name="JEVOIS_UART" value="UART1"/>
             <configure name="JEVOIS_BAUD" value="B115200"/>
-        </module>
+        </module-->
         <module name="gps" type="datalink"/>
         <!-- No I2C yet... need to find some good spot for I2C pins -->
         <!--
@@ -336,12 +336,17 @@
     </section>
 
     <section name="INS" prefix="INS_">
+    <!-- Use GPS altitude measurments and set the R gain -->
+    <define name="USE_GPS_ALT" value="1"/>
+    <define name="VFF_R_GPS" value="0.01"/>
     </section>
 
     <section name="AHRS" prefix="AHRS_">
          <define name="H_X" value=" 0.51562740288882"/>
          <define name="H_Y" value="-0.05707735220832"/>
          <define name="H_Z" value=" 0.85490967783446"/>
+
+         <define name="HEADING_UPDATE_GPS_MIN_SPEED" value="0"/>
     </section>
 
     <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
