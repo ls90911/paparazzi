@@ -31,12 +31,12 @@
 <!--
             <configure name="PERIODIC_FREQUENCY" value="512"/>
             <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
-            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
--->
+            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>-->
+
 <!-- see e.g. https://github.com/kriswiner/MPU9250/issues/59 -->
 <!-- 1 kHz -->
 <!-- NOT TESTED IMU_MPU_LOWPASS_FILTER and IMU_MPU_SMPLRT_DIV  TODO - ATM likely INCORRECT values-->
-        <!--in Freq in HZ-->
+        <!--in Freq in HZ
             <configure name="PERIODIC_FREQUENCY" value="1024"/>
 
             <define name="HFF_PRESCALER" value="20" />
@@ -51,7 +51,7 @@
             <configure name="CONTROL_FREQUENCY" value="120"/>
             <configure name="TELEMETRY_FREQUENCY" value="60"/>
             <configure name="MODULES_FREQUENCY" value="1024"/>
-         <!---->
+         -->
 
 <!-- 2 kHz -->
 <!-- NOT TESTED IMU_MPU_LOWPASS_FILTER and IMU_MPU_SMPLRT_DIV  TODO - ATM likely INCORRECT values-->
@@ -71,13 +71,13 @@
             <configure name="TELEMETRY_FREQUENCY" value="60"/>
             <configure name="MODULES_FREQUENCY" value="2048"/>
 -->
-            <!--<define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> --><!--  No Errors, not tested if it works we have 16kb-->
-            <!--<define name="BAT_CHECKER_DELAY" value="50"/>--> <!-- amount of time it take for the bat to be checked  -->
+            <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!--  No Errors, not tested if it works we have 16kb-->
+            <define name="BAT_CHECKER_DELAY" value="50"/> <!-- amount of time it take for the bat to be checked  -->
             <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
-            <!--<define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/>--><!-- in seconds-->
+            <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
         </target>
 
-        <module name="radio_control" type="ppm"> <!--datalink(e.g. wifi) or ppm  or sbus-->
+        <module name="radio_control" type="datalink"> <!--datalink(e.g. wifi) or ppm  or sbus-->
             <!--<define name="SBUS_PORT" value="UART1"/>-->
             <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>-->
 
@@ -91,7 +91,7 @@
         <module name="motor_mixing"/>
 
         <module name="actuators" type="pwm">
-            <define name="SERVO_HZ" value="40"/>
+            <define name="SERVO_HZ" value="400"/>
         </module>
 
         <!-- <module name="telemetry" type="transparent_usb"/>--><!-- Not working, maybe broken in LibopenCM3 ATM? -->
@@ -112,16 +112,16 @@
 
         <module name="ins" type="extended"/> <!--TODO: change later to <module name="ins" type="gps_passthrough"/>-->
 
-        <module name="ahrs" type="int_cmpl_quat">
-            <!--<configure name="USE_MAGNETOMETER" value="FALSE" />-->
+        <module name="ahrs" type="float_cmpl_quat">
+            <configure name="USE_MAGNETOMETER" value="FALSE" />
             <define name="AHRS_USE_GPS_HEADING" value="FALSE"/> <!-- true for Optitrac-->
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine best... Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
             <!--<define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/>--> <!-- apply a low pass filter on rotational velocity"-->
         </module>
 
-        <module name="stabilization" type="int_quat"/>
-        <!--<module name="stabilization" type="rate_indi"/>-->
-        <!--<module name="stabilization" type="indi_simple" />-->
+        <!--<module name="stabilization" type="int_quat"/>-->
+        <module name="stabilization" type="rate_indi"/>
+        <module name="stabilization" type="indi_simple" />
 
         <!-- <module name="stabilization" type="indi"/> -->
 
@@ -130,20 +130,16 @@
             <configure name="MODEM_BAUD" value="B115200"/>
         </module>
 
-<!--
         <module name="guidance" type="indi">
             <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
         </module>
-        -->
 
-        <module name="sys_mon"/>
-
-        <!--<module name="ctrl_module_outerloop_demo"/>-->
-        <!--<module name="dronerace"/>-->
-        <!--<module name="jevois_mavlink">-->
-            <!--<configure name="JEVOIS_UART" value="UART1"/>-->
-            <!--<configure name="JEVOIS_BAUD" value="B115200"/>-->
-        <!--</module>-->
+        <module name="ctrl_module_outerloop_demo"/>
+        <module name="dronerace"/>
+        <module name="jevois_mavlink">
+            <configure name="JEVOIS_UART" value="UART1"/>
+            <configure name="JEVOIS_BAUD" value="B115200"/>
+        </module>
 
         <!-- No I2C yet... need to find some good spot for I2C pins -->
         <!--
@@ -166,7 +162,7 @@
             </module>
         </target>
 -->
-       <!-- <target name="FPV Racing" board="crazybee_f4_1.0">-->
+        <target name="FPV Racing" board="crazybee_f4_1.0">
             <!--
 
             WIP
@@ -188,7 +184,7 @@
                 <!-- <module name="stabilization" type="rate"/> -->
                 <!-- <module name="stabilization" type="indi_simple" /> -->
                 <!-- <module name="stabilization" type="indi" /> -->
-        <!--</target>-->
+        </target>
 
     </firmware>
 
@@ -324,7 +320,7 @@
         <define name="ACT_DYN_R" value="0.06" />
 
         <!-- Adaptive Learning Rate -->
-        <define name="USE_ADAPTIVE" value="FALSE" />
+        <define name="USE_ADAPTIVE" value="TRUE" />
         <define name="ADAPTIVE_MU" value="0.0003" />
 
         <!--Maxium yaw rate, to avoid instability -->

@@ -59,10 +59,18 @@ static inline void comm_send_ch(mavlink_channel_t chan __attribute__((unused)), 
   MAVLinkTransmit(ch);
 }
 
+struct vision_relative_position_struct {
+  int received;
+  int cnt;
+  float x;
+  float y;
+  float z;
+};
+
+extern struct vision_relative_position_struct jevois_vision_position;
 /*
  * Paparazzi Module functions
  */
-
 extern void jevois_mavlink_init(void);
 extern void jevois_mavlink_periodic(void);
 extern void jevois_mavlink_filter_periodic(void);
