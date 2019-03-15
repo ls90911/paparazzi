@@ -71,7 +71,7 @@
             <configure name="TELEMETRY_FREQUENCY" value="60"/>
             <configure name="MODULES_FREQUENCY" value="2048"/>
 -->
-            <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!--  No Errors, not tested if it works we have 16kb-->
+            <!--define name="USE_PERSISTENT_SETTINGS" value="TRUE"/--> <!--  No Errors, not tested if it works we have 16kb-->
             <define name="BAT_CHECKER_DELAY" value="50"/> <!-- amount of time it take for the bat to be checked  -->
             <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
             <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
@@ -114,14 +114,14 @@
 
         <module name="ahrs" type="float_cmpl_quat">
             <configure name="USE_MAGNETOMETER" value="FALSE" />
-            <define name="AHRS_USE_GPS_HEADING" value="FALSE"/> <!-- true for Optitrac-->
+            <define name="AHRS_USE_GPS_HEADING" value="TRUE"/> <!-- true for Optitrac-->
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine best... Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
             <!--<define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/>--> <!-- apply a low pass filter on rotational velocity"-->
         </module>
 
-        <!--<module name="stabilization" type="int_quat"/>-->
-        <module name="stabilization" type="rate_indi"/>
-        <module name="stabilization" type="indi_simple" />
+        <module name="stabilization" type="int_quat"/>
+        <!--module name="stabilization" type="rate_indi"/>
+        <module name="stabilization" type="indi_simple" /-->
 
         <!-- <module name="stabilization" type="indi"/> -->
 
@@ -134,13 +134,13 @@
             <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
         </module>
 
-        <module name="ctrl_module_outerloop_demo"/>
+        <!--module name="ctrl_module_outerloop_demo"/-->
         <module name="dronerace"/>
         <module name="jevois_mavlink">
             <configure name="JEVOIS_UART" value="UART1"/>
             <configure name="JEVOIS_BAUD" value="B115200"/>
         </module>
-
+        <module name="gps" type="datalink"/>
         <!-- No I2C yet... need to find some good spot for I2C pins -->
         <!--
         <module name="gps" type="ublox">
@@ -149,7 +149,7 @@
         -->
 
         <!-- <module name="geo_mag"/> -->
-        <!-- <module name="air_data"/> -->
+        <module name="air_data"/>
 
         <!-- below temporary until tested then remove it -->
         <!-- <module name="send_imu_mag_current"/> -->
@@ -242,12 +242,12 @@
 
     <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
         <!-- setpoints -->
-        <define name="SP_MAX_PHI"     value="20." unit="deg"/>
-        <define name="SP_MAX_THETA"   value="20." unit="deg"/>
+        <define name="SP_MAX_PHI"     value="40." unit="deg"/>
+        <define name="SP_MAX_THETA"   value="40." unit="deg"/>
         <define name="SP_MAX_R"       value="80." unit="deg/s"/>
-        <define name="DEADBAND_A"     value="10"/>
-        <define name="DEADBAND_E"     value="10"/>
-        <define name="DEADBAND_R"     value="250"/>
+        <define name="DEADBAND_A"     value="0"/>
+        <define name="DEADBAND_E"     value="0"/>
+        <define name="DEADBAND_R"     value="150"/>
 
         <!-- reference -->
         <define name="REF_OMEGA_P"  value="800" unit="deg/s"/>
@@ -286,10 +286,10 @@
 
     <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
         <!-- control effectiveness -->
-        <define name="G1_P" value="0.025" />
-        <define name="G1_Q" value="0.025" />
+        <define name="G1_P" value="0.035" />
+        <define name="G1_Q" value="0.035" />
         <define name="G1_R" value="0.0022" />
-        <define name="G2_R" value="0.20" />
+        <define name="G2_R" value="0.10" />
 
         <!-- For some airframes, e.g. Bebop2 we need to filter the roll rate due to the dampers -->
         <define name="FILTER_ROLL_RATE" value="FALSE" />
@@ -297,11 +297,11 @@
         <define name="FILTER_YAW_RATE" value="FALSE" />
 
         <!-- reference acceleration for attitude control -->
-        <define name="REF_ERR_P" value="300.0" />
+        <define name="REF_ERR_P" value="600.0" />
         <define name="REF_ERR_Q" value="600.0" />
         <define name="REF_ERR_R" value="600.0" />
-        <define name="REF_RATE_P" value="28.0" />
-        <define name="REF_RATE_Q" value="28.0" />
+        <define name="REF_RATE_P" value="30.0" />
+        <define name="REF_RATE_Q" value="30.0" />
         <define name="REF_RATE_R" value="20.0" />
 
         <!-- second order filter parameters -->
@@ -315,23 +315,23 @@
         <define name="FILT_CUTOFF_R" value="3.2"/>
 
         <!-- first order actuator dynamics (indi_simple) -->
-        <define name="ACT_DYN_P" value="0.06" />
-        <define name="ACT_DYN_Q" value="0.06" />
-        <define name="ACT_DYN_R" value="0.06" />
+        <define name="ACT_DYN_P" value="0.10" />
+        <define name="ACT_DYN_Q" value="0.10" />
+        <define name="ACT_DYN_R" value="0.10" />
 
         <!-- Adaptive Learning Rate -->
-        <define name="USE_ADAPTIVE" value="TRUE" />
+        <define name="USE_ADAPTIVE" value="FALSE" />
         <define name="ADAPTIVE_MU" value="0.0003" />
 
         <!--Maxium yaw rate, to avoid instability -->
-        <define name="MAX_R" value="120" unit="deg/s" />
+        <define name="MAX_R" value="80" unit="deg/s" />
     </section>
 
     <section name="GUIDANCE_V" prefix="GUIDANCE_V_">
         <define name="HOVER_KP"    value="150"/>
         <define name="HOVER_KD"    value="80"/>
         <define name="HOVER_KI"    value="20"/>
-        <define name="NOMINAL_HOVER_THROTTLE" value="0.4"/>
+        <define name="NOMINAL_HOVER_THROTTLE" value="0.33"/>
         <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
     </section>
 
@@ -345,7 +345,7 @@
     </section>
 
     <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
-        <define name="MAX_BANK" value="20." unit="deg"/>
+        <define name="MAX_BANK" value="30." unit="deg"/>
         <define name="USE_SPEED_REF" value="TRUE"/>
         <define name="PGAIN" value="50"/>
         <define name="DGAIN" value="100"/>
@@ -356,8 +356,8 @@
 <!-- ********************** AP ************************** -->
     <section name="AUTOPILOT">
         <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/><!-- for now...-->
-        <define name="MODE_AUTO1"  value="AP_MODE_ATTITUDE_DIRECT"/><!-- for now...-->
-        <define name="MODE_AUTO2"  value="AP_MODE_ATTITUDE_DIRECT"/><!-- for now...-->
+        <define name="MODE_AUTO1"  value="AP_MODE_HOVER_Z_HOLD"/><!-- for now...-->
+        <define name="MODE_AUTO2"  value="AP_MODE_HOVER_Z_HOLD"/><!-- for now...-->
         <define name="USE_THROTTLE_FOR_MOTOR_ARMING" value="TRUE"/>
         <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
     </section>
