@@ -274,7 +274,7 @@ void jevois_mavlink_event(void)
           mavlink_msg_heartbeat_decode(&msg, &heartbeat);
           //Debug the heartbeat variable
           heart_beat++;
-          send_dronerace_debug_info(&(DefaultChannel).trans_tx, &(DefaultDevice).device);
+         // send_dronerace_debug_info(&(DefaultChannel).trans_tx, &(DefaultDevice).device);
         }
         break;
 
@@ -352,7 +352,7 @@ void jevois_mavlink_event(void)
 
           //if(mavlink_cnt % 10 == 0) {
           //heart_beat = 0;
-          send_dronerace_debug_info(&(DefaultChannel).trans_tx, &(DefaultDevice).device);
+          //send_dronerace_debug_info(&(DefaultChannel).trans_tx, &(DefaultDevice).device);
           //}
         }
         break;
