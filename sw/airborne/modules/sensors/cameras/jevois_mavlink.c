@@ -138,7 +138,6 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &heart_beat,
                                &jevois_vision_position.x,
                                &jevois_vision_position.y,
-                               &jevois_vision_position.z,
                                &phi,
                                &theta,
                                &psi,
@@ -158,7 +157,8 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &indi_ctrl.vy_cmd,
                                &indi_ctrl.ax_cmd,
                                &indi_ctrl.ay_cmd,
-                               0 
+                               0,
+							   0
                              /*
 							   &phi,
 								 &theta,
