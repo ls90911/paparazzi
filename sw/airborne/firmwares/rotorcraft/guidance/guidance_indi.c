@@ -211,7 +211,6 @@ void guidance_indi_run(float heading_sp)
   debug_indi.z_ref = POS_FLOAT_OF_BFP(guidance_v_z_ref);
   debug_indi.z_error = pos_z_err;
   debug_indi.vz_sp = speed_sp_z;
-  debug_indi.az_sp = sp_accel.z;
 
   if(flagNN == true)
   {
@@ -227,13 +226,11 @@ void guidance_indi_run(float heading_sp)
           scale_factor = 1.0;
       }
       float theta = stateGetNedToBodyEulers_f()->theta;
-      //float nn_accel_z = (-nn_cmd.thrust_ref/0.389)*cos(theta)+9.8;
       float nn_accel_z = -(nn_cmd.FL+nn_cmd.FR)/0.389*cos(theta)+9.8;
       sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_accel_z;
-      //sp_accel.z = 0.3;
-      //printf("nn thrust is running\n");
+      printf("nn thrust is running\n");
   }
-
+  debug_indi.az_sp = sp_accel.z;
   //---------------------------------------------------------------------------------------------------------
 #if GUIDANCE_INDI_RC_DEBUG
 #warning "GUIDANCE_INDI_RC_DEBUG lets you control the accelerations via RC, but disables autonomous flight!"

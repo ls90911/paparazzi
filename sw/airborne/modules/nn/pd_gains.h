@@ -7,10 +7,8 @@
 #define KPP 0.2  /* proportional term on auxiliary */
 #define KDP 0.2  /* derivative term on auxiliary   */
 
-
-#ifndef SCALING_COEFF
 #define SCALING_COEFF 0.5  /* squared neighbourhood radius for using the PD */
-#endif
+
 /* constants (do not change) */
 #define GRAV_ACC 9.81
 #define MASS 0.38905
