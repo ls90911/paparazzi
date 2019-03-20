@@ -207,6 +207,18 @@
         <define name="TYPE" value="QUAD_X"/>
     </section>
 
+  <!--section name="MIXING" prefix="MOTOR_MIXING_">
+    <define name="TRIM_ROLL" value="0"/>
+    <define name="TRIM_PITCH" value="0"/>
+    <define name="TRIM_YAW" value="0"/>
+    <define name="NB_MOTOR" value="4"/>
+    <define name="SCALE" value="256"/>
+    <define name="ROLL_COEF" value="{  -256, -256,  256,  256 }"/>
+    <define name="PITCH_COEF" value="{  256, -256, -256,  256 }"/>
+    <define name="YAW_COEF" value="{    256, -256,  256, -256 }"/>
+    <define name="THRUST_COEF" value="{ 256,  256,  256,  256 }"/>
+  </section-->
+
     <command_laws>
         <call fun="motor_mixing_run(autopilot_get_motors_on(),FALSE,values)"/>
         <set servo="FL" value="motor_mixing.commands[MOTOR_FRONT_LEFT]"/>
@@ -242,12 +254,12 @@
 
     <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
         <!-- setpoints -->
-        <define name="SP_MAX_PHI"     value="40." unit="deg"/>
-        <define name="SP_MAX_THETA"   value="40." unit="deg"/>
-        <define name="SP_MAX_R"       value="80." unit="deg/s"/>
+        <define name="SP_MAX_PHI"     value="60." unit="deg"/>
+        <define name="SP_MAX_THETA"   value="60." unit="deg"/>
+        <define name="SP_MAX_R"       value="120." unit="deg/s"/>
         <define name="DEADBAND_A"     value="0"/>
         <define name="DEADBAND_E"     value="0"/>
-        <define name="DEADBAND_R"     value="150"/>
+        <define name="DEADBAND_R"     value="100"/>
 
         <!-- reference -->
         <define name="REF_OMEGA_P"  value="800" unit="deg/s"/>
@@ -266,13 +278,13 @@
         <define name="REF_MAX_RDOT" value="RadOfDeg(1800.)"/>
 
         <!-- feedback -->
-        <define name="PHI_PGAIN"  value="100"/>
-        <define name="PHI_DGAIN"  value="60"/>
-        <define name="PHI_IGAIN"  value="20"/>
+        <define name="PHI_PGAIN"  value="90"/>
+        <define name="PHI_DGAIN"  value="92"/>
+        <define name="PHI_IGAIN"  value="26"/>
 
-        <define name="THETA_PGAIN"  value="100"/>
-        <define name="THETA_DGAIN"  value="60"/>
-        <define name="THETA_IGAIN"  value="20"/>
+        <define name="THETA_PGAIN"  value="90"/>
+        <define name="THETA_DGAIN"  value="92"/>
+        <define name="THETA_IGAIN"  value="22"/>
 
         <define name="PSI_PGAIN"  value="400"/>
         <define name="PSI_DGAIN"  value="200"/>
