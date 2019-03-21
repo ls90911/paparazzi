@@ -169,8 +169,9 @@ void guidance_indi_run(float heading_sp)
   guidance_indi_propagate_filters(&eulers_yxz);
 
   //Linear controller to find the acceleration setpoint from position and velocity
-  //float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
-  //float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
+  float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
+  float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
+  /*
   float pos_x_err = ref.pos.x - filteredX;
   float pos_y_err = ref.pos.y - filteredY;
   float pos_z_err = POS_FLOAT_OF_BFP(POS_BFP_OF_REAL(-1.5)- stateGetPositionNed_i()->z);
@@ -178,10 +179,12 @@ void guidance_indi_run(float heading_sp)
   indi_ctrl.z_sp = POS_FLOAT_OF_BFP(guidance_v_z_ref);
   indi_ctrl.previous_x_err = pos_x_err;
   indi_ctrl.previous_y_err = pos_y_err;
+  */
 
   float speed_sp_x = pos_x_err * guidance_indi_pos_gain + guidance_indi_pos_d_gain * (pos_x_err-indi_ctrl.previous_x_err) * 512.0;
   float speed_sp_y = pos_y_err * guidance_indi_pos_gain + guidance_indi_pos_d_gain * (pos_y_err-indi_ctrl.previous_y_err) * 512.0;
   float speed_sp_z = pos_z_err * 0.5;
+  /*
   indi_ctrl.vz_sp = speed_sp_z; 
   
   indi_ctrl.previous_x_err = pos_x_err;
@@ -205,6 +208,7 @@ void guidance_indi_run(float heading_sp)
 	  speed_sp_x = dr_ransac.buf_size>5?-2.0:0.0; 
       speed_sp_y = pos_y_err * guidance_indi_pos_gain;
   }
+  */
 
   // If the acceleration setpoint is set over ABI message
   if (indi_accel_sp_set_2d) {
@@ -232,6 +236,7 @@ void guidance_indi_run(float heading_sp)
     sp_accel.z = (speed_sp_z - stateGetSpeedNed_f()->z) * guidance_indi_speed_gain;
   }
 
+  /*
     float vx_err = speed_sp_x - filteredVx;
     float vy_err = speed_sp_y - filteredVy;
     sp_accel.x = vx_err * guidance_indi_speed_gain	+ guidance_indi_speed_d_gain * (vx_err-indi_ctrl.previous_vx_err)*512.0;
@@ -243,6 +248,7 @@ void guidance_indi_run(float heading_sp)
 
 	indi_ctrl.previous_vx_err = vx_err;
 	indi_ctrl.previous_vy_err = vy_err;
+	*/
 
     //
 #if GUIDANCE_INDI_RC_DEBUG

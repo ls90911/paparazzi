@@ -168,6 +168,7 @@ void generate_waypoints_from_gates()
 {
   int i;
 #ifdef DEBUG_WP_GENERATION
+  /*
   if (debug) {
 
     char filename[128];
@@ -189,6 +190,7 @@ void generate_waypoints_from_gates()
     fprintf(fp, "\n\n\n");
     fclose(fp);
   }
+  */
 #endif
 
   for (i = 0; i < MAX_GATES; i++) {

@@ -198,6 +198,7 @@ void dronerace_periodic(void)
     }
 
 
+
   float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
   float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);
 
@@ -217,7 +218,7 @@ void dronerace_periodic(void)
 
     filter_correct();
 
-    flightplan_list();
+    //flightplan_list();
   }
 
   //printf("before write log\n");

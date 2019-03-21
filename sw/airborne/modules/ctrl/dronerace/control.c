@@ -55,11 +55,13 @@ float vy_error_previous = 0.0;
 */
 
 
+control_cnt = 0;
 void control_reset(void)
 {
   // Reset flight plan logic
   flightplan_reset();
   reset_reference();
+  control_cnt = 0;
 
   // Reset own variables
   dr_control.psi_ref = 0;
@@ -89,6 +91,7 @@ void control_reset(void)
 
 void control_run(void)
 {
+	control_cnt++;
   float r_cmd;
   float dt = 1.0/512.0;
   // Propagate the flightplan
@@ -106,8 +109,26 @@ void control_run(void)
   dr_control.psi_ref += r_cmd * dt;
 
   //printf("wp = (%f,%f)\n",dr_fp.x_set,dr_fp.y_set);
-  autopilot_guided_goto_ned(dr_fp.x_set,dr_fp.y_set,-1.5,dr_control.psi_ref);
-
+  //autopilot_guided_goto_ned(dr_fp.x_set,dr_fp.y_set,-1.5,dr_control.psi_ref);
+  //----------------------------------------------------------
+  //  test trachcan with optitrack
+  if(control_cnt / 512.0 < 200)
+  {
+    autopilot_guided_goto_ned(0.0,0.0,-1.5,0);
+  }
+  else if(control_cnt / 512.0 < 500)
+  {
+    autopilot_guided_goto_ned(3.0,0.0,-1.5,3.14/2);
+  }
+  else if(control_cnt / 512.0 < 30)
+  {
+    autopilot_guided_goto_ned(3.0,3.0,-1.5,3.14);
+  }
+  else
+  {
+    autopilot_guided_goto_ned(3.0,3.0,-1.5,3.14);
+  }
+  //----------------------------------------------------------
 }
 
 void reference_init()

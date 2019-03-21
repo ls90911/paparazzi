@@ -113,12 +113,19 @@
         <module name="ins" type="extended"/> <!--TODO: change later to <module name="ins" type="gps_passthrough"/>-->
 
         <module name="ahrs" type="int_cmpl_quat">
-            <configure name="USE_MAGNETOMETER" value="FALSE" />
-            <define name="AHRS_USE_GPS_HEADING" value="TRUE"/> <!-- true for Optitrac-->
-            <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine best... Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
-            <!--<define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/>--> <!-- apply a low pass filter on rotational velocity"-->
-        </module>
+            <!--<configure name="USE_MAGNETOMETER" value="FALSE" />
+            <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
+            <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> -->
 
+             <configure name="USE_GPS" value="TRUE"/>
+      	     <configure name="USE_MAGNETOMETER" value="FALSE"/>
+      	     <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
+      	     <define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="TRUE"/>
+             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/>
+        </module>
+        <module name="guidance" type="indi">
+             <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
+        </module>
         <module name="stabilization" type="int_quat"/>
         <!--module name="stabilization" type="rate_indi"/>
         <module name="stabilization" type="indi_simple" /-->
@@ -364,8 +371,8 @@
     <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
         <define name="MAX_BANK" value="30." unit="deg"/>
         <define name="USE_SPEED_REF" value="TRUE"/>
-        <define name="PGAIN" value="50"/>
-        <define name="DGAIN" value="100"/>
+        <define name="PGAIN" value="80"/>
+        <define name="DGAIN" value="150"/>
         <define name="AGAIN" value="70"/>
         <define name="IGAIN" value="20"/>
     </section>
@@ -374,7 +381,7 @@
     <section name="AUTOPILOT">
         <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/><!-- for now...-->
         <define name="MODE_AUTO1"  value="AP_MODE_HOVER_Z_HOLD"/><!-- for now...-->
-        <define name="MODE_AUTO2"  value="AP_MODE_HOVER_Z_HOLD"/><!-- for now...-->
+        <define name="MODE_AUTO2"  value="AP_MODE_GUIDED"/><!-- for now...-->
         <define name="USE_THROTTLE_FOR_MOTOR_ARMING" value="TRUE"/>
         <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
     </section>
