@@ -129,35 +129,20 @@
              <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
         </module-->
         <module name="stabilization" type="int_quat"/>
-        <!--module name="stabilization" type="rate_indi"/>
-        <module name="stabilization" type="indi_simple" /-->
-
-        <!-- <module name="stabilization" type="indi"/> -->
 
         <module name="telemetry" type="transparent">
             <configure name="MODEM_PORT" value="UART2"/>
             <configure name="MODEM_BAUD" value="B115200"/>
         </module>
 
-        <!--module name="guidance" type="indi">
-            <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
-        </module-->
 
         <!--module name="ctrl_module_outerloop_demo"/-->
-        <!--module name="dronerace"/>
+        <module name="dronerace"/>
         <module name="jevois_mavlink">
             <configure name="JEVOIS_UART" value="UART1"/>
             <configure name="JEVOIS_BAUD" value="B115200"/>
-        </module-->
-        <module name="gps" type="datalink"/>
-        <!-- No I2C yet... need to find some good spot for I2C pins -->
-        <!--
-        <module name="gps" type="ublox">
-        <configure name="GPS_PORT" value="I2C"/>
         </module>
-        -->
-
-        <!-- <module name="geo_mag"/> -->
+        <module name="gps" type="datalink"/>
         <module name="air_data"/>
 
         <!-- below temporary until tested then remove it -->
@@ -287,7 +272,7 @@
         <define name="REF_MAX_RDOT" value="RadOfDeg(1800.)"/>
 
         <!-- feedback -->
-        <define name="PHI_PGAIN"  value="145"/>
+        <define name="PHI_PGAIN"  value="100"/>
         <define name="PHI_DGAIN"  value="90"/>
         <define name="PHI_IGAIN"  value="10"/>
 
@@ -328,10 +313,10 @@
     </section>
 
     <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
-        <define name="MAX_BANK" value="30." unit="deg"/>
+        <define name="MAX_BANK" value="60." unit="deg"/>
         <define name="USE_SPEED_REF" value="TRUE"/>
-        <define name="PGAIN" value="80"/>
-        <define name="DGAIN" value="150"/>
+        <define name="PGAIN" value="700"/>
+        <define name="DGAIN" value="300"/>
         <define name="AGAIN" value="70"/>
         <define name="IGAIN" value="20"/>
     </section>
