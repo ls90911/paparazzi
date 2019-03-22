@@ -113,7 +113,7 @@
         <module name="ins" type="extended"/> <!--TODO: change later to <module name="ins" type="gps_passthrough"/>-->
 
         <module name="ahrs" type="int_cmpl_quat">
-            <!--<configure name="USE_MAGNETOMETER" value="FALSE" />
+           <!--<configure name="USE_MAGNETOMETER" value="FALSE" />
             <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> -->
 
@@ -123,9 +123,11 @@
       	     <define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="TRUE"/>
              <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/>
         </module>
-        <module name="guidance" type="indi">
+
+ 
+        <!--module name="guidance" type="indi">
              <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
-        </module>
+        </module-->
         <module name="stabilization" type="int_quat"/>
         <!--module name="stabilization" type="rate_indi"/>
         <module name="stabilization" type="indi_simple" /-->
@@ -142,11 +144,11 @@
         </module-->
 
         <!--module name="ctrl_module_outerloop_demo"/-->
-        <module name="dronerace"/>
+        <!--module name="dronerace"/>
         <module name="jevois_mavlink">
             <configure name="JEVOIS_UART" value="UART1"/>
             <configure name="JEVOIS_BAUD" value="B115200"/>
-        </module>
+        </module-->
         <module name="gps" type="datalink"/>
         <!-- No I2C yet... need to find some good spot for I2C pins -->
         <!--
@@ -285,13 +287,13 @@
         <define name="REF_MAX_RDOT" value="RadOfDeg(1800.)"/>
 
         <!-- feedback -->
-        <define name="PHI_PGAIN"  value="90"/>
-        <define name="PHI_DGAIN"  value="92"/>
-        <define name="PHI_IGAIN"  value="26"/>
+        <define name="PHI_PGAIN"  value="145"/>
+        <define name="PHI_DGAIN"  value="90"/>
+        <define name="PHI_IGAIN"  value="10"/>
 
-        <define name="THETA_PGAIN"  value="90"/>
-        <define name="THETA_DGAIN"  value="92"/>
-        <define name="THETA_IGAIN"  value="22"/>
+        <define name="THETA_PGAIN"  value="300"/>
+        <define name="THETA_DGAIN"  value="90"/>
+        <define name="THETA_IGAIN"  value="20"/>
 
         <define name="PSI_PGAIN"  value="400"/>
         <define name="PSI_DGAIN"  value="200"/>
@@ -301,49 +303,6 @@
         <define name="PHI_DDGAIN"   value="0"/>
         <define name="THETA_DDGAIN" value="0"/>
         <define name="PSI_DDGAIN"   value="0"/>
-    </section>
-
-    <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
-        <!-- control effectiveness -->
-        <define name="G1_P" value="0.035" />
-        <define name="G1_Q" value="0.035" />
-        <define name="G1_R" value="0.0022" />
-        <define name="G2_R" value="0.10" />
-
-        <!-- For some airframes, e.g. Bebop2 we need to filter the roll rate due to the dampers -->
-        <define name="FILTER_ROLL_RATE" value="FALSE" />
-        <define name="FILTER_PITCH_RATE" value="FALSE" />
-        <define name="FILTER_YAW_RATE" value="FALSE" />
-
-        <!-- reference acceleration for attitude control -->
-        <define name="REF_ERR_P" value="600.0" />
-        <define name="REF_ERR_Q" value="600.0" />
-        <define name="REF_ERR_R" value="600.0" />
-        <define name="REF_RATE_P" value="30.0" />
-        <define name="REF_RATE_Q" value="30.0" />
-        <define name="REF_RATE_R" value="20.0" />
-
-        <!-- second order filter parameters -->
-        <define name="FILT_OMEGA" value="50.0"/>
-        <define name="FILT_ZETA" value="0.55"/>
-        <define name="FILT_OMEGA_R" value="50.0"/>
-        <define name="FILT_ZETA_R" value="0.55"/>
-
-        <!-- second order filter parameters -->
-        <define name="FILT_CUTOFF" value="8.0"/>
-        <define name="FILT_CUTOFF_R" value="3.2"/>
-
-        <!-- first order actuator dynamics (indi_simple) -->
-        <define name="ACT_DYN_P" value="0.10" />
-        <define name="ACT_DYN_Q" value="0.10" />
-        <define name="ACT_DYN_R" value="0.10" />
-
-        <!-- Adaptive Learning Rate -->
-        <define name="USE_ADAPTIVE" value="FALSE" />
-        <define name="ADAPTIVE_MU" value="0.0003" />
-
-        <!--Maxium yaw rate, to avoid instability -->
-        <define name="MAX_R" value="80" unit="deg/s" />
     </section>
 
     <section name="GUIDANCE_V" prefix="GUIDANCE_V_">
