@@ -155,39 +155,7 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &ref.pos.y, 
                                &indi_ctrl.vx_cmd,
                                &indi_ctrl.vy_cmd,
-                               &indi_ctrl.ax_cmd,
-                               &indi_ctrl.ay_cmd,
-                               0,
-							   0
-                             /*
-							   &phi,
-								 &theta,
-								 &psi,
-
-								 &x_OT,
-								 &y_OT,
-								 &vx_OT,
-								 &vy_OT,
-								 &x_pre,
-								 &y_pre,
-
-								 &x_est,
-								 &y_est,
-								 &vx_est,
-								 &vy_est,
-
-								 &x_sp,
-								 &y_sp,
-
-								 &vx_sp,
-								 &vy_sp,
-
-								 &ax_sp,
-								 &ay_sp,
-
-								 &accel_x,
-								 &accel_y
-								 */
+                               &jevois_vision_position.cnt
 								 );
 
 }
