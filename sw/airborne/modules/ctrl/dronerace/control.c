@@ -66,6 +66,7 @@ void control_reset(void)
   // Reset flight plan logic
   flightplan_reset();
   reset_reference();
+  filter_reset();
   control_cnt = 0;
 
   // Reset own variables

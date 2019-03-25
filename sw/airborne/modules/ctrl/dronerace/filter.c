@@ -155,9 +155,9 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 {
 	int i;
 	//int j;
-	float min_distance = 9999;
 
 	dr_state.assigned_gate_index = -1;
+	float min_distance;
 
 	for (i = 0; i < MAX_GATES; i++) {
 		if (gates[i].type != VIRTUAL) {
@@ -174,6 +174,12 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 				float distance_measured_2_drone = 0;
 				distance_measured_2_drone = (x - (dr_state.x + dr_ransac.corr_x)) * (x - (dr_state.x + dr_ransac.corr_x)) +
 					(y - (dr_state.y + dr_ransac.corr_y)) * (y - (dr_state.y + dr_ransac.corr_y));
+				if(i==0)
+				{
+					min_distance = distance_measured_2_drone;
+					*_mx = x;
+					*_my = y;
+				}
 				if (distance_measured_2_drone < min_distance) {
 					dr_state.assigned_gate_index = i;
 					min_distance = distance_measured_2_drone;
