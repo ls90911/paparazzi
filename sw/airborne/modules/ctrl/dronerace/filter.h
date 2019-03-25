@@ -55,5 +55,7 @@ extern float filteredVy;
 extern int get_time_stamp(void);
 extern int detection_time_stamp;
 extern int assigned_gate;
+extern float vision_x_earth;
+extern float vision_y_earth;
 
 #endif

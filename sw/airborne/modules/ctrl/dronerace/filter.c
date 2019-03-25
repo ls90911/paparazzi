@@ -21,6 +21,8 @@ void calibrate_detection(float *measured_x,float *measured_y);
 void calibrate_ahrs(void);
 void calibrate_ahrs_init(void);
 int assigned_gate = 0;
+float vision_x_earth;
+float vision_y_earth;
 
 void filter_reset()
 {
@@ -160,24 +162,10 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 	for (i = 0; i < MAX_GATES; i++) {
 		if (gates[i].type != VIRTUAL) {
 
-			/*
-			float exp_dx = gates[i].x - dr_state.x;
-			float exp_dy = gates[i].y - dr_state.y;
-			//float exp_yaw = scale_heading(gates[i].psi) - scale_heading(dr_state.psi);
-			float exp_yaw = 0;
-			float exp_dist = sqrtf(exp_dx * exp_dx + exp_dy * exp_dy);
-			if (exp_dist == 0.0) {
-				exp_dist = 0.0001f;
-			}
-			float exp_size =  1.4f * 340.0f / exp_dist;
-			// dist = 1.4f * 340.0f / ((float)size);
-			float exp_bearing = atan2(exp_dy, exp_dx);
-			float exp_view = exp_bearing - dr_state.psi;
-			if ((exp_view > -320.0f / 340.0f) && (exp_view < 320.0f / 340.0f)
-					&& ((exp_yaw > -RadOfDeg(60.0f)) && (exp_yaw < RadOfDeg(60.0f)))
-			   ) {
-
-			   */
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			dr_state.psi = 0;
+			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			
 				float rot_dx = cosf(dr_state.psi) * dx -sinf(dr_state.psi) * dy;
 				float rot_dy = sinf(dr_state.psi) * dx + cosf(dr_state.psi) * dy;
 
@@ -192,7 +180,6 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 					*_mx = x;
 					*_my = y;
 				}
-			//}
 		}
 	}
 	if(dr_state.assigned_gate_index == -1) {
@@ -204,22 +191,6 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 
 void pushJungleGateDetection(void)
 {
-  if (gates[dr_fp.gate_nr].type == JUNGLE && jungleGate.flagJungleGateDetected == false
-      && jungleGate.numJungleGateDetection < MAX_DETECTION) {
-    jungleGate.jungleGateDetectionZ[jungleGate.numJungleGateDetection] = dr_vision.dz;
-    jungleGate.jungleGateDetectionY[jungleGate.numJungleGateDetection] = dr_vision.dy;
-    jungleGate.sumJungleGateHeight += dr_vision.dz;
-    jungleGate.numJungleGateDetection++;
-    jungleGate.jungleGateHeight = jungleGate.sumJungleGateHeight / jungleGate.numJungleGateDetection;
-    if (jungleGate.numJungleGateDetection == MAX_DETECTION) {
-      jungleGate.flagJungleGateDetected = true;
-      if (jungleGate.jungleGateHeight > 0.0) {
-        flagHighOrLowGate = UPPER_GATE;
-      } else {
-        flagHighOrLowGate = LOWER_GATE;
-      }
-    }
-  }
 }
 
 
@@ -254,34 +225,8 @@ void calibrate_detection(float *measured_x,float *measured_y)
 
 void calibrate_ahrs_init()
 {
-    cali_ahrs.sum_bias_north = 0.0;
-    cali_ahrs.sum_bias_east = 0.0;
-    cali_ahrs.counter= 0;
-    cali_ahrs.is_ahrs_calibrated = 0;
 }
 
 void calibrate_ahrs()
 {
-	int counter_start = 1000;
-	int counter_end = 2000;
-
-	if(cali_ahrs.counter<counter_start)
-	{
-		//if(cali_ahrs.counter%10==0) printf("Calibrating AHRS [%.1f %%]\n",0.0);
-    }
-
-	if(cali_ahrs.counter > counter_start && cali_ahrs.counter < counter_end)
-	{
-		cali_ahrs.sum_bias_east += (float)3.;//stateGetNedToBodyEulers_f()->phi;
-		cali_ahrs.sum_bias_north += (float)4.;//stateGetNedToBodyEulers_f()->theta;
-		//if(cali_ahrs.counter%10==0) printf("Calibrating AHRS [%.1f %%]\n",((float)cali_ahrs.counter-(float)counter_start)/(counter_end-counter_start)*100.0);
-	}
-	if(cali_ahrs.counter > counter_end)
-	{
-		cali_ahrs.bias_north = cali_ahrs.sum_bias_north/(counter_end-counter_start);
-		cali_ahrs.bias_east = cali_ahrs.sum_bias_east/(counter_end-counter_start);
-		cali_ahrs.is_ahrs_calibrated = 1;
-		//printf("ahrs calibration is done\n");
-	}
-	cali_ahrs.counter ++;
 }

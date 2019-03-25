@@ -129,6 +129,8 @@ void correct_state() {
 void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_stamp)
 {
     int i = 0;
+	vision_x_earth = _mx;
+	vision_y_earth = _my;
 
     // Insert the new sample in the buffer
     dr_ransac.buf_index_of_last++;

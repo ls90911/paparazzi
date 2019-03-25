@@ -136,8 +136,16 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
 
     pprz_msg_send_DRONERACE_DEBUG(trans, dev, AC_ID,
                                &heart_beat,
+							   /*
+							   &dr_vision.dx,
+							   &dr_vision.dy,
+							   */
+							   /*
                                &jevois_vision_position.x,
                                &jevois_vision_position.y,
+							   */
+							   &mx,
+							   &my,
                                &phi,
                                &theta,
                                &psi,
