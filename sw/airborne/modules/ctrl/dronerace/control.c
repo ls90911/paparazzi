@@ -136,11 +136,11 @@ void control_run(void)
   //autopilot_guided_goto_ned(dr_fp.x_set,dr_fp.y_set,-1.5,dr_control.psi_ref);
   //----------------------------------------------------------
   //  test trachcan with optitrack
-  if(control_cnt / 512.0 < 5)
+  if(control_cnt / 512.0 < 50)
   {
     autopilot_guided_goto_ned(0.0,0.0,-1.5,0);
   }
-  else if(control_cnt / 512.0 < 10)
+  else if(control_cnt / 512.0 < 100)
   {
     autopilot_guided_goto_ned(3.0,0.0,-1.5,3.14/2);
   }
