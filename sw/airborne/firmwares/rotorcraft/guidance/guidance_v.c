@@ -553,6 +553,8 @@ bool guidance_v_set_guided_z(float z)
 {
   if (guidance_v_mode == GUIDANCE_V_MODE_GUIDED) {
     /* disable vertical velocity setpoints */
+	  if(POS_BFP_OF_REAL(z) != guidance_v_z_sp)
+	  {
     guidance_v_guided_mode = GUIDANCE_V_GUIDED_MODE_ZHOLD;
 
     /* set altitude setpoint */
@@ -564,6 +566,7 @@ bool guidance_v_set_guided_z(float z)
     /* reset guidance reference */
     guidance_v_z_sum_err = 0;
     GuidanceVSetRef(stateGetPositionNed_i()->z, stateGetSpeedNed_i()->z, 0);
+	  }
     return true;
   }
   return false;

@@ -166,10 +166,6 @@ void guidance_indi_run(float heading_sp)
   //filter accel to get rid of noise and filter attitude to synchronize with accel
   guidance_indi_propagate_filters(&eulers_yxz);
 
-  //------------------------------------------------------------------------------------
-  guidance_v_z_ref = z_ref;
-  //------------------------------------------------------------------------------------
-
   //Linear controller to find the acceleration setpoint from position and velocity
   float pos_x_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.x) - stateGetPositionNed_f()->x;
   float pos_y_err = POS_FLOAT_OF_BFP(guidance_h.ref.pos.y) - stateGetPositionNed_f()->y;
@@ -412,7 +408,3 @@ static void accel_sp_cb(uint8_t sender_id __attribute__((unused)), uint8_t flag,
   }
 }
 
-void set_z_ref(float m_z_ref)
-{
-    z_ref = POS_BFP_OF_REAL(m_z_ref); 
-}
