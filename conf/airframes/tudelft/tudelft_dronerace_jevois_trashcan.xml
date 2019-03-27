@@ -20,12 +20,14 @@
         <target name="ap" board="crazybee_f4_1.0">
             <define name="AUTOPILOT_DISABLE_AHRS_KILL"/> <!--  Starts in KILL, but can now switch to NAV -->
 
+
             <!-- Towards a better and no messing it all up kind of aligner when wobbly plugging in battery ;) -->
-            <!--
+<!--
             <define name="AHRS_ALIGNER_SAMPLES_NB" value="200"/>
             <define name="LOW_NOISE_THRESHOLD" value="30000"/>
             <define name="LOW_NOISE_TIME" value="10"/>
-            -->
+-->
+
 
 <!-- 512 Hz -->
 <!--
@@ -55,22 +57,23 @@
 
 <!-- 2 kHz -->
 <!-- NOT TESTED IMU_MPU_LOWPASS_FILTER and IMU_MPU_SMPLRT_DIV  TODO - ATM likely INCORRECT values-->
-<!--
+
             <configure name="PERIODIC_FREQUENCY" value="2048"/>
 
             <define name="HFF_PRESCALER" value="40" />
-            <define name="AHRS_PROPAGATE_FREQUENCY" value="1000"/>
-            <configure name="AHRS_CORRECT_FREQUENCY" value="1000"/>
-            <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="100"/>
+            <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
+            <configure name="AHRS_CORRECT_FREQUENCY" value="2000"/>
+            <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/>
 
             <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
             <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
-
+<!--
             <configure name="NAVIGATION_FREQUENCY" value="16"/>
             <configure name="CONTROL_FREQUENCY" value="240"/>
             <configure name="TELEMETRY_FREQUENCY" value="60"/>
             <configure name="MODULES_FREQUENCY" value="2048"/>
 -->
+
             <!--define name="USE_PERSISTENT_SETTINGS" value="TRUE"/--> <!--  No Errors, not tested if it works we have 16kb-->
             <define name="BAT_CHECKER_DELAY" value="50"/> <!-- amount of time it take for the bat to be checked  -->
             <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
@@ -111,8 +114,12 @@
         </module>
 
         <module name="ins" type="extended"/> <!--TODO: change later to <module name="ins" type="gps_passthrough"/>-->
+	    <!--module name="ins" type="float_invariant">
+	      <define name="INS_PROPAGATE_FREQUENCY" value="500"/>
+	      <define name="INS_FINV_MAG_ID" value="MAG_HMC58XX_SENDER_ID"/>
+	    </module-->
 
-        <module name="ahrs" type="int_cmpl_quat">
+        <module name="ahrs" type="float_cmpl_quat">
            <!--<configure name="USE_MAGNETOMETER" value="FALSE" />
             <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> -->
@@ -128,7 +135,7 @@
         <!--module name="guidance" type="indi">
              <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
         </module-->
-        <module name="stabilization" type="int_quat"/>
+        <module name="stabilization" type="inth_quat"/>
 
         <module name="telemetry" type="transparent">
             <configure name="MODEM_PORT" value="UART2"/>
@@ -248,9 +255,9 @@
 
     <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
         <!-- setpoints -->
-        <define name="SP_MAX_PHI"     value="60." unit="deg"/>
-        <define name="SP_MAX_THETA"   value="60." unit="deg"/>
-        <define name="SP_MAX_R"       value="120." unit="deg/s"/>
+        <define name="SP_MAX_PHI"     value="25." unit="deg"/>
+        <define name="SP_MAX_THETA"   value="25." unit="deg"/>
+        <define name="SP_MAX_R"       value="90." unit="deg/s"/>
         <define name="DEADBAND_A"     value="0"/>
         <define name="DEADBAND_E"     value="0"/>
         <define name="DEADBAND_R"     value="100"/>
