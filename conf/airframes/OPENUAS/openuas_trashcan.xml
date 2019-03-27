@@ -54,7 +54,7 @@
 
 <!-- 2 kHz -->
 <!-- NOT TESTED IMU_MPU_LOWPASS_FILTER and IMU_MPU_SMPLRT_DIV  TODO - ATM likely INCORRECT values-->
-<!--
+
             <configure name="PERIODIC_FREQUENCY" value="2048"/>
 
             <define name="HFF_PRESCALER" value="40" />
@@ -69,7 +69,7 @@
             <configure name="CONTROL_FREQUENCY" value="240"/>
             <configure name="TELEMETRY_FREQUENCY" value="60"/>
             <configure name="MODULES_FREQUENCY" value="2048"/>
--->
+
             <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!--  No Errors, not tested if it works we have 16kb-->
             <define name="BAT_CHECKER_DELAY" value="50"/> <!-- amount of time it take for the bat to be checked  -->
             <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->

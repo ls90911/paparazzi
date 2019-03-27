@@ -16,14 +16,13 @@ SRC_ARCH=arch/$(ARCH_DIR)
 $(TARGET).ARCHDIR = $(ARCH)
 $(TARGET).LDSCRIPT=$(SRC_ARCH)/crazybee_f4_1.0.ld 
 
-HARD_FLOAT=no
+HARD_FLOAT=yes
 
 # Default flash mode is the STM32 DFU bootloader
 # Theoreticlly possible are also SWD and JTAG_BMP
 # But no simple physical connectors to the board...
 # So... DFU it will be ...
 FLASH_MODE=DFU-UTIL
-
 
 #idVendor=0483, idProduct=5740
 #USB device strings: Mfr=1, Product=2, SerialNumber=3
@@ -45,9 +44,8 @@ SYS_TIME_LED       ?= 1
 #
 # Default UART configuration (RC receiver, telemetry modem, GPS)
 #
-# RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT   ?= UART1
+# RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT   ?= UART2
 # RADIO_CONTROL_SBUS_PORT   ?= UART1
-# SBUS_PORT   ?= UART1
 
 MODEM_PORT ?= UART2
 MODEM_BAUD ?= B115200
