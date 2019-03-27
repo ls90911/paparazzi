@@ -561,8 +561,10 @@ bool guidance_v_set_guided_z(float z)
     guidance_v_zd_sp = 0;
 
     /* reset guidance reference */
+	/*
     guidance_v_z_sum_err = 0;
     GuidanceVSetRef(stateGetPositionNed_i()->z, stateGetSpeedNed_i()->z, 0);
+	*/
     return true;
   }
   return false;

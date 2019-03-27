@@ -198,6 +198,7 @@ void dronerace_periodic(void)
     }
 
 
+
   float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
   float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);
 
@@ -217,7 +218,7 @@ void dronerace_periodic(void)
 
     filter_correct();
 
-    flightplan_list();
+    //flightplan_list();
   }
 
   //printf("before write log\n");
@@ -256,12 +257,12 @@ void dronerace_set_rc(UNUSED float rt, UNUSED float rx, UNUSED float ry, UNUSED 
 void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
 {
 
-  control_run();
+  //control_run();  // periodic function
 
   *phi = dr_control.phi_cmd;
   *theta = dr_control.theta_cmd;
   *psi_cmd = dr_control.psi_cmd + psi0;
-  *alt = - dr_control.z_cmd;
+  *alt =dr_control.z_cmd;
 
   guidance_v_z_sp = POS_BFP_OF_REAL(dr_control.z_cmd);
   

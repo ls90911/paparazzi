@@ -8,6 +8,7 @@
 #include "ransac.h"
 #include <math.h>
 #include "firmwares/rotorcraft/autopilot_guided.h"
+#include "state.h"
 
 // Variables
 struct dronerace_control_struct dr_control;
@@ -26,6 +27,10 @@ float k_p_pos_y = 0.5;
 float k_d_pos_y = 0.0;
 float vx_error_previous = 0.0;
 float vy_error_previous = 0.0;
+float x_error_previous = 0.0;
+float y_error_previous = 0.0;
+float vx_cmd = 0.0;
+float vy_cmd = 0.0;
 
 
 
@@ -55,11 +60,14 @@ float vy_error_previous = 0.0;
 */
 
 
+control_cnt = 0;
 void control_reset(void)
 {
   // Reset flight plan logic
   flightplan_reset();
   reset_reference();
+  filter_reset();
+  control_cnt = 0;
 
   // Reset own variables
   dr_control.psi_ref = 0;
@@ -89,25 +97,67 @@ void control_reset(void)
 
 void control_run(void)
 {
+  control_cnt++;
   float r_cmd;
   float dt = 1.0/512.0;
+  float psi = stateGetNedToBodyEulers_f()->psi;
+  
   // Propagate the flightplan
   flightplan_run();
-  update_reference_run();
+  //update_reference_run();
 
   // Heading controller
   r_cmd = 2.0*(dr_fp.psi_set - dr_control.psi_ref);
 
-  // Find shortest turn
-  //r_cmd = angle180(r_cmd);
 
   // Apply rate limit
   Bound(r_cmd, -CTRL_MAX_R, CTRL_MAX_R);
   dr_control.psi_ref += r_cmd * dt;
 
-  //printf("wp = (%f,%f)\n",dr_fp.x_set,dr_fp.y_set);
-  autopilot_guided_goto_ned(dr_fp.x_set,dr_fp.y_set,-1.5,dr_control.psi_ref);
 
+
+  float x_error = dr_fp.x_set - filteredX;
+  float y_error = dr_fp.y_set - filteredY;
+  vx_cmd = k_p_pos_x*x_error + k_d_pos_x * (x_error - x_error_previous)/512.0;
+  vy_cmd = k_p_pos_y*y_error + k_d_pos_y * (y_error - y_error_previous)/512.0;
+
+  float vx_error = vx_cmd - filteredVx;
+  float vy_error = vy_cmd - filteredVy;
+  float ax_cmd = k_p_vel_x * (vx_error) + k_d_vel_x * (vx_error - vx_error_previous)/512.0;
+  float ay_cmd = k_p_vel_y * (vy_error) + k_d_vel_y * (vy_error - vy_error_previous)/512.0;
+
+  dr_control.phi_cmd   = - sinf(psi) * ax_cmd + cosf(psi) * ay_cmd;
+  dr_control.theta_cmd = - cosf(psi) * ax_cmd - sinf(psi) * ay_cmd;
+  dr_control.psi_cmd   = dr_control.psi_ref;
+  dr_control.z_cmd   = dr_fp.z_set;
+
+
+
+  //autopilot_guided_goto_ned(dr_fp.x_set,dr_fp.y_set,-1.5,dr_control.psi_ref);
+  //----------------------------------------------------------
+  //  test trachcan with optitrack
+  if(control_cnt / 512.0 < 50)
+  {
+    autopilot_guided_goto_ned(0.0,0.0,-1.0,0);
+  }
+  else if(control_cnt / 512.0 < 100)
+  {
+    autopilot_guided_goto_ned(3.0,0.0,-1.0,3.14/2);
+  }
+  else if(control_cnt / 512.0 < 15)
+  {
+    autopilot_guided_goto_ned(3.0,3.0,-1.0,3.14);
+  }
+  else if(control_cnt / 512.0 <20) 
+  {
+    autopilot_guided_goto_ned(0.0,3.0,-1.0,3.14);
+  }
+  else if(control_cnt / 512.0 <25)
+  {
+	  control_cnt = 0;
+  
+  }
+  //----------------------------------------------------------
 }
 
 void reference_init()
