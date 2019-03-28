@@ -80,7 +80,10 @@
             <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="50"/><!-- in seconds-->
         </target>
 
-        <module name="radio_control" type="datalink"> <!--datalink(e.g. wifi) or ppm  or sbus-->
+        <module name="radio_control" type="ppm"> <!--datalink(e.g. wifi) or ppm  or sbus-->
+
+            <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>
+            <define name="RADIO_KILL_SWITCH" value="RADIO_AUX1"/>
             <!--<define name="SBUS_PORT" value="UART1"/>-->
             <!-- <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>-->
 
@@ -114,10 +117,10 @@
         </module>
 
         <module name="ins" type="extended"/> <!--TODO: change later to <module name="ins" type="gps_passthrough"/>-->
-	    <!--module name="ins" type="float_invariant">
-	      <define name="INS_PROPAGATE_FREQUENCY" value="500"/>
-	      <define name="INS_FINV_MAG_ID" value="MAG_HMC58XX_SENDER_ID"/>
-	    </module-->
+        <!--module name="ins" type="float_invariant">
+          <define name="INS_PROPAGATE_FREQUENCY" value="500"/>
+          <define name="INS_FINV_MAG_ID" value="MAG_HMC58XX_SENDER_ID"/>
+        </module-->
 
         <module name="ahrs" type="float_cmpl_quat">
            <!--<configure name="USE_MAGNETOMETER" value="FALSE" />
@@ -125,17 +128,17 @@
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> -->
 
              <configure name="USE_GPS" value="TRUE"/>
-      	     <configure name="USE_MAGNETOMETER" value="FALSE"/>
-      	     <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
-      	     <define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="TRUE"/>
+             <configure name="USE_MAGNETOMETER" value="FALSE"/>
+             <define name="AHRS_USE_GPS_HEADING" value="TRUE"/>
+             <define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="TRUE"/>
              <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/>
         </module>
 
- 
+
         <!--module name="guidance" type="indi">
              <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
         </module-->
-        <module name="stabilization" type="inth_quat"/>
+        <module name="stabilization" type="int_quat"/>
 
         <module name="telemetry" type="transparent">
             <configure name="MODEM_PORT" value="UART2"/>
