@@ -92,7 +92,7 @@ bool hover_with_optitrack(float hoverTime)
    // ----------------------------------------------
    
    guidance_h_set_guided_pos(0.0, 0.0); 
-   guidance_v_set_guided_z(-2.0);
+   guidance_v_set_guided_z(-1.5);
    guidance_h_set_guided_heading(0.0);
 
     if(getTime(2)>hoverTime)
@@ -163,7 +163,7 @@ void nn_controller(float desired_x,float desired_z)
     float_rmat_transp_vmult(&vel_NWU, &R_NED_2_NWU, &vel_NED);
 
    // prepare current states to feed NN
-    float state[NUM_STATE_VARS] = {pos_NWU.x-desired_x, vel_NWU.x, pos_NWU.z+desired_z, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta,-stateGetBodyRates_f()->q};
+    float state[NUM_STATE_VARS] = {desired_x-pos_NWU.x, -vel_NWU.x, pos_NWU.z+desired_z, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta,-stateGetBodyRates_f()->q};
     float control[NUM_CONTROL_VARS];
     gettimeofday(&t0, 0);
     //nn_stable(state, control);

@@ -99,5 +99,7 @@ struct RateReference
 };
 
 extern struct RateReference rateRef;
+extern float dq_indi;
+extern float dq_nn;
 #endif /* STABILIZATION_INDI_SIMPLE_H */
 

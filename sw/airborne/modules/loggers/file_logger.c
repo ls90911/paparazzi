@@ -95,7 +95,7 @@ void file_logger_periodic(void)
   int timeStamp = milliseconds % 100000000;
 
   fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f ,%f,%f,%f,%f,%f,%d,%d,%d,%f,"
-          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f\n", timeStamp,
+          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", timeStamp,
 stateGetPositionNed_f()->x,
 stateGetPositionNed_f()->y,
 stateGetPositionNed_f()->z,
@@ -172,7 +172,10 @@ indi.angular_accel_ref.p,
 indi.angular_accel_ref.q,
 indi.angular_accel_ref.r,
 
-nn_cmd.nn_accel_z
+nn_cmd.nn_accel_z,
+
+dq_indi,
+dq_nn
          );
   counter++;
 }

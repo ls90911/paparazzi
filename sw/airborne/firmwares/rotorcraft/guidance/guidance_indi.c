@@ -220,11 +220,14 @@ void guidance_indi_run(float heading_sp)
       else
       {
           scale_factor = 1.0;
+		  float theta = stateGetNedToBodyEulers_f()->theta;
+		  float nn_accel_z = -(nn_cmd.FL+nn_cmd.FR)/0.389*cos(theta)+9.8;
+		  sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_accel_z;
+	      //printf("NN z is running\n");
       }
-      float theta = stateGetNedToBodyEulers_f()->theta;
-      float nn_accel_z = -(nn_cmd.FL+nn_cmd.FR)/0.389*cos(theta)+9.8;
-      sp_accel.z = (1-scale_factor)*sp_accel.z+scale_factor*nn_accel_z;
-      printf("nn thrust is running\n");
+      //nn_accel_z  = 0.3*sin(3.14*getTime(2));
+      //sp_accel.z = nn_accel_z;
+      //sp_accel.z = 0.3*sin(3.14*getTime(2));
   }
   debug_indi.az_sp = sp_accel.z;
   //---------------------------------------------------------------------------------------------------------
