@@ -1,4 +1,4 @@
-/* Since there is atm no schmatic of the board, some pins where measured
+/* Since there is atm no schmatic of the board, many pin to pin ios were deducted by measurinfg on the PCB
  * But e.g. the Volt and Current values are measured for the moment
  * Would be great if one could measure the reistor bridge true values
  */
@@ -79,7 +79,7 @@
  * FIXME: Default is PPM config 1, alternative 2 is input on RX2 pin but than no UART RX
  *
  * Originaly intended for 2812LED board - DMA1_ST2
- * Can be re- used for input to connect a receiver that spits CPPM pulsetrain
+ * Can be re- used for input to connect a receiver that outputs CPPM pulsestrain
  */
 
 #ifndef PPM_CONFIG
@@ -91,6 +91,7 @@
 #define PPM_CHANNEL         TIM_IC1
 #define PPM_TIMER_INPUT     TIM_IC_IN_TI1
 #define PPM_IRQ             NVIC_TIM5_IRQ
+//#define PPM_IRQ             NVIC_TIM5_CC_IRQ
 // Capture/Compare InteruptEnable and InterruptFlag
 #define PPM_CC_IE           TIM_DIER_CC1IE
 #define PPM_CC_IF           TIM_SR_CC1IF

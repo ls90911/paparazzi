@@ -44,6 +44,5 @@ the order of the functon in the list
   <channel ctl="SW8"                  function="MANUALRELEASE" min="1000" neutral="1000" max="2000" average="1"/>
   <channel ctl="CONTROL5"             function="GAIN1"         min="1000" neutral="1500" max="1900" average="0"/>
   <channel ctl="CONTROL6"             function="CALIB"         min="1000" neutral="1500" max="1900" average="0"/>
-  <channel ctl="NONE"	              function="NOTUSED"       min="1100" neutral="1500" max="1900" average="0"/>
+ <!-- <channel ctl="NONE"                 function="NOTUSED"       min="1100" neutral="1500" max="1900" average="0"/>-->
 </radio>
-

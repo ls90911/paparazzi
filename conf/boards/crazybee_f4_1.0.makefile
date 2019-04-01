@@ -24,7 +24,6 @@ HARD_FLOAT=yes
 # So... DFU it will be ...
 FLASH_MODE=DFU-UTIL
 
-
 #idVendor=0483, idProduct=5740
 #USB device strings: Mfr=1, Product=2, SerialNumber=3
 #Product: Product: CrazyBee F4 (x)
@@ -45,12 +44,11 @@ SYS_TIME_LED       ?= 1
 #
 # Default UART configuration (RC receiver, telemetry modem, GPS)
 #
-# RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT   ?= UART1
+# RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT   ?= UART2
 # RADIO_CONTROL_SBUS_PORT   ?= UART1
-# SBUS_PORT   ?= UART1
 
 MODEM_PORT ?= UART2
-MODEM_BAUD ?= B57600
+MODEM_BAUD ?= B115200
 
 #
 # GPS via I2C just as Baro and Magneto... sparec amount of uart ports left on this board
