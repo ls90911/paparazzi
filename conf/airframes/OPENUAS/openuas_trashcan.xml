@@ -58,10 +58,10 @@
 
             <configure name="PERIODIC_FREQUENCY" value="2048"/>
 
-            <define name="HFF_PRESCALER" value="40" />
+            <define name="HFF_PRESCALER" value="40" /><!-- Fixme: best one-->
             <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
             <configure name="AHRS_CORRECT_FREQUENCY" value="2000"/>
-            <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="100"/>
+            <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/> <!-- 75 or 160 max -->
 
             <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
             <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
@@ -121,16 +121,27 @@
         <!-- <module name="stabilization" type="indi" /> -->
 
         <module name="ins" type="extended"/>
+
+
+        <module name="filter_1euro_imu">
+            <!--<define name="IMU_F1E_ID" value="30"/>-->
+            <!--<define name="AHRS_ICQ_IMU_ID" value="F1E_IMU_ID"/>
+            <define name="AHRS_ALIGNER_IMU_ID" value="F1E_IMU_ID"/>-->
+        </module>
+
+
         <module name="ahrs" type="float_cmpl_quat">
+            <define name="AHRS_ICQ_IMU_ID" value="IMU_F1E_ID"/>
+            <define name="AHRS_ALIGNER_IMU_ID" value="IMU_F1E_ID"/>
+
             <configure name="USE_MAGNETOMETER" value="FALSE" />
             <define name="AHRS_USE_GPS_HEADING" value="FALSE"/> <!-- true for Optitrac-->
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine best... Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
             <!--<define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/>--> <!-- apply a low pass filter on rotational velocity"-->
         </module>
 
-        <module name="actuators" type="pwm">
-            <define name="SERVO_HZ" value="400"/>
-        </module>
+        <!-- for setting values e.g. P/D roll tune via RC Tranmitter, need a new settingfile WIP -->
+        <!--<module name="settings" type="rc"/>-->
 
         <!-- <module name="jevois_mavlink"> -->
 
@@ -155,7 +166,8 @@
             </module>
         </target>
 -->
-        <target name="FPV Racing" board="crazybee_f4_1.0">
+<!--
+        <target name="FPV Racing" board="crazybee_f4_1.0">-->
             <!--
 
             WIP
@@ -177,7 +189,9 @@
                 <!-- <module name="stabilization" type="rate"/> -->
                 <!-- <module name="stabilization" type="indi_simple" /> -->
                 <!-- <module name="stabilization" type="indi" /> -->
+                <!--
         </target>
+        -->
 
     </firmware>
 
@@ -207,6 +221,15 @@
         <set servo="BR" value="motor_mixing.commands[MOTOR_BACK_RIGHT]"/>
         <set servo="BL" value="motor_mixing.commands[MOTOR_BACK_LEFT]"/>
     </command_laws>
+
+    <section name="FILTER_1EURO" prefix="FILTER_1EURO_">
+      <define name="ENABLED" value="FALSE"/> <!-- activate or not the filter by default -->
+      <define name="GYRO_MINCUTOFF" value="10."/> <!-- minimum cutoff freq for gyro signal -->
+      <define name="GYRO_BETA" value="0.1"/> <!-- adaptation coefficient for gyro signal -->
+      <define name="ACCEL_MINCUTOFF" value="0.1"/> <!-- minimum cutoff freq for accel signal -->
+      <define name="ACCEL_BETA" value="0.01"/> <!-- adaptation coefficient for accel signal -->
+      <!--<define name="FREQ" value="512"set fixed frequency, if not defined but INS/AHRS_PROPAGATE_FREQUENCY is defined it is used, otherwise autofreq is used-->
+    </section>
 
     <section name="IMU" prefix="IMU_">
 
