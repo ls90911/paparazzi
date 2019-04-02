@@ -91,7 +91,7 @@
         <module name="motor_mixing"/>
 
         <module name="actuators" type="pwm">
-            <define name="SERVO_HZ" value="400"/>
+            <define name="SERVO_HZ" value="400"/><!-- 480 later -->
         </module>
 
         <!-- <module name="telemetry" type="transparent_usb"/>--><!-- Not working, maybe broken in LibopenCM3 ATM? -->
