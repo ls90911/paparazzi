@@ -43,6 +43,9 @@ specific memorymap.h header before including this header file.*/
  * @{*/
 #define I2C1				I2C1_BASE
 #define I2C2				I2C2_BASE
+#ifdef I2C3_BASE
+#define I2C3				I2C3_BASE
+#endif
 /**@}*/
 
 /* --- I2C registers ------------------------------------------------------- */
@@ -102,6 +105,19 @@ specific memorymap.h header before including this header file.*/
 #define I2C1_TXDR			I2C_TXDR(I2C1)
 #define I2C2_TXDR			I2C_TXDR(I2C2)
 
+/* Not all parts have i2c3 */
+#ifdef I2C3_BASE
+#define I2C3_CR1			I2C_CR1(I2C3)
+#define I2C3_CR2			I2C_CR2(I2C3)
+#define I2C3_OAR1			I2C_OAR1(I2C3)
+#define I2C3_OAR2			I2C_OAR2(I2C3)
+#define I2C3_DR				I2C_DR(I2C3)
+#define I2C3_SR1			I2C_SR1(I2C3)
+#define I2C3_SR2			I2C_SR2(I2C3)
+#define I2C3_CCR			I2C_CCR(I2C3)
+#define I2C3_TRISE			I2C_TRISE(I2C3)
+#endif
+
 /* --- I2Cx_CR1 values ----------------------------------------------------- */
 
 /* PECEN: PEC enable */
@@ -137,24 +153,9 @@ specific memorymap.h header before including this header file.*/
 /* ANFOFF: Analog noise filter OFF */
 #define I2C_CR1_ANFOFF			(1 << 12)
 
-/* DNF[3:0]: Digital noise filter */
-#define I2C_CR1_DNF_DISABLED		(0x0 << 8)
-#define I2C_CR1_DNF_UP_1_TI2CCLK	(0x1 << 8)
-#define I2C_CR1_DNF_UP_2_TI2CCLK	(0x2 << 8)
-#define I2C_CR1_DNF_UP_3_TI2CCLK	(0x3 << 8)
-#define I2C_CR1_DNF_UP_4_TI2CCLK	(0x4 << 8)
-#define I2C_CR1_DNF_UP_5_TI2CCLK	(0x5 << 8)
-#define I2C_CR1_DNF_UP_6_TI2CCLK	(0x6 << 8)
-#define I2C_CR1_DNF_UP_7_TI2CCLK	(0x7 << 8)
-#define I2C_CR1_DNF_UP_8_TI2CCLK	(0x8 << 8)
-#define I2C_CR1_DNF_UP_9_TI2CCLK	(0x9 << 8)
-#define I2C_CR1_DNF_UP_10_TI2CCLK	(0xA << 8)
-#define I2C_CR1_DNF_UP_11_TI2CCLK	(0xB << 8)
-#define I2C_CR1_DNF_UP_12_TI2CCLK	(0xC << 8)
-#define I2C_CR1_DNF_UP_13_TI2CCLK	(0xD << 8)
-#define I2C_CR1_DNF_UP_14_TI2CCLK	(0xE << 8)
-#define I2C_CR1_DNF_UP_15_TI2CCLK	(0xF << 8)
-#define I2C_CR1_DNF_MASK                (0xF << 8)
+/** DNF[3:0]: Digital noise filter. */
+#define I2C_CR1_DNF_MASK		0xF
+#define I2C_CR1_DNF_SHIFT		8
 
 /* ERRIE: Error interrupts enable */
 #define I2C_CR1_ERRIE			(1 << 7)
@@ -169,7 +170,7 @@ specific memorymap.h header before including this header file.*/
 #define I2C_CR1_NACKIE			(1 << 4)
 
 /* ADDRIE: Address match Interrupt enable (slave only) */
-#define I2C_CR1_DDRIE			(1 << 3)
+#define I2C_CR1_ADDRIE			(1 << 3)
 
 /* RXIE: RX Interrupt enable */
 #define I2C_CR1_RXIE			(1 << 2)

@@ -607,25 +607,31 @@ extern uint32_t rcc_apb2_frequency;
 
 enum rcc_clock_3v3 {
 	RCC_CLOCK_3V3_216MHZ,
+	RCC_CLOCK_3V3_168MHZ,
+	RCC_CLOCK_3V3_120MHZ,
+	RCC_CLOCK_3V3_72MHZ,
+	RCC_CLOCK_3V3_48MHZ,
+	RCC_CLOCK_3V3_24MHZ,
 	RCC_CLOCK_3V3_END
 };
 
 struct rcc_clock_scale {
-	uint8_t pllm;
+	// PLLM not specified here because it depends on input clock freq.
 	uint16_t plln;
 	uint8_t pllp;
 	uint8_t pllq;
-	uint32_t flash_config;
+	uint32_t flash_waitstates;
 	uint8_t hpre;
 	uint8_t ppre1;
 	uint8_t ppre2;
 	enum pwr_vos_scale vos_scale;
 	uint8_t overdrive;
+	uint32_t ahb_frequency;
 	uint32_t apb1_frequency;
 	uint32_t apb2_frequency;
 };
 
-extern const struct rcc_clock_scale rcc_hse_25mhz_3v3[RCC_CLOCK_3V3_END];
+extern const struct rcc_clock_scale rcc_3v3[RCC_CLOCK_3V3_END];
 
 enum rcc_osc {
 	RCC_PLL,
@@ -702,8 +708,8 @@ enum rcc_periph_clken {
 	RCC_CEC		= _REG_BIT(0x40, 27),
 	RCC_PWR		= _REG_BIT(0x40, 28),
 	RCC_DAC		= _REG_BIT(0x40, 29),
-	RCC_SPI7	= _REG_BIT(0x40, 30),
-	RCC_SPI8	= _REG_BIT(0x40, 31),
+	RCC_USART7	= _REG_BIT(0x40, 30),
+	RCC_USART8	= _REG_BIT(0x40, 31),
 
 	/* APB2 peripherals */
 	RCC_TIM1	= _REG_BIT(0x44, 0),
@@ -932,7 +938,8 @@ void rcc_set_main_pll_hsi(uint32_t pllm, uint32_t plln, uint32_t pllp,
 void rcc_set_main_pll_hse(uint32_t pllm, uint32_t plln, uint32_t pllp,
 			  uint32_t pllq);
 uint32_t rcc_system_clock_source(void);
-void rcc_clock_setup_hse_3v3(const struct rcc_clock_scale *clock);
+void rcc_clock_setup_hse(const struct rcc_clock_scale *clock, uint32_t hse_mhz);
+void rcc_clock_setup_hsi(const struct rcc_clock_scale *clock);
 END_DECLS
 
 #endif

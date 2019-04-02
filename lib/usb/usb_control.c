@@ -138,8 +138,9 @@ static int usb_control_recv_chunk(usbd_device *usbd_dev)
 	return packetsize;
 }
 
-static int usb_control_request_dispatch(usbd_device *usbd_dev,
-					struct usb_setup_data *req)
+static enum usbd_request_return_codes
+usb_control_request_dispatch(usbd_device *usbd_dev,
+			     struct usb_setup_data *req)
 {
 	int i, result = 0;
 	struct user_control_callback *cb = usbd_dev->user_control_callback;
@@ -226,11 +227,6 @@ void _usbd_control_setup(usbd_device *usbd_dev, uint8_t ea)
 	usbd_dev->control_state.complete = NULL;
 
 	usbd_ep_nak_set(usbd_dev, 0, 1);
-
-	if (usbd_ep_read_packet(usbd_dev, 0, req, 8) != 8) {
-		stall_transaction(usbd_dev);
-		return;
-	}
 
 	if (req->wLength == 0) {
 		usb_control_setup_read(usbd_dev, req);

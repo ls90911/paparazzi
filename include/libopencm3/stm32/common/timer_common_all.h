@@ -81,6 +81,12 @@ specific memorymap.h header before including this header file.*/
 #if defined(TIM17_BASE)
 # define TIM17				TIM17_BASE
 #endif
+#if defined(TIM21_BASE)
+# define TIM21				TIM21_BASE
+#endif
+#if defined(TIM22_BASE)
+# define TIM22				TIM22_BASE
+#endif
 /**@}*/
 
 /* --- Timer registers ----------------------------------------------------- */
@@ -1170,7 +1176,6 @@ enum tim_et_pol {
 
 BEGIN_DECLS
 
-void timer_reset(uint32_t timer_peripheral);
 void timer_enable_irq(uint32_t timer_peripheral, uint32_t irq);
 void timer_disable_irq(uint32_t timer_peripheral, uint32_t irq);
 bool timer_interrupt_source(uint32_t timer_peripheral, uint32_t flag);

@@ -24,11 +24,11 @@ endif
 LDSCRIPT	= generated.$(DEVICE).ld
 DEVICES_DATA = $(OPENCM3_DIR)/ld/devices.data
 
-genlink_family		:=$(shell gawk -v PAT="$(DEVICE)" -v MODE="FAMILY" -f $(OPENCM3_DIR)/scripts/genlink.awk $(DEVICES_DATA))
-genlink_subfamily	:=$(shell gawk -v PAT="$(DEVICE)" -v MODE="SUBFAMILY" -f $(OPENCM3_DIR)/scripts/genlink.awk $(DEVICES_DATA))
-genlink_cpu		:=$(shell gawk -v PAT="$(DEVICE)" -v MODE="CPU" -f $(OPENCM3_DIR)/scripts/genlink.awk $(DEVICES_DATA))
-genlink_fpu		:=$(shell gawk -v PAT="$(DEVICE)" -v MODE="FPU" -f $(OPENCM3_DIR)/scripts/genlink.awk $(DEVICES_DATA))
-genlink_cppflags	:=$(shell gawk -v PAT="$(DEVICE)" -v MODE="CPPFLAGS" -f $(OPENCM3_DIR)/scripts/genlink.awk $(DEVICES_DATA))
+genlink_family		:=$(shell $(OPENCM3_DIR)/scripts/genlink.py $(DEVICES_DATA) $(DEVICE) FAMILY)
+genlink_subfamily	:=$(shell $(OPENCM3_DIR)/scripts/genlink.py $(DEVICES_DATA) $(DEVICE) SUBFAMILY)
+genlink_cpu		:=$(shell $(OPENCM3_DIR)/scripts/genlink.py $(DEVICES_DATA) $(DEVICE) CPU)
+genlink_fpu		:=$(shell $(OPENCM3_DIR)/scripts/genlink.py $(DEVICES_DATA) $(DEVICE) FPU)
+genlink_cppflags	:=$(shell $(OPENCM3_DIR)/scripts/genlink.py $(DEVICES_DATA) $(DEVICE) CPPFLAGS)
 
 CPPFLAGS	+= $(genlink_cppflags)
 
@@ -56,9 +56,11 @@ endif
 # where those are provided by different means
 ifneq (,$(wildcard $(OPENCM3_DIR)/lib/libopencm3_$(genlink_family).a))
 LDLIBS += -lopencm3_$(genlink_family)
+LIBDEPS += $(OPENCM3_DIR)/lib/libopencm3_$(genlink_family).a
 else
 ifneq (,$(wildcard $(OPENCM3_DIR)/lib/libopencm3_$(genlink_subfamily).a))
 LDLIBS += -lopencm3_$(genlink_subfamily)
+LIBDEPS += $(OPENCM3_DIR)/lib/libopencm3_$(genlink_subfamily).a
 else
 $(warning $(OPENCM3_DIR)/lib/libopencm3_$(genlink_family).a library variant for the selected device does not exist.)
 endif

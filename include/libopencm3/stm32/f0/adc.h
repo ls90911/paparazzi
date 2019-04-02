@@ -65,6 +65,7 @@
 #define ADC1_TR				ADC1_TR(ADC) /* Compatibility */
 #define ADC1_CHSELR			ADC_CHSELR(ADC)
 #define ADC1_DR				ADC_DR(ADC)
+#define ADC1_CCR			ADC_CCR(ADC)
 
 /*****************************************************************************/
 /* Register values                                                           */
@@ -174,6 +175,7 @@ void adc_clear_watchdog_flag(uint32_t adc);
 void adc_enable_eoc_sequence_interrupt(uint32_t adc);
 void adc_disable_eoc_sequence_interrupt(uint32_t adc);
 bool adc_get_eoc_sequence_flag(uint32_t adc);
+void adc_clear_eoc_sequence_flag(uint32_t adc);
 
 /* Basic configuration */
 void adc_set_clk_source(uint32_t adc, uint32_t source);

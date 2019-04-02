@@ -42,35 +42,19 @@ TGT_CFLAGS	+= $(STANDARD_FLAGS)
 
 ARFLAGS		= rcs
 
-OBJS		= pwr.o rcc.o gpio.o gpio_common_all.o gpio_common_f0234.o
+OBJS		= desig.o
+OBJS		+= dma_common_f24.o
+OBJS		+= flash_common_all.o flash_common_f.o flash_common_f24.o flash.o
+OBJS		+= gpio.o gpio_common_all.o gpio_common_f0234.o
+OBJS		+= pwr.o rcc.o
 
-OBJS		+= rcc_common_all.o flash_common_f234.o flash_common_f24.o
-
+OBJS		+= rcc_common_all.o
 OBJS		+= rng_common_v1.o
+OBJS		+= spi_common_all.o spi_common_v2.o
+OBJS		+= timer_common_all.o
+OBJS		+= usart_common_all.o usart_common_v2.o
 
 VPATH += ../../usb:../:../../cm3:../common
 VPATH += ../../ethernet
 
-###############################################################################
-# Checking CPU support in the toolchain
-###############################################################################
-# TODO: This check and silent skip of build should be removed, when it will be
-# sure that first compatible toolchain (g-a-e 4.8 2014q3) will be sufficiently
-# penetrated in majority of user stations.
-define MISSING_CPU
-Your toolchain doesn't support -mcpu=cortex-m7.
-Please use gcc-arm-embedded 4.8 2014q3 or newer. Skipping this sub-library.
-endef
-
-ifneq ($(shell $(CC) --help=target | grep -q '\<cortex-m7\>'; echo $$?),0)
-  $(warning $(MISSING_CPU))
-
-all clean:
-	@true
-
-$(SRCLIBDIR)/$(LIBNAME).a:
-	@true
-
-else
-  include ../../Makefile.include
-endif
+include ../../Makefile.include

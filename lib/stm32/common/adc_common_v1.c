@@ -1,4 +1,5 @@
-/** @addtogroup adc_file
+/** @addtogroup adc_file ADC peripheral API
+@ingroup peripheral_apis
 
 @author @htmlonly &copy; @endhtmlonly
 2009 Edward Cheeseman <evbuilder@users.sourceforge.net>
@@ -747,6 +748,32 @@ void adc_disable_dma(uint32_t adc)
 	ADC_CR2(adc) &= ~ADC_CR2_DMA;
 }
 
+/*---------------------------------------------------------------------------*/
+/** @brief Read a Status Flag.
 
+@param[in] adc Unsigned int32. ADC register address base @ref adc_reg_base
+@param[in] flag Unsigned int32. Status register flag  @ref adc_sr_values.
+@returns boolean: flag set.
+*/
+
+bool adc_get_flag(uint32_t adc, uint32_t flag)
+{
+	return ADC_SR(adc) & flag;
+}
+
+/*---------------------------------------------------------------------------*/
+/** @brief Clear a Status Flag.
+
+@param[in] adc Unsigned int32. ADC register address base @ref adc_reg_base
+@param[in] flag Unsigned int32. Status register flag  @ref adc_sr_values.
+*/
+
+void adc_clear_flag(uint32_t adc, uint32_t flag)
+{
+	/* All defined bits are 'r' or 'rc_w0' */
+	ADC_SR(adc) = ~flag;
+}
+
+/*---------------------------------------------------------------------------*/
 
 /**@}*/

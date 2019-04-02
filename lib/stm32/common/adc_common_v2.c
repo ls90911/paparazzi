@@ -1,4 +1,5 @@
-/** @addtogroup adc_file
+/** @addtogroup adc_file ADC peripheral API
+@ingroup peripheral_apis
 
 @author @htmlonly &copy; @endhtmlonly
 2015 Karl Palsson <karlp@tweak.net.au>
@@ -375,8 +376,10 @@ void adc_disable_vrefint(void)
 
 /** @brief ADC Software Triggered Conversion on Regular Channels
  *
- * This starts conversion on a set of defined regular channels. It is cleared
- * by hardware once conversion starts.
+ * This starts conversion on a set of defined regular channels.
+ * Depending on the configuration bits EXTEN, a conversion will start
+ * immediately (software trigger configuration) or once a regular hardware
+ * trigger event occurs (hardware trigger configuration)
  *
  * @param[in] adc ADC block register address base @ref adc_reg_base
  */
@@ -384,9 +387,26 @@ void adc_start_conversion_regular(uint32_t adc)
 {
 	/* Start conversion on regular channels. */
 	ADC_CR(adc) |= ADC_CR_ADSTART;
+}
 
-	/* Wait until the ADC starts the conversion. */
-	while (ADC_CR(adc) & ADC_CR_ADSTART);
+/** @brief Enable circular mode for DMA transfers
+ *
+ * For this to work it needs to be ebabled on the DMA side as well.
+ *
+ * @param[in] adc Unsigned int32. ADC base address (@ref adc_reg_base)
+ */
+void adc_enable_dma_circular_mode(uint32_t adc)
+{
+	ADC_CFGR1(adc) |= ADC_CFGR1_DMACFG;
+}
+
+/** @brief Disable circular mode for DMA transfers
+ *
+ * @param[in] adc Unsigned int32. ADC base address (@ref adc_reg_base)
+ */
+void adc_disable_dma_circular_mode(uint32_t adc)
+{
+	ADC_CFGR1(adc) &= ~ADC_CFGR1_DMACFG;
 }
 
 /**@}*/
