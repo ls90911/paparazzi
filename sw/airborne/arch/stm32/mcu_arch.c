@@ -70,19 +70,20 @@ const struct rcc_clock_scale rcc_hse_24mhz_3v3[RCC_CLOCK_3V3_END] = {
     .apb1_frequency = 42000000,
     .apb2_frequency = 84000000,
   },
-  { /* 100MHz maybe set to 96 MHz for USB to work ? */
-    .pllm = 8,
-    .plln = 384,
+  { /* 100MHz dunno maybe set to 96 MHz for USB to work 24 better 8*/
+    .pllm = 24,
+    .plln = 400,
     .pllp = 4,
     .pllq = 8,
+    .pllr = 0,
     .hpre = RCC_CFGR_HPRE_DIV_NONE,
     .ppre1 = RCC_CFGR_PPRE_DIV_2,
     .ppre2 = RCC_CFGR_PPRE_DIV_NONE,
     .power_save = 1,
     .flash_config = FLASH_ACR_ICEN | FLASH_ACR_DCEN | FLASH_ACR_LATENCY_3WS,
-    .ahb_frequency  = 96000000,
-    .apb1_frequency = 48000000,//if not 48 mhz no USB ??
-    .apb2_frequency = 96000000,
+    .ahb_frequency  = 100000000,
+    .apb1_frequency = 50000000,
+    .apb2_frequency = 100000000,
   },
   { /* 120MHz */
     .pllm = 24,
