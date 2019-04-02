@@ -68,7 +68,7 @@
 
             <configure name="NAVIGATION_FREQUENCY" value="16"/>
             <configure name="CONTROL_FREQUENCY" value="1000"/>
-            <configure name="TELEMETRY_FREQUENCY" value="60"/>
+            <configure name="TELEMETRY_FREQUENCY" value="120"/>
             <configure name="MODULES_FREQUENCY" value="2048"/>
 
             <!--<define name="USE_PERSISTENT_SETTINGS" value="FALSE"/> --><!--  No Errors, not tested if it works we have 16kb-->
@@ -98,7 +98,7 @@
 
         <module name="telemetry" type="transparent">
            <configure name="MODEM_BAUD" value="B115200"/>
-            <configure name="MODEM_PORT" value="UART1"/>
+            <configure name="MODEM_PORT" value="UART2"/>
         </module>
 
         <module name="imu" type="mpu6000">

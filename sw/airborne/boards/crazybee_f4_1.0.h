@@ -10,7 +10,7 @@
 
 /** Clock config - STM32F4 - STM32F411CEU6 in 48 pin package UFQFPN48 **/
 #define EXT_CLK 8000000  // 8mHz
-#define AHB_CLK 84000000 // 84mhz for now, not yet done suppord for 100Mhz see MCU Arch an libopencm3 to fix
+#define AHB_CLK 100000000 // 84mhz for now, not yet done suppord for 100Mhz see MCU Arch an libopencm3 to fix
 
 /** LEDs **/
 /* Green LED on flight controller */
