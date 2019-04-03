@@ -122,17 +122,22 @@
 
         <module name="ins" type="extended"/>
 
+        <!-- Not yet tested -->
+        <module name="osd_max7456">
+           <configure name="MAX7456_SPI_DEV" value="SPI2"/>
+           <configure name="MAX7456_SLAVE_IDX" value="SPI_SLAVE1"/>
+        </module>
+        <!-- -->
 
-        <module name="filter_1euro_imu">
+        <!-- <module name="filter_1euro_imu"> -->
             <!--<define name="IMU_F1E_ID" value="30"/>-->
             <!--<define name="AHRS_ICQ_IMU_ID" value="F1E_IMU_ID"/>
             <define name="AHRS_ALIGNER_IMU_ID" value="F1E_IMU_ID"/>-->
-        </module>
-
+        <!-- </module> -->
 
         <module name="ahrs" type="float_cmpl_quat">
-            <define name="AHRS_ICQ_IMU_ID" value="IMU_F1E_ID"/>
-            <define name="AHRS_ALIGNER_IMU_ID" value="IMU_F1E_ID"/>
+            <!--<define name="AHRS_ICQ_IMU_ID" value="IMU_F1E_ID"/>
+            <define name="AHRS_ALIGNER_IMU_ID" value="IMU_F1E_ID"/>-->
 
             <configure name="USE_MAGNETOMETER" value="FALSE" />
             <define name="AHRS_USE_GPS_HEADING" value="FALSE"/> <!-- true for Optitrac-->
@@ -177,7 +182,7 @@
               No Magneto
               Highest loop rate
               Flip module
-              Mavlink module for OSD
+              Module for OSD
 
             -->
                   <!-- 2 kHz -->
@@ -190,6 +195,12 @@
                 <!-- <module name="stabilization" type="indi_simple" /> -->
                 <!-- <module name="stabilization" type="indi" /> -->
                 <!--
+        <module name="osd_max7456"
+           <configure name="MAX7456_SPI_DEV" value="spi2"/>
+           <configure name="MAX7456_SLAVE_IDX" value="SPI_SLAVE2"/>
+        </module>
+
+
         </target>
         -->
 
