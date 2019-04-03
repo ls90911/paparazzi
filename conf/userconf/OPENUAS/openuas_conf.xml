@@ -107,9 +107,9 @@
    telemetry="telemetry/default_rotorcraft.xml"
    flight_plan="flight_plans/dummy.xml"
    settings="settings/rotorcraft_basic.xml [settings/control/stabilization_rate.xml] [settings/control/stabilization_indi.xml] [settings/control/stabilization_att_float_quat.xml] settings/control/stabilization_att_int_quat.xml"
-   settings_modules="modules/ahrs_float_cmpl_quat.xml modules/filter_1euro_imu.xml modules/ins_extended.xml modules/stabilization_int_quat.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml modules/imu_common.xml"
+   settings_modules="modules/ahrs_float_cmpl_quat.xml modules/ins_extended.xml modules/stabilization_int_quat.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml modules/imu_common.xml"
    gui_color="#fffffe72b9fd"
-   release="b41a6e444361fb2e5f92f0c9e21784d17e12fe26"
+   release="101b5ce4a2a7960d0f626f2955eb3239d112476f"
   />
   <aircraft
    name="Vivify"

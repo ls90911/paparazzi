@@ -91,14 +91,12 @@
         <module name="motor_mixing"/>
 
         <module name="actuators" type="pwm">
-            <define name="SERVO_HZ" value="400"/><!-- 480 later -->
+            <define name="SERVO_HZ" value="400"/><!-- 480 later? -->
         </module>
 
-        <!-- <module name="telemetry" type="transparent_usb"/>--><!-- Not working, maybe broken in LibopenCM3 ATM? -->
-
-        <module name="telemetry" type="transparent">
-           <configure name="MODEM_BAUD" value="B115200"/>
+        <module name="telemetry" type="transparent"> <!-- transparent_usb handy for debugging not working ATM, maybe broken in LibopenCM3? -->
             <configure name="MODEM_PORT" value="UART2"/>
+            <configure name="MODEM_BAUD" value="B115200"/>
         </module>
 
         <module name="imu" type="mpu6000">
@@ -123,10 +121,10 @@
         <module name="ins" type="extended"/>
 
         <!-- Not yet tested -->
-        <module name="osd_max7456">
+        <!--<module name="osd_max7456">
            <configure name="MAX7456_SPI_DEV" value="SPI2"/>
            <configure name="MAX7456_SLAVE_IDX" value="SPI_SLAVE1"/>
-        </module>
+        </module>-->
         <!-- -->
 
         <!-- <module name="filter_1euro_imu"> -->

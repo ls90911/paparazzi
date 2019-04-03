@@ -36,7 +36,7 @@
 
 /* UART2 */
 //Can connect to built-in DSMX receiver is availabe on UART RX
-//Not to be confused with DSMX over SPI, that is unreated
+//Not to be confused with DSMX over SPI, that is unrelated
 #define UART2_GPIO_AF GPIO_AF7
 #define UART2_GPIO_PORT_TX GPIOA
 #define UART2_GPIO_TX GPIO2
@@ -129,8 +129,17 @@
 #define SPI1_GPIO_PORT_MOSI GPIOA
 #define SPI1_GPIO_MOSI GPIO7
 
+/* SPI slave pin declaration ACC_GYRO_CS on SPI1 ICM 20609-G*/
+#define SPI_SELECT_SLAVE0_PORT GPIOA
+#define SPI_SELECT_SLAVE0_PIN GPIO4
+
 /* SPI2 for embedded OSD MAX chip*/
-#define SPI2_GPIO_AF GPIO_AF5
+//#ifndef USE_MAX7456
+//#define USE_MAX7456 0
+//#endif
+
+//#if USE_MAX7456
+#define SPI2_GPIO_AF GPIO_AF5 //TODO check datasheet
 #define SPI2_GPIO_PORT_SCK GPIOB
 #define SPI2_GPIO_SCK GPIO13
 #define SPI2_GPIO_PORT_MISO GPIOB
@@ -138,27 +147,23 @@
 #define SPI2_GPIO_PORT_MOSI GPIOB
 #define SPI2_GPIO_MOSI GPIO15
 
+/* SPI slave pin declaration OSD */
+#define SPI_SELECT_SLAVE1_PORT GPIOB
+#define SPI_SELECT_SLAVE1_PIN GPIO12
+//#endif
+
 /* Used SPI3 for RX direct, if RX solution is implemented in AP */
-//#define SPI3_GPIO_AF GPIO_AF5 //TODO check datasheet
-//#define SPI3_GPIO_PORT_SCK GPIOB
-//#define SPI3_GPIO_SCK GPIO3
-//#define SPI3_GPIO_PORT_MISO GPIOB
-//#define SPI3_GPIO_MISO GPIO4
-//#define SPI3_GPIO_PORT_MOSI GPIOB
-//#define SPI3_GPIO_MOSI GPIO5
+#define SPI3_GPIO_AF GPIO_AF6
+#define SPI3_GPIO_PORT_SCK GPIOB
+#define SPI3_GPIO_SCK GPIO3
+#define SPI3_GPIO_PORT_MISO GPIOB
+#define SPI3_GPIO_MISO GPIO4
+#define SPI3_GPIO_PORT_MOSI GPIOB
+#define SPI3_GPIO_MOSI GPIO5
 
-/* SPI slave pin declaration */
-/*  ACC_GYRO_CS on SPI1 ICM 20609-G*/
-#define SPI_SELECT_SLAVE0_PORT GPIOA
-#define SPI_SELECT_SLAVE0_PIN GPIO4
-
-/* OSD on SPI2 */
-//#define SPI_SELECT_SLAVE1_PORT GPIOB??
-//#define SPI_SELECT_SLAVE1_PIN GPIO3??
-
-/* Not implemnented RX on SPI3 */
-//#define SPI_SELECT_SLAVE2_PORT GPIOB??
-//#define SPI_SELECT_SLAVE2_PIN GPIO3??
+/* SPI slave pin declaration for Receiver */
+#define SPI_SELECT_SLAVE2_PORT GPIOA
+#define SPI_SELECT_SLAVE2_PIN GPIO15
 
 /** Onboard ADCs **/
 
