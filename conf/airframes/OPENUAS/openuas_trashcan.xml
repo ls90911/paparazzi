@@ -27,35 +27,7 @@
             <define name="LOW_NOISE_TIME" value="10"/>
             -->
 
-<!-- 512 Hz -->
-<!--
-            <configure name="PERIODIC_FREQUENCY" value="512"/>
-            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
-            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
--->
-<!-- see e.g. https://github.com/kriswiner/MPU9250/issues/59 -->
-<!-- 1 kHz -->
-<!-- NOT TESTED IMU_MPU_LOWPASS_FILTER and IMU_MPU_SMPLRT_DIV  TODO - ATM likely INCORRECT values-->
-        <!--in Freq in HZ
-            <configure name="PERIODIC_FREQUENCY" value="1024"/>
-
-            <define name="HFF_PRESCALER" value="20" />
-            <define name="AHRS_PROPAGATE_FREQUENCY" value="1000"/>
-            <configure name="AHRS_CORRECT_FREQUENCY" value="1000"/>
-            <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/>
-
-            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
-            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
-
-            <configure name="NAVIGATION_FREQUENCY" value="16"/>
-            <configure name="CONTROL_FREQUENCY" value="120"/>
-            <configure name="TELEMETRY_FREQUENCY" value="60"/>
-            <configure name="MODULES_FREQUENCY" value="1024"/>
-         -->
-
 <!-- 2 kHz -->
-<!-- NOT TESTED IMU_MPU_LOWPASS_FILTER and IMU_MPU_SMPLRT_DIV  TODO - ATM likely INCORRECT values-->
-
             <configure name="PERIODIC_FREQUENCY" value="2048"/>
 
             <define name="HFF_PRESCALER" value="40" /><!-- Fixme: best one-->
@@ -63,15 +35,16 @@
             <configure name="AHRS_CORRECT_FREQUENCY" value="2000"/>
             <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/> <!-- 75 or 160 max -->
 
+             <!-- set Gyro/Accel output rate to 2kHz at 8kHz internal sampling -->
             <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
             <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
 
             <configure name="NAVIGATION_FREQUENCY" value="16"/>
-            <configure name="CONTROL_FREQUENCY" value="1000"/>
+            <configure name="CONTROL_FREQUENCY" value="2000"/>
             <configure name="TELEMETRY_FREQUENCY" value="120"/>
             <configure name="MODULES_FREQUENCY" value="2048"/>
 
-            <!--<define name="USE_PERSISTENT_SETTINGS" value="FALSE"/> --><!--  No Errors, not tested if it works we have 16kb-->
+            <!-- <define name="USE_PERSISTENT_SETTINGS" value="FALSE"/> --><!--  No Errors, not tested if it works we have 16kb reserved -->
             <define name="BAT_CHECKER_DELAY" value="20"/> <!-- amount of time it take for the bat to be checked  -->
             <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
             <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="60"/><!-- in seconds-->
@@ -91,7 +64,7 @@
         <module name="motor_mixing"/>
 
         <module name="actuators" type="pwm">
-            <define name="SERVO_HZ" value="400"/><!-- 480 later? -->
+            <define name="SERVO_HZ" value="480"/><!-- 400hz normally, just testing -->
         </module>
 
         <module name="telemetry" type="transparent"> <!-- transparent_usb handy for debugging not working ATM, maybe broken in LibopenCM3? -->
@@ -140,15 +113,15 @@
             <configure name="USE_MAGNETOMETER" value="FALSE" />
             <define name="AHRS_USE_GPS_HEADING" value="FALSE"/> <!-- true for Optitrac-->
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine best... Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
-            <!--<define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/>--> <!-- apply a low pass filter on rotational velocity"-->
+            <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/> <!-- apply a low pass filter on rotational velocity"-->
         </module>
 
-        <!-- for setting values e.g. P/D roll tune via RC Tranmitter, need a new settingfile WIP -->
+        <!-- WIP for setting values e.g. P/D roll tune via RC Tranmitter, need a new setting file WIP -->
         <!--<module name="settings" type="rc"/>-->
 
-        <!-- <module name="jevois_mavlink"> -->
+        <!-- <module name="jevois_mavlink"> --><!-- For the Visioncam to add-->
 
-        <!-- No I2C yet... nned to find some good spot for I2C pins -->
+        <!-- No I2C bus yet... nned to find some good spot for I2C pins :( -->
         <!--
         <module name="gps" type="ublox">
         <configure name="GPS_PORT" value="I2C"/>
@@ -169,43 +142,26 @@
             </module>
         </target>
 -->
-<!--
-        <target name="FPV Racing" board="crazybee_f4_1.0">-->
-            <!--
+<!--       <target name="FPV Racing" board="crazybee_f4_1.0">
 
             WIP
               For FPV setup only
               No GPS
               No Baro
               No Magneto
-              Highest loop rate
+              Highest loop rate possible for board
               Flip module
               Module for OSD
-
-            -->
-                  <!-- 2 kHz -->
-            <!--
-                  <define name="HFF_PRESCALER" value="40" />
-                  <configure name="PERIODIC_FREQUENCY" value="2048"/>
-                  <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
-            -->
-                <!-- <module name="stabilization" type="rate"/> -->
-                <!-- <module name="stabilization" type="indi_simple" /> -->
-                <!-- <module name="stabilization" type="indi" /> -->
-                <!--
-        <module name="osd_max7456"
-           <configure name="MAX7456_SPI_DEV" value="spi2"/>
-           <configure name="MAX7456_SLAVE_IDX" value="SPI_SLAVE2"/>
-        </module>
-
+              Tuned for Race and ACRO
+              Try INDI full
 
         </target>
-        -->
+-->
 
     </firmware>
 
     <servos driver="Pwm">
-        <servo name="FL" no="3" min="1000" neutral="1030" max="2000"/>
+        <servo name="FL" no="3" min="1000" neutral="1030" max="2000"/> <!-- maybe shorter on the cost of resolution... but low high differcnce MUST be bigger than 140-->
         <servo name="FR" no="1" min="1000" neutral="1030" max="2000"/>
         <servo name="BR" no="0" min="1000" neutral="1030" max="2000"/>
         <servo name="BL" no="2" min="1000" neutral="1030" max="2000"/>
