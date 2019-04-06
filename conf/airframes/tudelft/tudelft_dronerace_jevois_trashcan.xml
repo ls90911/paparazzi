@@ -135,7 +135,7 @@
         <!--module name="guidance" type="indi">
              <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
         </module-->
-        <module name="stabilization" type="inth_quat"/>
+        <module name="stabilization" type="int_quat"/>
 
         <module name="telemetry" type="transparent">
             <configure name="MODEM_PORT" value="UART2"/>
