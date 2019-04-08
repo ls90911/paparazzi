@@ -15,6 +15,7 @@ void generate_waypoints_from_gates(void);
 
 int flagHighOrLowGate;
 float dist_2_gate;
+int num_lap;
 
 // X, Y, ALT, PSI
 /*
@@ -33,7 +34,7 @@ const struct dronerace_flightplan_item_struct gates[MAX_GATES] = {
   {   4.0,          0.0,          -1.5,          RadOfDeg(0),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
   {   5.0,          5.0,          -1.5,          RadOfDeg(90),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
   {   1.0,          6.0,          -1.5,          RadOfDeg(180),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
-  {   0.0,          1.0,          -1.5,          RadOfDeg(270),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
+  {   0.0,          0.0,          -1.5,          RadOfDeg(270),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
 };
 
 struct dronerace_flightplan_item_struct waypoints_dr[MAX_GATES];
@@ -85,6 +86,7 @@ void flightplan_reset()
   dr_fp.y_set = 0;
   dr_fp.z_set = 0;
   dr_fp.psi_set = 0;
+  num_lap = 0;
 
   resetJungleGate();
   generate_waypoints_from_gates();
@@ -124,7 +126,7 @@ void flightplan_run(void)
   */
 
   // Align with current gate
-  dr_fp.psi_set = dr_fp.gate_psi;
+  dr_fp.psi_set = dr_fp.gate_psi + num_lap*2*3.14;
 
   dist_2_gate = (dr_fp.x_set- filteredX) * (dr_fp.x_set- filteredX) + (dr_fp.y_set- filteredY) *
                 (dr_fp.y_set- filteredY);
@@ -135,7 +137,7 @@ void flightplan_run(void)
       //dx = gates[dr_fp.gate_nr + 1].x - filteredX;
       //dy = gates[dr_fp.gate_nr + 1].y - filteredY;
       //dr_fp.psi_set = atan2(dy, dx);
-      dr_fp.psi_set = gates[dr_fp.gate_nr+1].psi;
+      dr_fp.psi_set = (gates[dr_fp.gate_nr+1].psi)+num_lap*2*3.14;
     }
   }
 
@@ -145,7 +147,8 @@ void flightplan_run(void)
     dr_fp.gate_nr ++;
     reset_local_reference();
     if (dr_fp.gate_nr >= MAX_GATES) {
-      dr_fp.gate_nr = (MAX_GATES - 1);
+      dr_fp.gate_nr = 0;
+	  num_lap++;
     }
 
     //printf("\n\n*** RESET DUE TO NEXT GATE ***\n\n");
