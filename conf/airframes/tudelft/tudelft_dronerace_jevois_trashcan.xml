@@ -306,7 +306,7 @@
         <define name="THETA_DDGAIN" value="0"/>
         <define name="PSI_DDGAIN"   value="0"/>
     </section>
-    -->
+-->
 
     <!-- when using stabilization  type float_quat use ones below, not tuned yet! -->
     <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">

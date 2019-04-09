@@ -121,7 +121,7 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
 {
 	//if (jevois_vision_position.received) {
     //jevois_vision_position.received = false;
-   // uint16_t cnt = jevois_vision_position.cnt;
+    //uint16_t cnt = jevois_vision_position.cnt;
 	float x_OT = stateGetPositionNed_f()->x;
 	float y_OT = stateGetPositionNed_f()->y;
 	float vx_OT = stateGetSpeedNed_f()->x;
@@ -129,17 +129,13 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
 	float phi = stateGetNedToBodyEulers_f()->phi;
 	float theta = stateGetNedToBodyEulers_f()->theta;
 	float psi = stateGetNedToBodyEulers_f()->psi;
-
+/*
     pprz_msg_send_DRONERACE_DEBUG(trans, dev, AC_ID,
                                &heart_beat,
-							   /*
-							   &dr_vision.dx,
-							   &dr_vision.dy,
-							   */
-							   /*
-                               &jevois_vision_position.x,
-                               &jevois_vision_position.y,
-							   */
+							   //&dr_vision.dx,
+							   //&dr_vision.dy,
+                               //&jevois_vision_position.x,
+                               //&jevois_vision_position.y,
 							   &mx,
 							   &my,
                                &phi,
@@ -161,7 +157,7 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &indi_ctrl.vy_cmd,
                                &jevois_vision_position.cnt
 								 );
-
+*/
 }
 // Send Manual Setpoint over telemetry using ROTORCRAFT_RADIO_CONTROL message
 
