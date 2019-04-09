@@ -122,11 +122,11 @@ static pthread_mutex_t gate_detect_mutex;            ///< Mutex lock fo thread s
 // Module variables
 struct vision_relative_position_struct {
   int received;
-  int cnt;
+  int8 cnt;
   float x;
   float y;
   float z;
-} detectgate_vision_position = {false, 0, 0.0f, 0.0f, 0.0f};
+} detectgate_vision_position = {0, 0, 0.0f, 0.0f, 0.0f};
 
 
 
@@ -219,7 +219,7 @@ static struct image_t *detect_gate_func(struct image_t *img)
         //height = (float) img->w;
         float pix_y = (best_gate.x_corners[1] + best_gate.x_corners[0]) / 2.0f;
         float pix_x = (best_gate.y_corners[2] + best_gate.y_corners[1]) / 2.0f;
-        printf("Not simulating, pix_x = %f, pix_y = %f\n", pix_x, pix_y);
+        //printf("Not simulating, pix_x = %f, pix_y = %f\n", pix_x, pix_y);
         float angle_x = (pix_x-DETECT_GATE_CAMERA.camera_intrinsics.center_y) / DETECT_GATE_CAMERA.camera_intrinsics.focal_y;
         float angle_y = (pix_y-DETECT_GATE_CAMERA.camera_intrinsics.center_x) / DETECT_GATE_CAMERA.camera_intrinsics.focal_x;
         float dist = gate_size_m * (DETECT_GATE_CAMERA.camera_intrinsics.focal_x / size);

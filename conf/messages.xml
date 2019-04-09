@@ -364,8 +364,8 @@
     <message name="DRONERACE_DEBUG" id="45">
       <description>Debug messages to be able to small drone</description>
       <field name="heart_beat" type="uint8"/>
-      <field name="vision_position_x" type="float" unit="m" format="%.1f"/>
-      <field name="vision_position_y" type="float" unit="m" format="%.1f"/>
+      <!--<field name="vision_position_x" type="float" unit="m" format="%.1f"/>
+      <field name="vision_position_y" type="float" unit="m" format="%.1f"/>-->
 
       <field name="phi" type="float" unit="rad"/>
       <field name="theta" type="float" unit="rad"/>
@@ -389,9 +389,8 @@
       <field name="vx_sp" type="float" unit="m/s"/>
       <field name="vy_sp" type="float" unit="m/s"/>
 
-      <field name="detection_cnt" type="uint8"/>
+      <field name="detection_cnt" type="int8"/>
 
-      
     </message>
 
     <message name="BARO_WORDS" id="46">

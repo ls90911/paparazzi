@@ -58,9 +58,8 @@ float vy_cmd = 0.0;
 #define CTRL_MAX_ROLL   RadOfDeg(45)    // rad
 #define CTRL_MAX_R      RadOfDeg(180)   // rad/sec
 */
+int control_cnt;
 
-
-control_cnt = 0;
 void control_reset(void)
 {
   // Reset flight plan logic

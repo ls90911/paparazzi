@@ -28,9 +28,7 @@
 //#define DEBUG_PRINT printf
 #include <stdio.h>
 
-/*
- * MavLink protocol
- */
+
 #include <mavlink/mavlink_types.h>
 #include "mavlink/paparazzi/mavlink.h"
 
@@ -51,7 +49,6 @@
 #include "modules/sensors/cameras/jevois_mavlink.h"
 #include "firmwares/rotorcraft/guidance/guidance_h.h"
 #include "firmwares/rotorcraft/guidance/guidance_v.h"
-
 #include "subsystems/imu.h"
 #ifdef COMMAND_THRUST
 #include "firmwares/rotorcraft/stabilization.h"
@@ -61,7 +58,6 @@
 #endif
 
 #include "state.h"
-
 
 mavlink_system_t mavlink_system;
 
@@ -87,7 +83,7 @@ struct visual_target_struct {
   int h;
   int quality;
   int source;
-} jevois_visual_target = {false, 0, 0, 0, 0, 0, 0};
+} jevois_visual_target = {false, 0, 0, 0, 0, 0, 0, 0};
 
 struct vision_relative_position_struct jevois_vision_position = {false, 0, 0.0f, 0.0f, 0.0f};
 
@@ -169,20 +165,20 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
 }
 // Send Manual Setpoint over telemetry using ROTORCRAFT_RADIO_CONTROL message
 
-static void send_jevois_mavlink_visual_target(struct transport_tx *trans, struct link_device *dev)
-{
-  if (jevois_visual_target.received) {
-    jevois_visual_target.received = false;
-    uint16_t cnt = jevois_visual_target.count;
-    int16_t tx = jevois_visual_target.x;
-    int16_t ty = jevois_visual_target.y;
-    int16_t w = jevois_visual_target.w;
-    int16_t h = jevois_visual_target.h;
-    uint16_t s = jevois_visual_target.source;
-    pprz_msg_send_VISUALTARGET(trans, dev, AC_ID, &cnt,
-                               &tx, &ty, &w, &h, &s);
-  }
-}
+//static void send_jevois_mavlink_visual_target(struct transport_tx *trans, struct link_device *dev)
+//{
+//  if (jevois_visual_target.received) {
+//    jevois_visual_target.received = false;
+//    uint16_t cnt = jevois_visual_target.count;
+//    int16_t tx = jevois_visual_target.x;
+//    int16_t ty = jevois_visual_target.y;
+//    int16_t w = jevois_visual_target.w;
+//    int16_t h = jevois_visual_target.h;
+//    uint16_t s = jevois_visual_target.source;
+//    pprz_msg_send_VISUALTARGET(trans, dev, AC_ID, &cnt,
+//                               &tx, &ty, &w, &h, &s);
+//  }
+//}
 
 static void send_jevois_mavlink_visual_position(struct transport_tx *trans, struct link_device *dev)
 {
@@ -213,7 +209,8 @@ void jevois_mavlink_init(void)
   jevois_mavlink_filter_init();
 
   // Send telemetry
-  //ster_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_VISUALTARGET, send_jevois_mavlink_visual_target);
+  //used for debugging
+  //register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_VISUALTARGET, send_jevois_mavlink_visual_target);
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_VISION_POSITION_ESTIMATE, send_jevois_mavlink_visual_position);
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_DRONERACE_DEBUG, send_dronerace_debug_info);
 }
@@ -239,7 +236,7 @@ void jevois_mavlink_event(void)
   mavlink_message_t msg;
   mavlink_status_t status;
 
-          //Debug the heartbeat variable
+  //Debug the heartbeat variable
   while (MAVLinkChAvailable()) {
     uint8_t c = MAVLinkGetch();
     if (mavlink_parse_char(MAVLINK_COMM_1, c, &msg, &status)) {
@@ -332,6 +329,8 @@ void jevois_mavlink_event(void)
           //}
         }
         break;
+        default:
+        	break;
 
       }
     }
@@ -339,7 +338,7 @@ void jevois_mavlink_event(void)
 }
 
 
-/////////////////////////////
+/* ********************************** */
 
 #include "state.h"
 #include "mcu_periph/sys_time.h"
