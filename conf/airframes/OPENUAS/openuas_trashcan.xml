@@ -21,11 +21,10 @@
             <define name="AUTOPILOT_DISABLE_AHRS_KILL"/> <!--  Starts in KILL, but can now switch to NAV -->
 
             <!-- Towards a better and no messing it all up kind of aligner when wobbly plugging in battery ;) -->
-            <!--
-            <define name="AHRS_ALIGNER_SAMPLES_NB" value="200"/>
-            <define name="LOW_NOISE_THRESHOLD" value="30000"/>
-            <define name="LOW_NOISE_TIME" value="10"/>
-            -->
+            <!-- -->
+            <define name="AHRS_ALIGNER_SAMPLES_NB" value="1200"/>
+           <!-- <define name="LOW_NOISE_THRESHOLD" value="30000"/>-->
+           <!-- <define name="LOW_NOISE_TIME" value="10"/>-->
 
 <!-- 2 kHz -->
             <configure name="PERIODIC_FREQUENCY" value="2048"/>
@@ -58,13 +57,13 @@
             <!--<define name="TELEMETRY_MODE_FBW" value="1"/>-->
 
             <!-- <define name="RADIO_MODE" value="RADIO_FLAP"/> -->
-            <!-- <define name="RADIO_KILL_SWITCH" value="RADIO_GEAR"/>-->
+            <define name="RADIO_KILL_SWITCH" value="RADIO_AUX1"/>
         </module>
 
         <module name="motor_mixing"/>
 
         <module name="actuators" type="pwm">
-            <define name="SERVO_HZ" value="480"/><!-- 400hz normally, just testing -->
+            <define name="SERVO_HZ" value="400"/><!-- 400hz normally, just testing -->
         </module>
 
         <module name="telemetry" type="transparent"> <!-- transparent_usb handy for debugging not working ATM, maybe broken in LibopenCM3? -->
@@ -167,6 +166,16 @@
         <servo name="BL" no="2" min="1000" neutral="1030" max="2000"/>
     </servos>
 
+      <!-- ************************** RC COMMANDS ****************************** -->
+   <!-- <rc_commands>
+        <set command="THRUST" value="@THROTTLE"/>
+        <set command="ROLL" value="@ROLL"/>
+        <set command="PITCH" value="-@PITCH"/>
+        <set command="YAW" value="@YAW"/>
+        <!--<set command="MODE" value="@MODE"/>
+        <set command="KILL" value="@AUX1"/>-->
+   <!-- </rc_commands>-->
+
     <commands>
         <axis name="ROLL"   failsafe_value="0"/>
         <axis name="PITCH"  failsafe_value="0"/>
@@ -242,11 +251,11 @@
 
         <section name="STABILIZATION_ATTITUDE" prefix="STABILIZATION_ATTITUDE_">
         <!-- setpoints -->
-        <define name="SP_MAX_PHI"     value="25." unit="deg"/>
-        <define name="SP_MAX_THETA"   value="25." unit="deg"/>
-        <define name="SP_MAX_R"       value="80." unit="deg/s"/>
-        <define name="DEADBAND_A"     value="10"/>
-        <define name="DEADBAND_E"     value="10"/>
+        <define name="SP_MAX_PHI"     value="45." unit="deg"/>
+        <define name="SP_MAX_THETA"   value="45." unit="deg"/>
+        <define name="SP_MAX_R"       value="120." unit="deg/s"/>
+        <define name="DEADBAND_A"     value="0"/>
+        <define name="DEADBAND_E"     value="0"/>
         <define name="DEADBAND_R"     value="250"/>
 
         <!-- reference -->
@@ -266,13 +275,13 @@
         <define name="REF_MAX_RDOT" value="RadOfDeg(1800.)"/>
 
         <!-- feedback -->
-        <define name="PHI_PGAIN"  value="100"/>
-        <define name="PHI_DGAIN"  value="30"/>
-        <define name="PHI_IGAIN"  value="20"/>
+        <define name="PHI_PGAIN"  value="165"/>
+        <define name="PHI_DGAIN"  value="40"/>
+        <define name="PHI_IGAIN"  value="2"/>
 
-        <define name="THETA_PGAIN"  value="100"/>
-        <define name="THETA_DGAIN"  value="30"/>
-        <define name="THETA_IGAIN"  value="20"/>
+        <define name="THETA_PGAIN"  value="165"/>
+        <define name="THETA_DGAIN"  value="40"/>
+        <define name="THETA_IGAIN"  value="2"/>
 
         <define name="PSI_PGAIN"  value="400"/>
         <define name="PSI_DGAIN"  value="200"/>
@@ -390,7 +399,7 @@
     </section>
 
     <section name="GUIDANCE_H" prefix="GUIDANCE_H_">
-        <define name="MAX_BANK" value="35." unit="deg"/>
+        <define name="MAX_BANK" value="45." unit="deg"/>
         <define name="USE_SPEED_REF" value="TRUE"/>
         <define name="PGAIN" value="50"/>
         <define name="DGAIN" value="100"/>
@@ -412,7 +421,7 @@
         <define name="MAX_BAT_CAPACITY" value="300" unit="mAh"/>
         <!-- tested at V 7.6 the avg -->  <!-- idle RPM then ?A half throttle ?A-->
         <define name="MILLIAMP_AT_IDLE_THROTTLE" value="10" unit="mA"/>  <!-- TODO ??mA, with additional RC receiver ~??mA -->
-        <define name="MILLIAMP_AT_FULL_THROTTLE" value="40" unit="mA"/> <!-- TODO At 7.2 ?? A at 8.2v ??A rounded then to ?? to be at safe side-->
+        <define name="MILLIAMP_AT_FULL_THROTTLE" value="240" unit="mA"/> <!-- TODO At 7.2 ?? A at 8.2v ??A rounded then to ?? to be at safe side-->
         <define name="CATASTROPHIC_BAT_LEVEL" value="6.0" unit="V"/> <!-- TODO: test when AP board switches off -->
         <define name="CRITIC_BAT_LEVEL" value="6.6" unit="V"/>
         <define name="LOW_BAT_LEVEL" value="7.0" unit="V"/>
