@@ -38,6 +38,7 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/timer.h>
+#include <libopencm3/stm32/common/timer_common_all.h>
 #include <libopencm3/cm3/nvic.h>
 
 #include "mcu_periph/gpio.h"
@@ -105,7 +106,7 @@ void ppm_arch_init(void)
   gpio_setup_pin_af(PPM_GPIO_PORT, PPM_GPIO_PIN, PPM_GPIO_AF, FALSE);
 
   /* Time Base configuration */
-  timer_reset(PPM_TIMER);
+  timer_reset_output_idle_state(PPM_TIMER, 0); //was: timer_reset(PPM_TIMER);
   timer_set_mode(PPM_TIMER, TIM_CR1_CKD_CK_INT,
                  TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
   timer_set_period(PPM_TIMER, 0xFFFF);
@@ -255,4 +256,3 @@ void tim8_cc_isr(void) {
 }
 
 #endif /* USE_PPM_TIM1 */
-

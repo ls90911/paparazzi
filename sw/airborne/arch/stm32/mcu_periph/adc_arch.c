@@ -93,6 +93,7 @@
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/timer.h>
+#include <libopencm3/stm32/common/timer_common_all.h>
 #include <string.h>
 #include "mcu_periph/gpio.h"
 #include "mcu_arch.h"
@@ -444,7 +445,7 @@ static inline void adc_init_rcc(void)
 #endif
 
   /* Time Base configuration */
-  timer_reset(TIM_ADC);
+  timer_reset_output_idle_state(TIM_ADC, 0); //was: timer_reset(TIM_ADC);
   timer_set_mode(TIM_ADC, TIM_CR1_CKD_CK_INT,
                  TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
   /* timer counts with ADC_TIMER_FREQUENCY */

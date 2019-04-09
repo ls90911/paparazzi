@@ -59,7 +59,7 @@ void actuators_pwm_arch_channel_init(uint32_t timer_peripheral,
 void set_servo_timer(uint32_t timer, uint32_t freq, uint8_t channels_mask)
 {
   // WARNING, this reset is only implemented for TIM1-8 in libopencm3!!
-  timer_reset(timer);
+  timer_reset_output_idle_state(timer, 0); //was: timer_reset(timer);
 
   /* Timer global mode:
    * - No divider.
@@ -122,4 +122,3 @@ void set_servo_timer(uint32_t timer, uint32_t freq, uint8_t channels_mask)
   timer_enable_counter(timer);
 
 }
-

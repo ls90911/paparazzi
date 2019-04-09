@@ -1,6 +1,7 @@
-/* Since there is atm no schmatic of the board, some pins where measured
- * But e.g. the Volt and Current values are measured for the moment
- * Would be great if one could measure the reistor bridge true values
+/* Since there is atm no schematic of the board, many pin to pin io was deducted
+ *  by measuring on the PCB.
+ * Not all, e.g. the Volt and Current values are measured for the moment
+ * Would be great if one could determine the resitor bridge true values
  */
 
 #ifndef CONFIG_CRAZYBEE_F4_1_0_H
@@ -10,7 +11,7 @@
 
 /** Clock config - STM32F4 - STM32F411CEU6 in 48 pin package UFQFPN48 **/
 #define EXT_CLK 8000000  // 8mHz
-#define AHB_CLK 84000000 // 84mhz for now, not yet done suppord for 100Mhz see MCU Arch an libopencm3 to fix
+#define AHB_CLK 100000000 // 100mhz tryout see MCU Arch and libopencm3 for the fix
 
 /** LEDs **/
 /* Green LED on flight controller */
@@ -23,7 +24,7 @@
 #define LED_1_GPIO_OFF gpio_set
 #define LED_1_AFIO_REMAP ((void)0)
 
-/* FIXME: Is red Power LED controllable, or not on a MCU pin ?*/
+/* FIXME: Add Red and White Power LEDs */
 
 /** UART's **/
 /* UART1 */
@@ -35,7 +36,7 @@
 
 /* UART2 */
 //Can connect to built-in DSMX receiver is availabe on UART RX
-//Not to be confused with DSMX over SPI, that is unreated
+//Not to be confused with DSMX over SPI, that is unrelated
 #define UART2_GPIO_AF GPIO_AF7
 #define UART2_GPIO_PORT_TX GPIOA
 #define UART2_GPIO_TX GPIO2
@@ -43,7 +44,7 @@
 #define UART2_GPIO_RX GPIO3
 
 /* SBUS inverted on UARTx is a separate physical pad on the board
- * To be used for RX that give an inverted SBUS out*/
+ * To be used for an receiverv that gives an inverted SBUS out signal */
 
 /* FIXME: (re)setting UART based (e.g. Spektum) Serial RADIO_CONTROL_POWER_PORT
 #define RADIO_CONTROL_POWER_PORT GPIOA
@@ -76,10 +77,11 @@
 
 /* PPM
  *
- * FIXME: Default is PPM config 1, alternative 2 is input on RX2 pin but than no UART RX
+ * FIXME: Default is PPM config 1, alternative 2 is CPPM input on RX2 pin but
+ * than no UART RX at the same time, but a need for that scenario is unlikely anyhow
  *
  * Originaly intended for 2812LED board - DMA1_ST2
- * Can be re- used for input to connect a receiver that spits CPPM pulsetrain
+ * Can be re- used for input to connect a receiver that outputs CPPM pulsestrain
  */
 
 #ifndef PPM_CONFIG
@@ -127,36 +129,41 @@
 #define SPI1_GPIO_PORT_MOSI GPIOA
 #define SPI1_GPIO_MOSI GPIO7
 
-/* SPI2 for emb0,014501953edded OSD MAX chip*/
-//#define SPI2_GPIO_AF GPIO_AF5
-//#define SPI2_GPIO_PORT_SCK GPIOB
-//#define SPI2_GPIO_SCK GPIO13
-//#define SPI2_GPIO_PORT_MISO GPIOB
-//#define SPI2_GPIO_MISO GPIO14
-//#define SPI2_GPIO_PORT_MOSI GPIOB
-//#define SPI2_GPIO_MOSI GPIO15
-
-/* Used SPI3 for RX direct, if RX solution is implemented in AP */
-//#define SPI3_GPIO_AF GPIO_AF5 //TODO check datasheet
-//#define SPI3_GPIO_PORT_SCK GPIOB
-//#define SPI3_GPIO_SCK GPIO3
-//#define SPI3_GPIO_PORT_MISO GPIOB
-//#define SPI3_GPIO_MISO GPIO4
-//#define SPI3_GPIO_PORT_MOSI GPIOB
-//#define SPI3_GPIO_MOSI GPIO5
-
-/* SPI slave pin declaration */
-/*  ACC_GYRO_CS on SPI1 ICM 20609-G*/
+/* SPI slave pin declaration ACC_GYRO_CS on SPI1 ICM 20609-G*/
 #define SPI_SELECT_SLAVE0_PORT GPIOA
 #define SPI_SELECT_SLAVE0_PIN GPIO4
 
-/* OSD on SPI2 */
-//#define S2100PI_SELECT_SLAVE1_PORT GPIOB??
-//#define SPI_SELECT_SLAVE1_PIN GPIO3??
+/* SPI2 for embedded OSD MAX chip*/
+//#ifndef USE_MAX7456
+//#define USE_MAX7456 0
+//#endif
 
-/* Not implemnented RX on SPI3 */
-//#define SPI_SELECT_SLAVE2_PORT GPIOB??
-//#define SPI_SELECT_SLAVE2_PIN GPIO3??
+//#if USE_MAX7456
+#define SPI2_GPIO_AF GPIO_AF5 //TODO check datasheet
+#define SPI2_GPIO_PORT_SCK GPIOB
+#define SPI2_GPIO_SCK GPIO13
+#define SPI2_GPIO_PORT_MISO GPIOB
+#define SPI2_GPIO_MISO GPIO14
+#define SPI2_GPIO_PORT_MOSI GPIOB
+#define SPI2_GPIO_MOSI GPIO15
+
+/* SPI slave pin declaration OSD */
+#define SPI_SELECT_SLAVE1_PORT GPIOB
+#define SPI_SELECT_SLAVE1_PIN GPIO12
+//#endif
+
+/* Used SPI3 for RX direct, if RX solution is implemented in AP */
+#define SPI3_GPIO_AF GPIO_AF6
+#define SPI3_GPIO_PORT_SCK GPIOB
+#define SPI3_GPIO_SCK GPIO3
+#define SPI3_GPIO_PORT_MISO GPIOB
+#define SPI3_GPIO_MISO GPIO4
+#define SPI3_GPIO_PORT_MOSI GPIOB
+#define SPI3_GPIO_MOSI GPIO5
+
+/* SPI slave pin declaration for Receiver */
+#define SPI_SELECT_SLAVE2_PORT GPIOA
+#define SPI_SELECT_SLAVE2_PIN GPIO15
 
 /** Onboard ADCs **/
 
@@ -192,7 +199,7 @@
 #define MilliAmpereOfAdc(adc)((float)adc) * (3.3f / 4096.0f) * (90.0f / 5.0f)// TODO: determine 100% correct value
 #endif
 
-/* TODO: Somehere on the board find and I2C so to connect e.g. GPS BAR MAG,
+/* TODO: Somehere on the board find PHiSICAL easily reachable I2C SDL SDA so to connect e.g. GNSS, Baro, Magneto
  * TODO: Finish the I2C mapping if Pins found */
 
 //#define I2C1_GPIO_AF GPIO_AF4
