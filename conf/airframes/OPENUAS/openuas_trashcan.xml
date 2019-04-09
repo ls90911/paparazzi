@@ -89,8 +89,11 @@
         </module>
 
         <!-- not all are tested or tuned -->
-        <!--<module name="stabilization" type="int_quat"/>-->
-        <module name="stabilization" type="float_quat"/>
+        <module name="stabilization" type="rate"/>
+        <!-- <module name="stabilization" type="rate_indi"/> -->
+
+        <module name="stabilization" type="int_quat"/>
+        <!--<module name="stabilization" type="float_quat"/>-->
         <!-- <module name="stabilization" type="indi_simple" /> -->
         <!-- <module name="stabilization" type="indi" /> -->
 
@@ -248,21 +251,28 @@
 
     <section name="STABILIZATION_RATE" prefix="STABILIZATION_RATE_">
         <!-- setpoints -->
-        <define name="SP_MAX_P" value="240." unit="deg/s"/>
-        <define name="SP_MAX_Q" value="240." unit="deg/s"/>
-        <define name="SP_MAX_R" value="240" unit="deg/s"/>
+        <define name="SP_MAX_P" value="2400." unit="deg/s"/>
+        <define name="SP_MAX_Q" value="2400." unit="deg/s"/>
+        <define name="SP_MAX_R" value="2400" unit="deg/s"/>
         <define name="DEADBAND_P" value="10"/>
         <define name="DEADBAND_Q" value="10"/>
         <define name="DEADBAND_R" value="200"/>
+        <define name="REF_TAU" value="4"/>
 
         <!-- feedback -->
         <define name="GAIN_P" value="800"/>
         <define name="GAIN_Q" value="800"/>
         <define name="GAIN_R" value="700"/>
 
-        <define name="IGAIN_P" value="240"/>
-        <define name="IGAIN_Q" value="240"/>
-        <define name="IGAIN_R" value="160"/>
+        <define name="IGAIN_P" value="140"/>
+        <define name="IGAIN_Q" value="140"/>
+        <define name="IGAIN_R" value="90"/>
+
+        <!-- feedforward -->
+        <define name="DDGAIN_P" value="300"/>
+        <define name="DDGAIN_Q" value="300"/>
+        <define name="DDGAIN_R" value="300"/>
+
     </section>
 
 <!--
