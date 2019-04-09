@@ -111,4 +111,5 @@ extern void reset_local_reference(void);
 extern void reference_init(void);
 extern void update_reference_run(void);
 extern void clear_reference(void);
+extern int flag_record_video;
 #endif

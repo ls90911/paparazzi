@@ -307,10 +307,11 @@ static void mavlink_send_set_mode(void)
 {
   mavlink_msg_set_mode_send(MAVLINK_COMM_0,
                             get_sys_time_msec(),
-                            0, //autopilotMode.currentMode,
-                            0
+                            flag_record_video, //autopilotMode.currentMode,
+                           flag_record_video 
                            );
   MAVLinkSendMessage();
+  //printf("[jevois_mavlink] flag_record_vide = %d\n",flag_record_video);
 }
 
 static void mavlink_send_heartbeat(void)

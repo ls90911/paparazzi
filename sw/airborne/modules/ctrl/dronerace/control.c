@@ -26,7 +26,7 @@ float k_p_pos_y = 0.5;
 float k_d_pos_y = 0.0;
 float vx_error_previous = 0.0;
 float vy_error_previous = 0.0;
-
+int flag_record_video = 0;
 
 
 // Settings
