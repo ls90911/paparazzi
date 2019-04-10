@@ -83,9 +83,9 @@ struct visual_target_struct {
   int h;
   int quality;
   int source;
-} jevois_visual_target = {false, 0, 0, 0, 0, 0, 0, 0};
+} jevois_visual_target = {0, 0, 0, 0, 0, 0, 0, 0};
 
-struct vision_relative_position_struct jevois_vision_position = {false, 0, 0.0f, 0.0f, 0.0f};
+struct vision_relative_position_struct jevois_vision_position = {0, 0, 0.0f, 0.0f, 0.0f};
 
 
 uint8_t heart_beat = 0;
@@ -117,6 +117,7 @@ void jevois_mavlink_filter_init(void)
 /*
  * Paparazzi Module functions : forward to telemetry
  */
+uint16_t cnt_temp;
 static void send_dronerace_debug_info(struct transport_tx *trans, struct link_device *dev)
 {
 	//if (jevois_vision_position.received) {
@@ -129,11 +130,9 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
 	float phi = stateGetNedToBodyEulers_f()->phi;
 	float theta = stateGetNedToBodyEulers_f()->theta;
 	float psi = stateGetNedToBodyEulers_f()->psi;
-/*
+    cnt_temp = jevois_vision_position.cnt;
     pprz_msg_send_DRONERACE_DEBUG(trans, dev, AC_ID,
                                &heart_beat,
-							   //&dr_vision.dx,
-							   //&dr_vision.dy,
                                //&jevois_vision_position.x,
                                //&jevois_vision_position.y,
 							   &mx,
@@ -155,9 +154,9 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &ref.pos.y, 
                                &indi_ctrl.vx_cmd,
                                &indi_ctrl.vy_cmd,
-                               &jevois_vision_position.cnt
+                               &cnt_temp
 								 );
-*/
+
 }
 // Send Manual Setpoint over telemetry using ROTORCRAFT_RADIO_CONTROL message
 
