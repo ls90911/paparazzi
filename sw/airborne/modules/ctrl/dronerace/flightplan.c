@@ -34,7 +34,7 @@ const struct dronerace_flightplan_item_struct gates[MAX_GATES] = {
   {   4.0,          0.0,          -1.5,          RadOfDeg(0),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
   {   5.0,          5.0,          -1.5,          RadOfDeg(90),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
   {   1.0,          6.0,          -1.5,          RadOfDeg(180),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
-  {   0.0,          1.0,          -1.5,          RadOfDeg(270),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
+  {   0.0,          -0.5,          -1.5,          RadOfDeg(270),      1.2f,    REGULAR,      NO_BRAKE,       2.0,                      0},
 };
 
 struct dronerace_flightplan_item_struct waypoints_dr[MAX_GATES];
@@ -93,8 +93,8 @@ void flightplan_reset()
 }
 
 
-#define DISTANCE_GATE_NOT_IN_SIGHT  1.0f
-#define DISTANCE_ARRIVED_AT_WP    0.5f
+#define DISTANCE_GATE_NOT_IN_SIGHT  2.5f
+#define DISTANCE_ARRIVED_AT_WP    1.0f
 
 void flightplan_run(void)
 {
@@ -139,6 +139,10 @@ void flightplan_run(void)
       //dr_fp.psi_set = atan2(dy, dx);
       dr_fp.psi_set = (gates[dr_fp.gate_nr+1].psi)+num_lap*2*3.14;
     }
+	else
+	{
+      dr_fp.psi_set = (gates[0].psi)+(num_lap+1)*2*3.14;
+	}
   }
 
 

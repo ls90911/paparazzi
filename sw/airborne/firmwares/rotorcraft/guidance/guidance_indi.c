@@ -159,6 +159,7 @@ void guidance_indi_enter(void)
  *
  * main indi guidance function
  */
+#define MAX_SPEED 2.5
 void guidance_indi_run(float heading_sp)
 {
   struct FloatEulers eulers_yxz;
@@ -191,26 +192,26 @@ void guidance_indi_run(float heading_sp)
   {
       //speed_sp_x = pos_x_err * 1.0;
       //speed_sp_x = 2.0;
-	  speed_sp_x = dr_ransac.buf_size>5?2.0:0.0; 
+	  speed_sp_x = dr_ransac.buf_size>5?MAX_SPEED:0.0; 
       speed_sp_y = pos_y_err * guidance_indi_pos_gain;
   }
   else if(dr_fp.gate_nr == 1)
   {
-	  speed_sp_y = dr_ransac.buf_size>5?2.0:0.0; 
+	  speed_sp_y = dr_ransac.buf_size>5?MAX_SPEED:0.0; 
       speed_sp_x = pos_x_err * guidance_indi_pos_gain;
   }
 
   else if(dr_fp.gate_nr == 2)
 
   {
-	  speed_sp_x = dr_ransac.buf_size>5?-2.0:0.0; 
+	  speed_sp_x = dr_ransac.buf_size>5?-MAX_SPEED:0.0; 
       speed_sp_y = pos_y_err * guidance_indi_pos_gain;
   }
 
   else
   {
       speed_sp_x = pos_x_err * guidance_indi_pos_gain;
-	  speed_sp_y = dr_ransac.buf_size>5?-2.0:0.0; 
+	  speed_sp_y = dr_ransac.buf_size>5?-MAX_SPEED:0.0; 
   }
 
   // -------------for log--------------
