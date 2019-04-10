@@ -39,8 +39,8 @@
             <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/> <!-- 75 or 160 max -->
 
              <!-- set Gyro/Accel output rate to 2kHz at 8kHz internal sampling -->
-            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
-            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
+            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/><!--This sets the internal sample rate to 8KHz. -->
+            <define name="IMU_MPU_SMPLRT_DIV" value="3"/> <!-- for 1khz periodic IMU_MPU_SMPLRT_DIV=7 sr = gr(8) /1+IMU_MPU_SMPLRT_DIV (1+7/8=1khz-->
 
             <configure name="NAVIGATION_FREQUENCY" value="16"/>
             <configure name="CONTROL_FREQUENCY" value="2000"/>
@@ -48,7 +48,7 @@
             <configure name="MODULES_FREQUENCY" value="2048"/>
 
             <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!-- handy with the short flight time between tuning sets, not tested if it works yet, this board we have 16kb reserved -->
-            <define name="BAT_CHECKER_DELAY" value="80"/> <!-- Not to much messages plz pulling up stong, larger amount of time it take for the bat to be checked  -->
+            <define name="BAT_CHECKER_DELAY" value="70"/> <!-- Not to much messages plz pulling up stong, larger amount of time it take for the bat to be checked  -->
             <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
             <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="90"/> <!-- in seconds-->
         </target>
@@ -91,7 +91,7 @@
         </module>
 
         <!-- not all are tested or tuned -->
-        <module name="stabilization" type="rate"/>
+        <module name="stabilization" type="rate"/><!-- not working yet..)
         <!-- <module name="stabilization" type="rate_indi"/> -->
 
         <module name="stabilization" type="int_quat"/>
@@ -233,6 +233,7 @@
         <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
         <define name="BODY_TO_IMU_PSI"   value="90." unit="deg"/>
 
+        <!-- Tere is no MAG per default, but in case one adds one , make it correct -->
         <define name="MAG_X_SIGN" value="1"/>
         <define name="MAG_Y_SIGN" value="1"/>
         <define name="MAG_Z_SIGN" value="1"/>
