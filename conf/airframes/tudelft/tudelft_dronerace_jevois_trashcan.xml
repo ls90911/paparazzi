@@ -24,9 +24,9 @@
 
             <configure name="NO_LUFTBOOT" value="1"/>
             <configure name="USE_BARO_BOARD" value="FALSE"/>
+
             <define name="AUTOPILOT_DISABLE_AHRS_KILL"/> <!--  Starts in KILL, but can now switch to NAV -->
-            <!--When fidly plugging battery, aircraft kind of wobbly, now avaoid messing up the aligner this way -->
-            <define name="AHRS_ALIGNER_SAMPLES_NB" value="1200"/>
+            <define name="AHRS_ALIGNER_SAMPLES_NB" value="1200"/>  <!--When fidly plugging in a battery, aircraft kind of wobbly, now avoid messing up the aligner this way -->
             <!-- <define name="LOW_NOISE_THRESHOLD" value="30000"/>-->
             <!-- <define name="LOW_NOISE_TIME" value="10"/>-->
 
@@ -48,9 +48,8 @@
             <configure name="MODULES_FREQUENCY" value="2048"/>
 
             <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!-- handy with the short flight time between tuning sets, not tested if it works yet, this board we have 16kb reserved -->
-            <define name="BAT_CHECKER_DELAY" value="70"/> <!-- Not to much messages plz pulling up stong, larger amount of time it take for the bat to be checked  -->
-            <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
-            <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="90"/> <!-- in seconds-->
+            <define name="BAT_CHECKER_DELAY" value="70"/>  <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
+            <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="90"/> <!-- in 10/s seconds-->
         </target>
 
         <module name="radio_control" type="ppm"> <!--datalink(e.g. wifi) or ppm  or sbus-->
@@ -67,10 +66,10 @@
         <module name="motor_mixing"/>
 
         <module name="actuators" type="pwm">
-            <define name="SERVO_HZ" value="480"/><!-- 400hz as default, now this just testing -->
+            <define name="SERVO_HZ" value="480"/>
         </module>
 
-        <module name="telemetry" type="transparent"> <!-- transparent_usb handy for debugging not working ATM, maybe broken in LibopenCM3? -->
+        <module name="telemetry" type="transparent"> <!-- transparent_usb would have been very handy for debugging, but not working ATM, maybe broken in LibopenCM3? -->
             <configure name="MODEM_PORT" value="UART2"/>
             <configure name="MODEM_BAUD" value="B115200"/>
         </module>
@@ -93,7 +92,6 @@
         <!-- not all are tested or tuned -->
         <module name="stabilization" type="rate"/><!-- not working yet..)
         <!-- <module name="stabilization" type="rate_indi"/> -->
-
         <module name="stabilization" type="int_quat"/>
         <!--<module name="stabilization" type="float_quat"/>-->
         <!-- <module name="stabilization" type="indi_simple" /> -->
@@ -150,7 +148,7 @@
         <module name="geo_mag"/>
         <module name="air_data"/>
 
-        <!-- below temporary until tested then remove it -->
+        <!-- below temporary until tested then disable it -->
         <!-- <module name="send_imu_mag_current"/> -->
 
 <!--
@@ -453,7 +451,7 @@
         <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
         <define name="MODE_AUTO1"  value="AP_MODE_RATE_DIRECT"/><!-- for now...-->
         <define name="MODE_AUTO2"  value="AP_MODE_GUIDED"/> <!-- for dronerrace -->
-       <!-- <define name="MODE_AUTO2"  value="AP_MODE_NAV"/>--> <!-- If GNSS device is added -->
+       <!-- <define name="MODE_AUTO2"  value="AP_MODE_NAV"/>--> <!-- If GNSS device is added for autonomous flight -->
         <define name="USE_THROTTLE_FOR_MOTOR_ARMING" value="TRUE"/>
         <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
     </section>
@@ -462,12 +460,12 @@
     <section name="BAT">
         <define name="MAX_BAT_CAPACITY" value="300" unit="mAh"/>
         <!-- tested at V 7.6 the avg -->  <!-- idle RPM then ?A half throttle ?A-->
-        <define name="MILLIAMP_AT_IDLE_THROTTLE" value="10" unit="mA"/>  <!-- TODO ??mA, with additional RC receiver ~??mA -->
+        <define name="MILLIAMP_AT_IDLE_THROTTLE" value="10" unit="mA"/>  <!-- TODO ??mA, with additional RC receiver and wifi and jevois cam ~??mA -->
         <define name="MILLIAMP_AT_FULL_THROTTLE" value="240" unit="mA"/> <!-- TODO At 7.2 ?? A at 8.2v ??A rounded then to ?? to be at safe side-->
         <define name="CATASTROPHIC_BAT_LEVEL" value="6.0" unit="V"/> <!-- TODO: test when AP board switches off -->
         <define name="CRITIC_BAT_LEVEL" value="6.6" unit="V"/>
         <define name="LOW_BAT_LEVEL" value="7.0" unit="V"/>
-        <define name="MAX_BAT_LEVEL" value="8.4" unit="V"/>  <!-- 2s lipo 2x4.2 = 8.4 -->
+        <define name="MAX_BAT_LEVEL" value="8.7" unit="V"/>  <!-- 2s LiPo HV 2x4.35 = 8.7 -->
     </section>
 
     <section name="SIMULATOR" prefix="NPS_">
