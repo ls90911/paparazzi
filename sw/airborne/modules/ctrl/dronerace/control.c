@@ -53,42 +53,20 @@ void control_reset(void)
   indi_ctrl.previous_vy_err = 0.0;
 }
 
-static float angle180(float r)
-{
-  if (r < RadOfDeg(-180))
-  {
-    r += RadOfDeg(360.0f);
-  }
-  else if (r > RadOfDeg(180.0f))
-  {
-    r -= RadOfDeg(360.0f);
-  }
-
-  return r;
-}
-
 
 void control_run(void)
 {
-  float psi, vxcmd, vycmd, r_cmd, ax, ay;
   float dt = 1.0/512.0;
   // Propagate the flightplan
   flightplan_run();
 
-  // Variables
-  psi = dr_state.psi;
-
   // Heading controller
-  r_cmd = 2.0*(dr_fp.psi_set - dr_control.psi_ref);
-
-  // Find shortest turn
-  //r_cmd = angle180(r_cmd);
+  float r_cmd = 2.0*(dr_fp.psi_set - dr_control.psi_ref);
 
   // Apply rate limit
   Bound(r_cmd, -CTRL_MAX_R, CTRL_MAX_R);
   dr_control.psi_ref += r_cmd * dt;
 
-  //printf("wp = (%f,%f)\n",dr_fp.x_set,dr_fp.y_set);
   autopilot_guided_goto_ned(dr_fp.x_set,dr_fp.y_set,-1.5,dr_control.psi_ref);
 
 }

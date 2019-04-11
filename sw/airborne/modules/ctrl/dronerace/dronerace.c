@@ -52,7 +52,6 @@ volatile float input_dy = 0;
 volatile float input_dz = 0;
 
 uint8_t previous_autopilot_mode;
-float scale_heading(float heading);
 
 #include <stdio.h>
 // sending the divergence message to the ground station:
@@ -186,22 +185,3 @@ void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
 }
 
 
-float scale_heading(float heading)
-{
-	int i = 1;
-
-	while(heading>3.14 || heading < -3.14)
-	{
-		if(heading > 3.14)
-		{
-			heading -= 2*3.14;
-		}
-		else if(heading < -3.14)
-		{
-			heading += 2*3.14;
-		}
-		i++;
-		printf("scale_heading heading = %f\n,heading");
-	}
-	return heading;
-}

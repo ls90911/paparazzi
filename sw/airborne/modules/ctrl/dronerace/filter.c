@@ -135,7 +135,7 @@ void filter_correct(void)
 
 int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float dy)
 {
-	int i, j;
+	int i;
 	float min_distance = 9999;
 
 	dr_state.assigned_gate_index = -1;
@@ -197,7 +197,7 @@ int get_time_stamp()
 }
 
 
-void calibrate_detection(float *mx,float *my)
+void calibrate_detection(float *mmx,float *mmy)
 {
     float k0_x = -0.0;
     float k1_x = 0.0;
@@ -207,11 +207,11 @@ void calibrate_detection(float *mx,float *my)
     float k1_y = 0.0;
     float k2_y = -0.0;
 
-    float x = *mx;
-    float y = *my;
+    float x = *mmx;
+    float y = *mmy;
 
-    *mx = x + k0_x + k1_x*x+k2_x*x*x;
-    *my = y + k0_y + k1_y*y+k2_y*y*y;
+    *mmx = x + k0_x + k1_x*x+k2_x*x*x;
+    *mmy = y + k0_y + k1_y*y+k2_y*y*y;
 
 }
 
