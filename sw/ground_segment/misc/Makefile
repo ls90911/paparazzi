@@ -57,10 +57,10 @@ GLIB_LDFLAGS = $(shell pkg-config glib-2.0 --libs) -lglibivy -lm $(shell pcre-co
 INCLUDES += $(shell pkg-config glib-2.0 --cflags) -I$(PAPARAZZI_SRC)/sw/airborne/ -I$(PAPARAZZI_SRC)/sw/include/ $(IVY_INC)
 INCLUDES += -I$(PAPARAZZI_SRC)/sw/ext/libsbp/c/include/ -I$(PAPARAZZI_SRC)/sw/airborne/subsystems/gps/librtcm3/ -I$(PAPARAZZI_SRC)/sw/airborne/arch/linux/
 
-all: davis2ivy kestrel2ivy natnet2ivy sbp2ivy video_synchronizer sbs2ivy rtcm2ivy
+all: davis2ivy kestrel2ivy natnet2ivy video_synchronizer rtcm2ivy
 
 clean:
-	$(Q)rm -f *.o davis2ivy kestrel2ivy natnet2ivy sbp2ivy video_synchronizer sbs2ivy
+	$(Q)rm -f *.o davis2ivy kestrel2ivy natnet2ivy video_synchronizer 
 
 davis2ivy: davis2ivy.o
 	@echo CC $@
