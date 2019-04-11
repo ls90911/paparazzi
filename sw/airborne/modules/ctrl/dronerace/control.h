@@ -57,17 +57,6 @@ struct pid_term_struct
     float vy_cmd;
 };
 
-struct reference_generator_struct
-{
-    struct FloatVect2 pos;
-    struct FloatVect2 vel;
-    struct FloatVect2 pos_local;
-    struct FloatVect2 vel_local;
-    float k_p_x_local;
-    float k_p_y_local;
-    float k_v_x_local;
-    float k_v_y_local;
-};
 
 struct indi_controller_struct
 {
@@ -106,10 +95,5 @@ extern float k_p_pos_x;
 extern float k_d_pos_x;
 extern float k_p_pos_y;
 extern float k_d_pos_y;
-extern void reset_reference(void);
-extern void reset_local_reference(void);
-extern void reference_init(void);
-extern void update_reference_run(void);
-extern void clear_reference(void);
 extern int flag_record_video;
 #endif

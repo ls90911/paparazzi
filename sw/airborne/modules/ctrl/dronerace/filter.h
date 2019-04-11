@@ -29,16 +29,6 @@ struct dronerace_state_struct {
   int assigned_gate_index;
 };
 
-struct calibrate_ahrs_struct
-{
-	int counter;
-	float sum_bias_north; 
-	float sum_bias_east; 
-	float bias_north;
-	float bias_east;
-	int is_ahrs_calibrated;
-};
-
 extern struct dronerace_state_struct dr_state;
 
 

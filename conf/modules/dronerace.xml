@@ -27,7 +27,6 @@
   </header>
   <init fun="dronerace_init()"/>
   <periodic fun="dronerace_periodic()"/>
-  <periodic fun="control_run()"/>
   <makefile target="ap|nps">
     <file name="dronerace.c"/>
     <file name="flightplan.c"/>

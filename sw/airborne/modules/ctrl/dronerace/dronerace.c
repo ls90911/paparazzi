@@ -52,102 +52,9 @@ volatile float input_dy = 0;
 volatile float input_dz = 0;
 
 uint8_t previous_autopilot_mode;
-
-struct GUIDANCE_INDI_VAR
-{
-    bool flag_wp_set;
-    int counter_time;
-};
-
-
-struct GUIDANCE_INDI_VAR gui_indi_var;
-
-void test_guidance_indi_temp_run();
 float scale_heading(float heading);
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// LOGGING
 
 #include <stdio.h>
-
-/** Set the default File logger path to the USB drive */
-#ifndef FILE_LOGGER_PATH
-  #if SIMULATE
-    #define FILE_LOGGER_PATH .
-  #else
-    #define FILE_LOGGER_PATH /data/ftp/internal_000
-  #endif
-#endif
-
-// What type of log to make during flight:
-#define CHRISTOPHE_LOG 0
-#define OLD_LOG 1
-#define FULL_LOG 2
-#define TYPE_LOG FULL_LOG
-
-
-/** The file pointer */
-static FILE *file_logger = NULL;
-
-static void open_log(void) {
-  // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
-  /*
-  char date_time[80];
-  time_t now = time(0);
-  struct tm  tstruct;
-  tstruct = *localtime(&now);
-  strftime(date_time, sizeof(date_time), "%Y-%m-%d_%X", &tstruct);
-  */
-
-  uint32_t counter = 0;
-  char filename[512];
-  // Check for available files
-  sprintf(filename, "%s/%s.csv", STRINGIFY(FILE_LOGGER_PATH), "log_file");
-  while ((file_logger = fopen(filename, "r"))) {
-    fclose(file_logger);
-    sprintf(filename, "%s/%s_%05d.csv", STRINGIFY(FILE_LOGGER_PATH), "log_file", counter);
-    counter++;
-  }
-
-  printf("\n\n*** chosen filename log drone race: %s ***\n\n", filename);
-
-  file_logger = fopen(filename, "w");
-
-  if (file_logger != NULL) {
-    if(TYPE_LOG == CHRISTOPHE_LOG) {
-      fprintf(file_logger,"phi,theta,psi,vision_cnt,dx,dy,dz\n");
-    }
-    else if(TYPE_LOG == OLD_LOG) {
-      fprintf(file_logger,"dr_state_x,dr_state_y,dr_state_vx,dr_state_vy,vision_cnt,vision_dx,vision_dy\n");
-    }
-    else {
-      fprintf(file_logger,"phi,theta,psi,vision_cnt,ransac_buf_size,vision_dx,vision_dy,vision_dz,dr_state_x,dr_state_y,dr_state_vx,dr_state_vy,corr_x,corr_y,real_x,real_y\n");
-    }
-  }
-}
-
-static void write_log(void)
-{
-  if (file_logger != 0) {
-
-    if(TYPE_LOG == OLD_LOG) {
-      fprintf(file_logger, "%f,%f,%f,%f,%d,%f,%f\n",dr_state.x, dr_state.y, dr_state.vx, dr_state.vy,
-          dr_vision.cnt,dr_vision.dx,dr_vision.dy);
-    }
-    else if(TYPE_LOG == CHRISTOPHE_LOG) {
-      fprintf(file_logger, "%f,%f,%f,%d,%f,%f,%f\n",input_phi, input_theta, input_psi, input_cnt, input_dx, input_dy, input_dz);
-    }
-    else {
-      fprintf(file_logger, "%f,%f,%f,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",stateGetNedToBodyEulers_f()->phi, stateGetNedToBodyEulers_f()->theta, stateGetNedToBodyEulers_f()->psi,
-                      dr_vision.cnt, dr_ransac.buf_size, dr_vision.dx, dr_vision.dy, dr_vision.dz, dr_state.x, dr_state.y, dr_state.vx, dr_state.vy,
-                      dr_state.x+dr_ransac.corr_x, dr_state.y+dr_ransac.corr_y, stateGetPositionNed_f()->x, stateGetPositionNed_f()->y);
-    }
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// TELEMETRY
-
-
 // sending the divergence message to the ground station:
 static void send_dronerace(struct transport_tx *trans, struct link_device *dev)
 {
@@ -206,14 +113,8 @@ void dronerace_init(void)
   // Send telemetry
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_OPTICAL_FLOW_HOVER, send_dronerace);
 
-  // Start Logging
-//  open_log();
-
-  // Compute waypoints
-  reference_init();
   dronerace_enter();
   filter_reset();
-
 }
 
 float psi0 = 0;
@@ -226,19 +127,6 @@ void dronerace_enter(void)
   prediction_correct(); // it is called by module_enter(), when the mode is changed, the prediction should go to estimation instead of 0
   control_reset();
   previous_autopilot_mode = autopilot.mode;
-
-  for (int i=0;i<MAX_GATES;i++)
-  {
-    struct EnuCoor_f enu_g = {.x=gates[i].y, .y=gates[i].x, .z=-gates[i].z};
-    struct EnuCoor_f enu_w = {.x=waypoints_dr[i].y, .y=waypoints_dr[i].x, .z=-waypoints_dr[i].z};
-    if (gates[i].type == VIRTUAL) {
-      enu_g.x = -10;
-      enu_g.y = 0;
-    }
-    waypoint_set_enu( WP_G1+i, &enu_g);
-    waypoint_set_enu( WP_p1+i, &enu_w);
-    //printf("Moved %f %f \n", enu_g.x, enu_g.y);
-  }
 }
 
 #ifndef PREDICTION_BIAS_PHI
@@ -254,17 +142,12 @@ void dronerace_periodic(void)
     if(previous_autopilot_mode != autopilot.mode)
     {
         control_reset();
-        gui_indi_var.counter_time = 0;
-        gui_indi_var.flag_wp_set = false;
     }
 
 
   //  test_guidance_indi_temp_run();
-  float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
-  float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);
-
-  input_phi = stateGetNedToBodyEulers_f()->phi - phi_bias;
-  input_theta = stateGetNedToBodyEulers_f()->theta - theta_bias;
+  input_phi = stateGetNedToBodyEulers_f()->phi;
+  input_theta = stateGetNedToBodyEulers_f()->theta;
   input_psi = stateGetNedToBodyEulers_f()->psi - psi0;
 
   filter_predict(input_phi,input_theta,input_psi, dt);
@@ -278,37 +161,10 @@ void dronerace_periodic(void)
     dr_vision.dz = input_dz;
 
     filter_correct();
-
-    flightplan_list();
-  }
-
-  //printf("before write log\n");
-  //write_log();
-  //printf("after write log\n");
-
-  {
-    struct NedCoor_f target_ned;
-    target_ned.x = dr_fp.gate_y;
-    target_ned.y = dr_fp.gate_x;
-    target_ned.z = -dr_fp.gate_z;
-
-    if (autopilot.mode_auto2 == AP_MODE_MODULE) {
-      ENU_BFP_OF_REAL(navigation_carrot, target_ned);
-      ENU_BFP_OF_REAL(navigation_target, target_ned);
-
-    }
   }
 
 
   previous_autopilot_mode = autopilot.mode;
-  // Show position on the map
-  /*
-  struct NedCoor_f pos;
-  pos.x = dr_state.x;
-  pos.y = dr_state.y;
-  pos.z = sonar_bebop.distance; // Hardcoded push of sonar to the altitude
-  //stateSetPositionNed_f(&pos);
-*/
 }
 
 void dronerace_set_rc(UNUSED float rt, UNUSED float rx, UNUSED float ry, UNUSED float rz)
@@ -329,23 +185,6 @@ void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
   
 }
 
-void test_guidance_indi_temp_run()
-{
-   gui_indi_var.counter_time++; 
-   float time = gui_indi_var.counter_time / 512.0;
-   if( time < 3.0)
-       autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(0.0));
-   else if(time<8.0)
-       autopilot_guided_goto_ned(4.0,0.0,-1.5,RadOfDeg(0.0));
-   else if(time<13.0)
-       autopilot_guided_goto_ned(4.0,4.0,-1.5,RadOfDeg(90.0));
-   else if(time<18.0)
-       autopilot_guided_goto_ned(0.0,4.0,-1.5,RadOfDeg(180.0));
-   else if(time<23.0)
-       autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(270.0));
-   else
-       autopilot_guided_goto_ned(0.0,0.0,-1.5,RadOfDeg(0.0));
-}
 
 float scale_heading(float heading)
 {

@@ -15,11 +15,8 @@
 
 struct dronerace_state_struct dr_state;
 struct dronerace_vision_struct dr_vision;
-struct calibrate_ahrs_struct cali_ahrs = {0,0,0,0};
 int detection_time_stamp;
 void calibrate_detection(float *mx,float *my);
-void calibrate_ahrs(void);
-void calibrate_ahrs_init(void);
 int assigned_gate = 0;
 
 void filter_reset()
@@ -41,7 +38,6 @@ void filter_reset()
   // Vision latency
   fifo_reset();
   ransac_reset();
-  calibrate_ahrs_init();
 }
 
 float filteredX, filteredY, filteredVx,filteredVy;
@@ -60,15 +56,6 @@ float filteredX, filteredY, filteredVx,filteredVy;
 
 void filter_predict(float phi, float theta, float psi, float dt)
 {
-	if (cali_ahrs.is_ahrs_calibrated == 0)
-	{
-		calibrate_ahrs();
-	}
-  ////////////////////////////////////////////////////////////////////////
-  // Body accelerations
-  
-	phi -=  cali_ahrs.bias_north;
-	theta -= cali_ahrs.bias_east;
   BoundAbs(phi, RadOfDeg(50));
   BoundAbs(theta, RadOfDeg(50));
   float az = DR_FILTER_GRAVITY / cosf(theta * DR_FILTER_THRUSTCORR) / cosf(phi * DR_FILTER_THRUSTCORR);
@@ -110,8 +97,6 @@ float log_mx, log_my;
 float mx, my;
 int transfer_measurement_local_2_global(float *mx, float *my, float dx, float dy);
 
-void pushJungleGateDetection(void);
-
 void filter_correct(void)
 {
   // Retrieve oldest element of state buffer (that corresponds to current vision measurement) // TODO: should we not empirically determine the delay (is it now just guessed?)
@@ -145,12 +130,6 @@ void filter_correct(void)
       return;
     }
   }
-
-  /*
-  filteredX = dr_state.x;
-  filteredY = dr_state.y;
-  return;
-  */
 }
 
 
@@ -206,26 +185,6 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 	return dr_state.assigned_gate_index;
 }
 
-void pushJungleGateDetection(void)
-{
-  if (gates[dr_fp.gate_nr].type == JUNGLE && jungleGate.flagJungleGateDetected == false
-      && jungleGate.numJungleGateDetection < MAX_DETECTION) {
-    jungleGate.jungleGateDetectionZ[jungleGate.numJungleGateDetection] = dr_vision.dz;
-    jungleGate.jungleGateDetectionY[jungleGate.numJungleGateDetection] = dr_vision.dy;
-    jungleGate.sumJungleGateHeight += dr_vision.dz;
-    jungleGate.numJungleGateDetection++;
-    jungleGate.jungleGateHeight = jungleGate.sumJungleGateHeight / jungleGate.numJungleGateDetection;
-    if (jungleGate.numJungleGateDetection == MAX_DETECTION) {
-      jungleGate.flagJungleGateDetected = true;
-      if (jungleGate.jungleGateHeight > 0.0) {
-        flagHighOrLowGate = UPPER_GATE;
-      } else {
-        flagHighOrLowGate = LOWER_GATE;
-      }
-    }
-  }
-}
-
 
 int get_time_stamp()
 {
@@ -256,38 +215,4 @@ void calibrate_detection(float *mx,float *my)
 
 }
 
-void calibrate_ahrs_init()
-{
-    cali_ahrs.sum_bias_north = 0.0;
-    cali_ahrs.sum_bias_east = 0.0;
-    cali_ahrs.counter= 0;
-    cali_ahrs.is_ahrs_calibrated = 0;
-}
 
-void calibrate_ahrs()
-{
-	int counter_start = 1000;
-	int counter_end = 2000;
-
-	if(cali_ahrs.counter<counter_start)
-	{
-		if(cali_ahrs.counter%10==0)
-			printf("Calibrating AHRS [%.1f %%]\n",0.0);
-	}
-
-	if(cali_ahrs.counter > counter_start && cali_ahrs.counter < counter_end)
-	{
-		cali_ahrs.sum_bias_east += stateGetNedToBodyEulers_f()->phi;
-		cali_ahrs.sum_bias_north += stateGetNedToBodyEulers_f()->theta;
-		if(cali_ahrs.counter%10==0)
-			printf("Calibrating AHRS [%.1f %%]\n",((float)cali_ahrs.counter-(float)counter_start)/(counter_end-counter_start)*100.0);
-	}
-	if(cali_ahrs.counter > counter_end)
-	{
-		cali_ahrs.bias_north = cali_ahrs.sum_bias_north/(counter_end-counter_start);
-		cali_ahrs.bias_east = cali_ahrs.sum_bias_east/(counter_end-counter_start);
-		cali_ahrs.is_ahrs_calibrated = 1;
-		printf("ahrs calibration is done\n");
-	}
-	cali_ahrs.counter ++;
-}

@@ -8,27 +8,12 @@
 #include "control.h"
 
 struct dronerace_fp_struct dr_fp;
-
-struct jungle_gate_struct jungleGate;
-void checkJungleGate(void);
 void generate_waypoints_from_gates(void);
 
 int flagHighOrLowGate;
 float dist_2_gate;
 int num_lap;
 
-// X, Y, ALT, PSI
-/*
-#define MAX_GATES 1
-const struct dronerace_flightplan_item_struct gates[MAX_GATES] = {
-    {0.0, 0.0, 1.5, RadOfDeg(0)},
-};
-*/
-
-
-
-// Note: pprz has positive Z here, while jevois has negative Z
-// both_side: bool in Jevois code, 0 or 1 here.
 const struct dronerace_flightplan_item_struct gates[MAX_GATES] = {
   //  X-coordinate  Y-coordinate  Z-coordinate   Psi-gate          Speed    Type-of-gate  Brake-at-gate   Distance-after gate       both side
   {   4.0,          0.0,          -1.5,          RadOfDeg(0),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
@@ -48,33 +33,6 @@ static void update_gate_setpoints(void)
   dr_fp.gate_speed = gates[dr_fp.gate_nr].speed;
 }
 
-
-void flightplan_list(void)
-{
-  int i;
-  for (i = 0; i < MAX_GATES; i++) {
-    if (gates[i].type != VIRTUAL) {
-      float dx = gates[i].x - dr_state.x;
-      float dy = gates[i].y - dr_state.y;
-      float yaw = gates[i].psi - dr_state.psi;
-      float dist = sqrt(dx * dx + dy * dy);
-      if (dist == 0.0) {
-        dist = 0.0001f;
-      }
-      float size =  1.4f * 340.0f / dist;
-      // dist = 1.4f * 340.0f / ((float)size);
-      float bearing = atan2(dy, dx);
-      float view = bearing - dr_state.psi;
-      if ((view > -320.0f / 340.0f) && (view < 320.0f / 340.0f)
-          && ((yaw > -RadOfDeg(90.0f)) && (yaw < RadOfDeg(90.0f)))
-         ) {
-        float px = view * 340.0f + 320.0f;
-        //printf("Expected gates: %d  %.1f s=%.1f heading %.1f rot %.1f\n", i, dist, size, px, yaw * 57.6f);
-      }
-    }
-  }
-}
-
 void flightplan_reset()
 {
   // Current Gate
@@ -88,7 +46,6 @@ void flightplan_reset()
   dr_fp.psi_set = 0;
   num_lap = 0;
 
-  resetJungleGate();
   generate_waypoints_from_gates();
 }
 
@@ -109,8 +66,6 @@ void flightplan_run(void)
   dr_fp.y_set = waypoints_dr[dr_fp.gate_nr].y;
   dr_fp.z_set = dr_fp.gate_z;
 
-  checkJungleGate();
-
   // Estimate distance to the gate
   correctedX = dr_state.x + dr_ransac.corr_x;
   correctedY = dr_state.y + dr_ransac.corr_y;
@@ -118,12 +73,6 @@ void flightplan_run(void)
   dx = waypoints_dr[dr_fp.gate_nr].x - correctedX;
   dy = waypoints_dr[dr_fp.gate_nr].y - correctedY;
   dist = sqrt((dx * dx) + (dy * dy));
-
-  /*
-  printf("Gate nr: %d, vision count = %d, nr msm in buffer = %d, (x,y) = (%f, %f), (cx, cy) = (%f, %f), (real_x, real_y) = (%f, %f)\n",
-         dr_fp.gate_nr, dr_vision.cnt, dr_ransac.buf_size, dr_state.x, dr_state.y, correctedX, correctedY,
-         stateGetPositionNed_f()->x, stateGetPositionNed_f()->y);
-  */
 
   // Align with current gate
   dr_fp.psi_set = dr_fp.gate_psi + num_lap*2*3.14;
@@ -134,9 +83,6 @@ void flightplan_run(void)
   // If too close to the gate to see the gate, heading to next gate
   if (dist_2_gate < DISTANCE_GATE_NOT_IN_SIGHT) {
     if ((dr_fp.gate_nr + 1) < MAX_GATES) {
-      //dx = gates[dr_fp.gate_nr + 1].x - filteredX;
-      //dy = gates[dr_fp.gate_nr + 1].y - filteredY;
-      //dr_fp.psi_set = atan2(dy, dx);
       dr_fp.psi_set = (gates[dr_fp.gate_nr+1].psi)+num_lap*2*3.14;
     }
 	else
@@ -149,52 +95,13 @@ void flightplan_run(void)
   // If close to desired position, switch to next
   if (dist < DISTANCE_ARRIVED_AT_WP) {
     dr_fp.gate_nr ++;
-    reset_local_reference();
     if (dr_fp.gate_nr >= MAX_GATES) {
       dr_fp.gate_nr = 0;
 	  num_lap++;
     }
 
-    //printf("\n\n*** RESET DUE TO NEXT GATE ***\n\n");
-    // correct the state predictions, refresh the ransac buffer:
-    //correct_state();
   }
 }
-
-
-#define MAX_TIME_JUNGLE_GATE_DETECTION 1.0
-void checkJungleGate()
-{
-  // get the time when enter jungle gate logic
-  if (gates[dr_fp.gate_nr].type == JUNGLE && jungleGate.flagInJungleGate == false) {
-    jungleGate.flagInJungleGate = 1;
-    jungleGate.timeStartJungleGate = dr_state.time; // TODO: this will compile but don't know if it is correct
-  }
-
-
-  // if there is no detection within 1s, it is likely to be a low gate
-  // When determine the gate is in high or low position, send controller desired altitude
-  if (gates[dr_fp.gate_nr].type == JUNGLE && jungleGate.flagJungleGateDetected == 1) {
-    // TODO: altitudes in the simulator are positive... is this also the case for the real bebop?
-    if (flagHighOrLowGate == UPPER_GATE) {
-      dr_fp.z_set = -2.2;
-    } else {
-      dr_fp.z_set = -1.2;
-    }
-  }
-
-}
-
-
-void resetJungleGate()
-{
-  jungleGate.flagJungleGateDetected = false;
-  jungleGate.numJungleGateDetection = 0;
-  jungleGate.jungleGateHeight = 0;
-  jungleGate.sumJungleGateHeight = 0;
-  jungleGate.flagInJungleGate = false;
-}
-
 
 // #define DEBUG_WP_GENERATION
 void generate_waypoints_from_gates()
