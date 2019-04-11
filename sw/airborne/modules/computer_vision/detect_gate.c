@@ -122,7 +122,7 @@ static pthread_mutex_t gate_detect_mutex;            ///< Mutex lock fo thread s
 // Module variables
 struct vision_relative_position_struct {
   int received;
-  int8 cnt;
+  uint16_t cnt;
   float x;
   float y;
   float z;

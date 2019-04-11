@@ -33,7 +33,7 @@
             <!-- 2 kHz periodic -->
             <configure name="PERIODIC_FREQUENCY" value="2048"/>
 
-            <define name="HFF_PRESCALER" value="40" /><!-- FIXME: determine fully correct one-->
+            <define name="HFF_PRESCALER" value="40"/><!-- FIXME: determine fully correct one-->
             <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
             <configure name="AHRS_CORRECT_FREQUENCY" value="2000"/>
             <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/> <!-- 75 or 160 max -->
@@ -47,7 +47,7 @@
             <configure name="TELEMETRY_FREQUENCY" value="120"/>
             <configure name="MODULES_FREQUENCY" value="2048"/>
 
-            <define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> <!-- handy with the short flight time between tuning sets, not tested if it works yet, this board we have 16kb reserved -->
+            <!--<define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> --><!-- handy with the short flight time between tuning sets, not tested if it works yet, this board we have 16kb reserved -->
             <define name="BAT_CHECKER_DELAY" value="70"/>  <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
             <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="90"/> <!-- in 10/s seconds-->
         </target>
@@ -90,7 +90,7 @@
         </module>
 
         <!-- not all are tested or tuned -->
-        <module name="stabilization" type="rate"/><!-- not working yet..)
+       <!-- <module name="stabilization" type="rate"/>--><!-- not working yet..)
         <!-- <module name="stabilization" type="rate_indi"/> -->
         <module name="stabilization" type="int_quat"/>
         <!--<module name="stabilization" type="float_quat"/>-->
@@ -100,10 +100,10 @@
         <module name="ins" type="extended"/>
 
         <!-- Not yet tested -->
-        <module name="osd_max7456">
+        <!--<module name="osd_max7456">
            <configure name="MAX7456_SPI_DEV" value="SPI2"/>
            <configure name="MAX7456_SLAVE_IDX" value="SPI_SLAVE1"/>
-        </module>
+        </module>-->
 
         <!-- <module name="filter_1euro_imu"> -->
             <!--<define name="IMU_F1E_ID" value="30"/>-->
@@ -119,7 +119,7 @@
             <!--<define name="AHRS_ICQ_IMU_ID" value="IMU_F1E_ID"/>
             <define name="AHRS_ALIGNER_IMU_ID" value="IMU_F1E_ID"/>-->
 
-            <configure name="USE_MAGNETOMETER" value="FALSE" />
+            <configure name="USE_MAGNETOMETER" value="FALSE"/>
             <define name="AHRS_USE_GPS_HEADING" value="TRUE"/> <!-- True for Optitrack false for real magneto-->
             <define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="TRUE"/> <!-- for dronerace -->
             <define name="AHRS_GRAVITY_HEURISTIC_FACTOR" value="0"/> <!-- TODO: determine best... Default is 30. Reduce accelerometer cut-off frequency when the vehicle is accelerating: norm(ax,ay,az) 9,81 m/s2. WARNING: when the IMU is not well damped, the norm of accelerometers never equals to 9,81 m/s2. As a result, the GRAVITY_HEURISTIC_FACTOR will reduce the accelerometer bandwith even if the vehicle is not accelerating. -->
@@ -136,6 +136,7 @@
             <configure name="JEVOIS_UART" value="UART1"/>
             <configure name="JEVOIS_BAUD" value="B115200"/>
         </module>
+
         <module name="gps" type="datalink"/> <!-- using optitrack and natnet2ivy -->
 
         <!-- No I2C bus yet... still need to find some good spot for I2C pins... except straigt on MCU solder blobs -->
@@ -145,8 +146,8 @@
         </module>
         -->
 
-        <module name="geo_mag"/>
-        <module name="air_data"/>
+        <!--<module name="geo_mag"/>
+        <<module name="air_data"/>-->
 
         <!-- below temporary until tested then disable it -->
         <!-- <module name="send_imu_mag_current"/> -->
@@ -184,9 +185,9 @@
     </servos>
 
     <commands>
-        <axis name="ROLL"   failsafe_value="0"/>
-        <axis name="PITCH"  failsafe_value="0"/>
-        <axis name="YAW"    failsafe_value="0"/>
+        <axis name="ROLL" failsafe_value="0"/>
+        <axis name="PITCH" failsafe_value="0"/>
+        <axis name="YAW" failsafe_value="0"/>
         <axis name="THRUST" failsafe_value="0"/>
     </commands>
 
@@ -227,9 +228,9 @@
 
     <section name="IMU" prefix="IMU_">
 
-        <define name="BODY_TO_IMU_PHI"   value="0." unit="deg"/>
+        <define name="BODY_TO_IMU_PHI" value="0." unit="deg"/>
         <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
-        <define name="BODY_TO_IMU_PSI"   value="90." unit="deg"/>
+        <define name="BODY_TO_IMU_PSI" value="90." unit="deg"/>
 
         <!-- Tere is no MAG per default, but in case one adds one , make it correct -->
         <define name="MAG_X_SIGN" value="1"/>
@@ -300,17 +301,17 @@
         <define name="REF_MAX_R"    value="180." unit="deg/s"/>
         <define name="REF_MAX_RDOT" value="RadOfDeg(1800.)"/>
 
-        <define name="PHI_PGAIN" value="180"/>
-        <define name="PHI_DGAIN" value="65"/>
+        <define name="PHI_PGAIN" value="185"/>
+        <define name="PHI_DGAIN" value="70"/>
         <define name="PHI_IGAIN" value="1"/>
 
-        <define name="THETA_PGAIN" value="170"/>
-        <define name="THETA_DGAIN" value="65"/>
+        <define name="THETA_PGAIN" value="185"/>
+        <define name="THETA_DGAIN" value="70"/>
         <define name="THETA_IGAIN" value="1"/>
 
-        <define name="PSI_PGAIN" value="200"/>
-        <define name="PSI_DGAIN" value="60"/>
-        <define name="PSI_IGAIN" value="1"/>
+        <define name="PSI_PGAIN" value="350"/>
+        <define name="PSI_DGAIN" value="100"/>
+        <define name="PSI_IGAIN" value="3"/>
 
         <define name="PHI_DDGAIN"   value="0"/>
         <define name="THETA_DDGAIN" value="0"/>
@@ -369,46 +370,46 @@
     <!-- when using stabilization type indi use ones below, not tuned yet! -->
     <section name="STABILIZATION_ATTITUDE_INDI" prefix="STABILIZATION_INDI_">
         <!-- control effectiveness -->
-        <define name="G1_P" value="0.05" />
-        <define name="G1_Q" value="0.025" />
-        <define name="G1_R" value="0.0022" />
-        <define name="G2_R" value="0.20" />
+        <define name="G1_P" value="0.05"/>
+        <define name="G1_Q" value="0.025"/>
+        <define name="G1_R" value="0.0022"/>
+        <define name="G2_R" value="0.20"/>
 
         <!-- For some airframes, e.g. Bebop2 we need to filter the roll rate due to the dampers -->
-        <define name="FILTER_ROLL_RATE" value="FALSE" />
-        <define name="FILTER_PITCH_RATE" value="FALSE" />
-        <define name="FILTER_YAW_RATE" value="FALSE" />
+        <define name="FILTER_ROLL_RATE" value="FALSE"/>
+        <define name="FILTER_PITCH_RATE" value="FALSE"/>
+        <define name="FILTER_YAW_RATE" value="FALSE"/>
 
         <!-- reference acceleration for attitude control -->
-        <define name="REF_ERR_P" value="170.0" />
-        <define name="REF_ERR_Q" value="600.0" />
-        <define name="REF_ERR_R" value="600.0" />
-        <define name="REF_RATE_P" value="14.3" />
-        <define name="REF_RATE_Q" value="28.0" />
-        <define name="REF_RATE_R" value="28.0" />
+        <define name="REF_ERR_P" value="170.0"/>
+        <define name="REF_ERR_Q" value="600.0"/>
+        <define name="REF_ERR_R" value="600.0"/>
+        <define name="REF_RATE_P" value="14.3"/>
+        <define name="REF_RATE_Q" value="28.0"/>
+        <define name="REF_RATE_R" value="28.0"/>
 
         <!-- second order filter parameters -->
-        <define name="ESTIMATION_FILT_CUTOFF" value="4.0" />
-        <define name="FILT_CUTOFF" value="5.0" />
-        <define name="FILT_CUTOFF_P" value="5.0" />
+        <define name="ESTIMATION_FILT_CUTOFF" value="4.0"/>
+        <define name="FILT_CUTOFF" value="5.0"/>
+        <define name="FILT_CUTOFF_P" value="5.0"/>
 
         <!-- first order actuator dynamics (indi_simple) -->
-        <define name="ACT_DYN_P" value="0.06" />
-        <define name="ACT_DYN_Q" value="0.06" />
-        <define name="ACT_DYN_R" value="0.06" />
+        <define name="ACT_DYN_P" value="0.06"/>
+        <define name="ACT_DYN_Q" value="0.06"/>
+        <define name="ACT_DYN_R" value="0.06"/>
 
         <!-- Adaptive Learning Rate -->
-        <define name="USE_ADAPTIVE" value="TRUE" />
-        <define name="ADAPTIVE_MU" value="0.0003" />
+        <define name="USE_ADAPTIVE" value="TRUE"/>
+        <define name="ADAPTIVE_MU" value="0.0003"/>
 
         <!--Maxium yaw rate, to avoid instability -->
-        <define name="MAX_R" value="120" unit="deg/s" />
+        <define name="MAX_R" value="120" unit="deg/s"/>
     </section>
 
     <section name="GUIDANCE_V" prefix="GUIDANCE_V_">
-        <define name="HOVER_KP"    value="150"/>
-        <define name="HOVER_KD"    value="80"/>
-        <define name="HOVER_KI"    value="20"/>
+        <define name="HOVER_KP" value="150"/>
+        <define name="HOVER_KD" value="80"/>
+        <define name="HOVER_KI" value="20"/>
         <define name="NOMINAL_HOVER_THROTTLE" value="0.33"/>
         <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
     </section>
@@ -449,8 +450,8 @@
     <section name="AUTOPILOT">
         <define name="MODE_STARTUP" value="AP_MODE_ATTITUDE_DIRECT"/><!-- if GNSS use AP_MODE_NAV ...-->
         <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
-        <define name="MODE_AUTO1"  value="AP_MODE_RATE_DIRECT"/><!-- for now...-->
-        <define name="MODE_AUTO2"  value="AP_MODE_GUIDED"/> <!-- for dronerrace -->
+        <define name="MODE_AUTO1" value="AP_MODE_RATE_DIRECT"/><!-- for now...-->
+        <define name="MODE_AUTO2" value="AP_MODE_GUIDED"/> <!-- for dronerrace -->
        <!-- <define name="MODE_AUTO2"  value="AP_MODE_NAV"/>--> <!-- If GNSS device is added for autonomous flight -->
         <define name="USE_THROTTLE_FOR_MOTOR_ARMING" value="TRUE"/>
         <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
@@ -469,7 +470,7 @@
     </section>
 
     <section name="SIMULATOR" prefix="NPS_">
-        <define name="ACTUATOR_NAMES"  value="FL, FR, BR, BL" type="string[]"/>
+        <define name="ACTUATOR_NAMES" value="FL, FR, BR, BL" type="string[]"/>
         <define name="JSBSIM_MODEL" value="simple_quad" type="string"/>
         <define name="SENSORS_PARAMS" value="nps_sensors_params_default.h" type="string"/>
         <!-- mode switch on joystick channel 5 (axis numbering starting at zero) -->
