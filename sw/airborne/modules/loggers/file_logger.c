@@ -120,7 +120,7 @@ void file_logger_periodic(void)
     return;
   }
   static uint32_t counter;
-  struct Int32Quat *quat = stateGetNedToBodyQuat_i();
+  //struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
   fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d\n",
           counter,
@@ -185,11 +185,11 @@ void file_logger_periodic(void)
           POS_FLOAT_OF_BFP(guidance_h.sp.pos.y),
           POS_FLOAT_OF_BFP(guidance_v_z_sp),
           guidance_h.sp.heading,
-		  0,
-		  0,
+		  0.0,
+		  0.0,
           dist_2_gate,
-		  0,
-		  0,
+		  0.0,
+		  0.0,
 
           indi_ctrl.r_ref,
           indi_ctrl.psi_err,

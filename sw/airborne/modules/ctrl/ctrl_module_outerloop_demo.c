@@ -92,7 +92,6 @@ void guidance_h_module_run(bool in_flight)
 
   stabilization_attitude_set_rpy_setpoint_i(&(ctrl.cmd));
   stabilization_attitude_run(in_flight);
-
   // Alternatively, use the indi_guidance and send AbiMsgACCEL_SP to it instead of setting pitch and roll
 }
 

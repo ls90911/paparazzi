@@ -148,7 +148,7 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
     {
         // Variables
         int n_samples = ((int)(dr_ransac.buf_size * 0.4));
-        int n_iterations = 200;
+        int n_iterations = 20;
         float error_threshold = 1.0;
         // int Dimension = 1;
         int count = dr_ransac.buf_size;
