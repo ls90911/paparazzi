@@ -141,6 +141,7 @@ void dronerace_periodic(void)
     if(previous_autopilot_mode != autopilot.mode)
     {
         control_reset();
+		filter_reset();
     }
 
 
