@@ -40,7 +40,7 @@ struct dronerace_ransac_buf_struct
 
 // Variables
 extern struct dronerace_ransac_struct dr_ransac;
-extern void ransac_update_buffer_size(void);
+
 
 // Reset
 extern void ransac_reset(void);
@@ -57,4 +57,5 @@ extern void ransac_push(float time, float _x, float _y, float _mx, float _my,int
 extern struct dronerace_ransac_buf_struct ransac_buf[RANSAC_BUF_SIZE];
 extern int get_index(int element);
 extern void prediction_correct(void);
+extern void ransac_update_buffer_size(void);
 #endif

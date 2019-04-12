@@ -40,7 +40,7 @@ struct jungle_gate_struct
 // Variables
 extern struct dronerace_fp_struct dr_fp;
 
-#define MAX_GATES 1
+#define MAX_GATES 4
 
 #define  REGULAR 0
 #define JUNGLE 1
@@ -72,7 +72,6 @@ extern float dist_2_gate;
 extern void flightplan_reset(void);
 extern void flightplan_run(void);
 extern void resetJungleGate(void);
-extern void flightplan_list(void);
 //extern struct dronerace_flightplan_item_struct waypoints_dr[MAX_GATES];
 
 #endif

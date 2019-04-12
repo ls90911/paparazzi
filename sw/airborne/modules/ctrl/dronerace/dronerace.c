@@ -53,40 +53,7 @@ volatile float input_dz = 0;
 
 uint8_t previous_autopilot_mode;
 
-struct GUIDANCE_INDI_VAR
-{
-    bool flag_wp_set;
-    int counter_time;
-};
-
-
-struct GUIDANCE_INDI_VAR gui_indi_var;
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// LOGGING
-
-//#include <stdio.h>
-
-/** Set the default File logger path to the USB drive */
-#ifndef FILE_LOGGER_PATH
-  #if SIMULATE
-    #define FILE_LOGGER_PATH .
-  #else
-    #define FILE_LOGGER_PATH /data/ftp/internal_000
-  #endif
-#endif
-
-// What type of log to make during flight:
-#define CHRISTOPHE_LOG 0
-#define OLD_LOG 1
-#define FULL_LOG 2
-#define TYPE_LOG FULL_LOG
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// TELEMETRY
-
-
+#include <stdio.h>
 // sending the divergence message to the ground station:
 static void send_dronerace(struct transport_tx *trans, struct link_device *dev)
 {
@@ -145,14 +112,8 @@ void dronerace_init(void)
   // Send telemetry
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_OPTICAL_FLOW_HOVER, send_dronerace);
 
-  // Start Logging
-//  open_log();
-
-  // Compute waypoints
-  reference_init();
   dronerace_enter();
   filter_reset();
-
 }
 
 float psi0 = 0;
@@ -165,19 +126,6 @@ void dronerace_enter(void)
   prediction_correct(); // it is called by module_enter(), when the mode is changed, the prediction should go to estimation instead of 0
   control_reset();
   previous_autopilot_mode = autopilot.mode;
-
-  for (int i=0;i<MAX_GATES;i++)
-  {
-    struct EnuCoor_f enu_g = {.x=gates[i].y, .y=gates[i].x, .z=-gates[i].z};
-    struct EnuCoor_f enu_w = {.x=waypoints_dr[i].y, .y=waypoints_dr[i].x, .z=-waypoints_dr[i].z};
-    if (gates[i].type == VIRTUAL) {
-      enu_g.x = -10;
-      enu_g.y = 0;
-    }
-    waypoint_set_enu( WP_G1+i, &enu_g);
-    waypoint_set_enu( WP_p1+i, &enu_w);
-    //printf("Moved %f %f \n", enu_g.x, enu_g.y);
-  }
 }
 
 #ifndef PREDICTION_BIAS_PHI
@@ -193,17 +141,13 @@ void dronerace_periodic(void)
     if(previous_autopilot_mode != autopilot.mode)
     {
         control_reset();
-        gui_indi_var.counter_time = 0;
-        gui_indi_var.flag_wp_set = false;
+		filter_reset();
     }
 
 
-
-  float phi_bias = RadOfDeg(PREDICTION_BIAS_PHI);
-  float theta_bias = RadOfDeg(PREDICTION_BIAS_THETA);
-
-  input_phi = stateGetNedToBodyEulers_f()->phi - phi_bias;
-  input_theta = stateGetNedToBodyEulers_f()->theta - theta_bias;
+  //  test_guidance_indi_temp_run();
+  input_phi = stateGetNedToBodyEulers_f()->phi;
+  input_theta = stateGetNedToBodyEulers_f()->theta;
   input_psi = stateGetNedToBodyEulers_f()->psi - psi0;
 
   filter_predict(input_phi,input_theta,input_psi, dt);
@@ -217,37 +161,10 @@ void dronerace_periodic(void)
     dr_vision.dz = input_dz;
 
     filter_correct();
-
-    //flightplan_list();
-  }
-
-  //printf("before write log\n");
-  //write_log();
-  //printf("after write log\n");
-
-  {
-    struct NedCoor_f target_ned;
-    target_ned.x = dr_fp.gate_y;
-    target_ned.y = dr_fp.gate_x;
-    target_ned.z = -dr_fp.gate_z;
-
-    if (autopilot.mode_auto2 == AP_MODE_MODULE) {
-      ENU_BFP_OF_REAL(navigation_carrot, target_ned);
-      ENU_BFP_OF_REAL(navigation_target, target_ned);
-
-    }
   }
 
 
   previous_autopilot_mode = autopilot.mode;
-  // Show position on the map
-  /*
-  struct NedCoor_f pos;
-  pos.x = dr_state.x;
-  pos.y = dr_state.y;
-  pos.z = sonar_bebop.distance; // Hardcoded push of sonar to the altitude
-  //stateSetPositionNed_f(&pos);
-*/
 }
 
 void dronerace_set_rc(UNUSED float rt, UNUSED float rx, UNUSED float ry, UNUSED float rz)
@@ -257,33 +174,15 @@ void dronerace_set_rc(UNUSED float rt, UNUSED float rx, UNUSED float ry, UNUSED 
 void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
 {
 
-  //control_run();  // periodic function
+  control_run();
 
   *phi = dr_control.phi_cmd;
   *theta = dr_control.theta_cmd;
-  *psi_cmd = dr_control.psi_cmd + psi0;
-  *alt =dr_control.z_cmd;
+  *psi_cmd = dr_control.psi_ref;
+  *alt = - dr_control.z_cmd;
 
   guidance_v_z_sp = POS_BFP_OF_REAL(dr_control.z_cmd);
   
 }
 
-float scale_heading(float heading)
-{
-	int i = 1;
 
-	while(heading>3.14 || heading < -3.14)
-	{
-		if(heading > 3.14)
-		{
-			heading -= 2*3.14;
-		}
-		else if(heading < -3.14)
-		{
-			heading += 2*3.14;
-		}
-		i++;
-		//printf("scale_heading heading = %f\n,heading");
-	}
-	return heading;
-}

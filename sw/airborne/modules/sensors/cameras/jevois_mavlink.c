@@ -150,8 +150,8 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &filteredY,
                                &filteredVx,
                                &filteredVy,
-                               &ref.pos.x, 
-                               &ref.pos.y, 
+                               &filteredX, 
+                               &filteredY, 
                                &indi_ctrl.vx_cmd,
                                &indi_ctrl.vy_cmd,
                                &cnt_temp

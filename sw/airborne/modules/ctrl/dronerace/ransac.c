@@ -129,8 +129,6 @@ void correct_state() {
 void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_stamp)
 {
     int i = 0;
-	vision_x_earth = _mx;
-	vision_y_earth = _my;
 
     // Insert the new sample in the buffer
     dr_ransac.buf_index_of_last++;
@@ -150,7 +148,7 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
     {
         // Variables
         int n_samples = ((int)(dr_ransac.buf_size * 0.4));
-        int n_iterations = 20; //was 200 gave issue for looptime taken on F4;
+        int n_iterations = 20;
         float error_threshold = 1.0;
         // int Dimension = 1;
         int count = dr_ransac.buf_size;
@@ -194,37 +192,39 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
         // Put EVERY FIT in a file to verify
 #define DEBUG_RANSAC
 #ifdef DEBUG_RANSAC
+		/*
 
         if(dr_ransac.ransac_cnt % 10000 == 0)
         {
-            //char filename[128];
-            //FILE* fp;
-            //sprintf(filename,"ransac%06d.txt",dr_ransac.ransac_cnt);
-            //fp = fopen(filename,"w");
+            char filename[128];
+            FILE* fp;
+            sprintf(filename,"ransac%06d.txt",dr_ransac.ransac_cnt);
+            fp = fopen(filename,"w");
             // fprintf(fp,"nr,time,x,y,mx,my,fitx,fity\n");
             // printf("t=%f %f\n\n",dr_state.time,dr_ransac.dt_max);
             for (i=0;i<dr_ransac.buf_size;i++)
             {
-                //float t_fit = (ransac_buf[get_index(i)].time - dr_state.time);
-//                fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n",i,ransac_buf[get_index(i)].time,
-//                        ransac_buf[get_index(i)].x,
-//                        ransac_buf[get_index(i)].y,
-//                        ransac_buf[get_index(i)].mx,
-//                        ransac_buf[get_index(i)].my,
-//                        ransac_buf[get_index(i)].x + dr_ransac.corr_x + t_fit * dr_ransac.corr_vx,
-//                        ransac_buf[get_index(i)].y + dr_ransac.corr_y + t_fit * dr_ransac.corr_vy,
-//                        ransac_buf[get_index(i)].time_stamp
-//                );
+                float t_fit = (ransac_buf[get_index(i)].time - dr_state.time);
+                fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n",i,ransac_buf[get_index(i)].time,
+                        ransac_buf[get_index(i)].x,
+                        ransac_buf[get_index(i)].y,
+                        ransac_buf[get_index(i)].mx,
+                        ransac_buf[get_index(i)].my,
+                        ransac_buf[get_index(i)].x + dr_ransac.corr_x + t_fit * dr_ransac.corr_vx,
+                        ransac_buf[get_index(i)].y + dr_ransac.corr_y + t_fit * dr_ransac.corr_vy,
+                        ransac_buf[get_index(i)].time_stamp
+                );
             }
 			{
-			  //float gate = (float) dr_fp.gate_nr;
-			  //float assigned = (float) dr_state.assigned_gate_index;
-	          //fprintf(fp,"%d,%f,%f,%f,%f,%f,%f,%f,%d\n", -1 , gate, assigned,  params_x[0], params_x[1], params_y[0], params_y[1] ,0.0f);
+			  float gate = (float) dr_fp.gate_nr;
+			  float assigned = (float) dr_state.assigned_gate_index;
+	          fprintf(fp,"%d,%d,%f,%f,%f,%f,%f,%f,%d\n", -1 , gate, assigned,  params_x[0], params_x[1], params_y[0], params_y[1] ,0.0f);
 			}
 
             // fprintf(fp,"\n\n X = %f %f Y = %f  %f \n",params_x[0], params_x[1], params_y[0], params_y[1] );
-            //fclose(fp);
+            fclose(fp);
         }
+		*/
 #endif
 
     }

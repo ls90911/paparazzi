@@ -15,14 +15,9 @@
 
 struct dronerace_state_struct dr_state;
 struct dronerace_vision_struct dr_vision;
-struct calibrate_ahrs_struct cali_ahrs = {0,0,0,0,0,0};
 int detection_time_stamp;
-void calibrate_detection(float *measured_x,float *measured_y);
-void calibrate_ahrs(void);
-void calibrate_ahrs_init(void);
+void calibrate_detection(float *mx,float *my);
 int assigned_gate = 0;
-float vision_x_earth;
-float vision_y_earth;
 
 void filter_reset()
 {
@@ -43,7 +38,6 @@ void filter_reset()
   // Vision latency
   fifo_reset();
   ransac_reset();
-  calibrate_ahrs_init();
 }
 
 float filteredX, filteredY, filteredVx,filteredVy;
@@ -62,15 +56,6 @@ float filteredX, filteredY, filteredVx,filteredVy;
 
 void filter_predict(float phi, float theta, float psi, float dt)
 {
-	if (cali_ahrs.is_ahrs_calibrated == 0)
-	{
-		calibrate_ahrs();
-	}
-  ////////////////////////////////////////////////////////////////////////
-  // Body accelerations
-  
-	phi -=  cali_ahrs.bias_north;
-	theta -= cali_ahrs.bias_east;
   BoundAbs(phi, RadOfDeg(50));
   BoundAbs(theta, RadOfDeg(50));
   float az = DR_FILTER_GRAVITY / cosf(theta * DR_FILTER_THRUSTCORR) / cosf(phi * DR_FILTER_THRUSTCORR);
@@ -112,8 +97,6 @@ float log_mx, log_my;
 float mx, my;
 int transfer_measurement_local_2_global(float *mx, float *my, float dx, float dy);
 
-void pushJungleGateDetection(void);
-
 void filter_correct(void)
 {
   // Retrieve oldest element of state buffer (that corresponds to current vision measurement) // TODO: should we not empirically determine the delay (is it now just guessed?)
@@ -126,10 +109,14 @@ void filter_correct(void)
   //  && dr_vision.dz > -2.5
   if (gates[dr_fp.gate_nr].type != VIRTUAL) {
 
+
+
     //calibrate_detection(&mx,&my);
     assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
 
     if (assigned_gate == dr_fp.gate_nr) {
+
+
 
       // Push to RANSAC
       detection_time_stamp = get_time_stamp();
@@ -139,33 +126,41 @@ void filter_correct(void)
       filteredY = dr_state.y + dr_ransac.corr_y;
       filteredVx = dr_state.vx + dr_ransac.corr_vx;
       filteredVy = dr_state.vy + dr_ransac.corr_vy;
+      
       return;
     }
   }
-
-  /*
-  filteredX = dr_state.x;
-  filteredY = dr_state.y;
-  return;
-  */
 }
 
 
 int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float dy)
 {
 	int i;
-	//int j;
+	float min_distance = 9999;
 
 	dr_state.assigned_gate_index = -1;
-	float min_distance;
 
 	for (i = 0; i < MAX_GATES; i++) {
 		if (gates[i].type != VIRTUAL) {
 
-			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			dr_state.psi = 0;
-			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			
+			/*
+			float exp_dx = gates[i].x - dr_state.x;
+			float exp_dy = gates[i].y - dr_state.y;
+			//float exp_yaw = scale_heading(gates[i].psi) - scale_heading(dr_state.psi);
+			float exp_yaw = 0;
+			float exp_dist = sqrtf(exp_dx * exp_dx + exp_dy * exp_dy);
+			if (exp_dist == 0.0) {
+				exp_dist = 0.0001f;
+			}
+			float exp_size =  1.4f * 340.0f / exp_dist;
+			// dist = 1.4f * 340.0f / ((float)size);
+			float exp_bearing = atan2(exp_dy, exp_dx);
+			float exp_view = exp_bearing - dr_state.psi;
+			if ((exp_view > -320.0f / 340.0f) && (exp_view < 320.0f / 340.0f)
+					&& ((exp_yaw > -RadOfDeg(60.0f)) && (exp_yaw < RadOfDeg(60.0f)))
+			   ) {
+
+			   */
 				float rot_dx = cosf(dr_state.psi) * dx -sinf(dr_state.psi) * dy;
 				float rot_dy = sinf(dr_state.psi) * dx + cosf(dr_state.psi) * dy;
 
@@ -174,18 +169,13 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 				float distance_measured_2_drone = 0;
 				distance_measured_2_drone = (x - (dr_state.x + dr_ransac.corr_x)) * (x - (dr_state.x + dr_ransac.corr_x)) +
 					(y - (dr_state.y + dr_ransac.corr_y)) * (y - (dr_state.y + dr_ransac.corr_y));
-				if(i==0)
-				{
-					min_distance = distance_measured_2_drone;
-					*_mx = x;
-					*_my = y;
-				}
 				if (distance_measured_2_drone < min_distance) {
 					dr_state.assigned_gate_index = i;
 					min_distance = distance_measured_2_drone;
 					*_mx = x;
 					*_my = y;
 				}
+			//}
 		}
 	}
 	if(dr_state.assigned_gate_index == -1) {
@@ -195,23 +185,22 @@ int transfer_measurement_local_2_global(float *_mx, float *_my, float dx, float 
 	return dr_state.assigned_gate_index;
 }
 
-void pushJungleGateDetection(void)
-{
-}
-
 
 int get_time_stamp()
 {
-	//FIXME: LOWPRIORITY
-  //struct timeval te;
-  //gettimeofday(&te, NULL); // get current time
-  //long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
-  //int timeStamp = milliseconds%100000;
+/*
+  struct timeval te;
+  gettimeofday(&te, NULL); // get current time
+  long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000;
+  int timeStamp = milliseconds%100000;
   //printf("Timestamp: %d\n",timeStamp);
-  return 1;//timeStamp;
+  return timeStamp;
+  */
+	return 1;
 }
 
-void calibrate_detection(float *measured_x,float *measured_y)
+
+void calibrate_detection(float *mmx,float *mmy)
 {
     float k0_x = -0.0;
     float k1_x = 0.0;
@@ -221,18 +210,12 @@ void calibrate_detection(float *measured_x,float *measured_y)
     float k1_y = 0.0;
     float k2_y = -0.0;
 
-    float x = *measured_x;
-    float y = *measured_y;
+    float x = *mmx;
+    float y = *mmy;
 
-    *measured_x = x + k0_x + k1_x*x+k2_x*x*x;
-    *measured_y = y + k0_y + k1_y*y+k2_y*y*y;
+    *mmx = x + k0_x + k1_x*x+k2_x*x*x;
+    *mmy = y + k0_y + k1_y*y+k2_y*y*y;
 
 }
 
-void calibrate_ahrs_init()
-{
-}
 
-void calibrate_ahrs()
-{
-}
