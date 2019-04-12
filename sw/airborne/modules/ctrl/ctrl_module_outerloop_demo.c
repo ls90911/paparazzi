@@ -74,6 +74,7 @@ void guidance_h_module_read_rc(void)
 }
 
 
+struct Int32Eulers att_cmd;
 void guidance_h_module_run(bool in_flight)
 {
   // YOUR NEW HORIZONTAL OUTERLOOP CONTROLLER GOES HERE
@@ -90,8 +91,9 @@ void guidance_h_module_run(bool in_flight)
   ctrl.cmd.psi = ANGLE_BFP_OF_REAL(yaw);
 
 
-  stabilization_attitude_set_rpy_setpoint_i(&(ctrl.cmd));
+
+  int32_quat_of_eulers(&stab_att_sp_quat,&ctrl.cmd);
+  //stabilization_attitude_set_rpy_setpoint_i(&(ctrl.cmd));
   stabilization_attitude_run(in_flight);
-  // Alternatively, use the indi_guidance and send AbiMsgACCEL_SP to it instead of setting pitch and roll
 }
 

@@ -37,6 +37,7 @@
 #include "modules/sensors/cameras/jevois_mavlink.h"
 #include "firmwares/rotorcraft/guidance/guidance_h.h"
 #include "firmwares/rotorcraft/guidance/guidance_v.h"
+#include "modules/ctrl/ctrl_module_outerloop_demo.h"
 
 #include "subsystems/imu.h"
 #ifdef COMMAND_THRUST

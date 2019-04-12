@@ -44,5 +44,6 @@ extern void guidance_h_module_init(void);
 extern void guidance_h_module_enter(void);
 extern void guidance_h_module_read_rc(void);
 extern void guidance_h_module_run(bool in_flight);
+extern struct ctrl_module_demo_struct ctrl; 
 
 #endif /* CTRL_MODULE_OUTERLOOP_DEMO_H_ */

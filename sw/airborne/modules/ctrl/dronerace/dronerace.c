@@ -177,7 +177,7 @@ void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
 
   *phi = dr_control.phi_cmd;
   *theta = dr_control.theta_cmd;
-  *psi_cmd = dr_control.psi_cmd + psi0;
+  *psi_cmd = dr_control.psi_ref;
   *alt = - dr_control.z_cmd;
 
   guidance_v_z_sp = POS_BFP_OF_REAL(dr_control.z_cmd);
