@@ -20,9 +20,9 @@ float k_d_vel_x = 0.1;
 float k_p_vel_y = 0.3;
 float k_d_vel_y = 0.1;
 
-float k_p_pos_x = 0.5;
+float k_p_pos_x = 0.8;
 float k_d_pos_x = 0.1;
-float k_p_pos_y = 0.5;
+float k_p_pos_y = 0.8;
 float k_d_pos_y = 0.1;
 float vx_error_previous = 0.0;
 float vy_error_previous = 0.0;
