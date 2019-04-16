@@ -55,10 +55,11 @@ void control_reset(void)
 }
 
 
+float vxcmd,vycmd;
 void control_run(void)
 {
   float dt = 1.0/512.0;
-  float psi, vxcmd, vycmd, r_cmd, ax, ay;
+  float psi,r_cmd, ax, ay;
   // Propagate the flightplan
   flightplan_run();
   psi = dr_state.psi;

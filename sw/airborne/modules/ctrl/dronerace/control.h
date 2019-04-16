@@ -96,4 +96,6 @@ extern float k_d_pos_x;
 extern float k_p_pos_y;
 extern float k_d_pos_y;
 extern int flag_record_video;
+extern float vxcmd;
+extern float vycmd;
 #endif

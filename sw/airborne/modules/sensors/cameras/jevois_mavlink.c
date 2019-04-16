@@ -69,6 +69,7 @@ static void mavlink_send_heartbeat(void);
 static void mavlink_send_attitude(void);
 static void mavlink_send_highres_imu(void);
 static void mavlink_send_set_mode(void);
+static void mavlink_send_control_system_state(void);
 
 /*
  * Exported data
@@ -214,9 +215,10 @@ void jevois_mavlink_init(void)
 void jevois_mavlink_periodic(void)
 {
   RunOnceEvery(100, mavlink_send_heartbeat());
-  RunOnceEvery(2, mavlink_send_attitude());
+  //RunOnceEvery(2, mavlink_send_attitude());
   RunOnceEvery(1, mavlink_send_highres_imu());
-  RunOnceEvery(1, mavlink_send_set_mode());
+  RunOnceEvery(20, mavlink_send_set_mode());
+  RunOnceEvery(10,mavlink_send_control_system_state());
 }
 
 #ifndef JEVOIS_MAVLINK_ABI_ID
@@ -395,3 +397,37 @@ static void mavlink_send_highres_imu(void)
   MAVLinkSendMessage();
 }
 
+float velocity_sp[3] = {0.,0.,0.};
+float position_sp[3] = {0.,0.,0.};
+float control_sp[4] = {0.,0.,0.,0.};
+
+static void mavlink_send_control_system_state(void)
+{
+  velocity_sp[0] = vxcmd;
+  velocity_sp[1] = vycmd;
+  control_sp[0] = dr_control.phi_cmd;
+  control_sp[1] = dr_control.theta_cmd;
+  control_sp[2] = dr_control.psi_cmd;
+  control_sp[3] = dr_control.z_cmd;
+  position_sp[0] = dr_fp.x_set;
+  position_sp[1] = dr_fp.y_set;
+  mavlink_msg_control_system_state_send(MAVLINK_COMM_0,
+		                          get_sys_time_msec(),
+								  0.0,
+								  0.0,
+								  0.0,
+								  filteredVx,
+								  filteredVy,
+								  (float)dr_fp.gate_nr,
+								  filteredX,
+								  filteredY,
+								  dr_state.x,
+								  dr_state.y,
+								  velocity_sp,
+								  position_sp,
+								  control_sp,
+								  0.0,
+								  0.0,
+								  0.0);
+  MAVLinkSendMessage();
+}

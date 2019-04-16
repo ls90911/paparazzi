@@ -131,6 +131,7 @@
 
         <!-- only for... dronerace... -->
         <module name="dronerace"/>
+        <module name="ctrl_module_outerloop_demo"/>
 
         <module name="jevois_mavlink">
             <configure name="JEVOIS_UART" value="UART1"/>
@@ -451,7 +452,7 @@
         <define name="MODE_STARTUP" value="AP_MODE_ATTITUDE_DIRECT"/><!-- if GNSS use AP_MODE_NAV ...-->
         <define name="MODE_MANUAL" value="AP_MODE_ATTITUDE_DIRECT"/>
         <define name="MODE_AUTO1" value="AP_MODE_RATE_DIRECT"/><!-- for now...-->
-        <define name="MODE_AUTO2" value="AP_MODE_GUIDED"/> <!-- for dronerrace -->
+        <define name="MODE_AUTO2" value="AP_MODE_MODULE"/> <!-- for dronerrace -->
        <!-- <define name="MODE_AUTO2"  value="AP_MODE_NAV"/>--> <!-- If GNSS device is added for autonomous flight -->
         <define name="USE_THROTTLE_FOR_MOTOR_ARMING" value="TRUE"/>
         <define name="NO_RC_THRUST_LIMIT" value="TRUE"/>
