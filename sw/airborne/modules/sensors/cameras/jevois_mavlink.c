@@ -132,6 +132,7 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
 	float theta = stateGetNedToBodyEulers_f()->theta;
 	float psi = stateGetNedToBodyEulers_f()->psi;
     cnt_temp = jevois_vision_position.cnt;
+	float buf_size = (float)dr_ransac.buf_size;
     pprz_msg_send_DRONERACE_DEBUG(trans, dev, AC_ID,
                                &heart_beat,
                                //&jevois_vision_position.x,
@@ -141,7 +142,7 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &phi,
                                &theta,
                                &psi,
-                               &x_OT,
+                               &buf_size,
                                &y_OT,
                                &vx_OT,
                                &vy_OT,
@@ -154,7 +155,7 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &filteredX, 
                                &filteredY, 
                                &indi_ctrl.vx_cmd,
-                               &indi_ctrl.vy_cmd,
+                               &dr_state.time,
                                &cnt_temp
 								 );
 
@@ -215,10 +216,9 @@ void jevois_mavlink_init(void)
 void jevois_mavlink_periodic(void)
 {
   RunOnceEvery(100, mavlink_send_heartbeat());
-  //RunOnceEvery(2, mavlink_send_attitude());
+  RunOnceEvery(2, mavlink_send_attitude());
   RunOnceEvery(1, mavlink_send_highres_imu());
-  RunOnceEvery(20, mavlink_send_set_mode());
-  RunOnceEvery(10,mavlink_send_control_system_state());
+  RunOnceEvery(1, mavlink_send_set_mode());
 }
 
 #ifndef JEVOIS_MAVLINK_ABI_ID

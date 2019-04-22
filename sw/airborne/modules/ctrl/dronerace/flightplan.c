@@ -17,9 +17,11 @@ int num_lap;
 const struct dronerace_flightplan_item_struct gates[MAX_GATES] = {
   //  X-coordinate  Y-coordinate  Z-coordinate   Psi-gate          Speed    Type-of-gate  Brake-at-gate   Distance-after gate       both side
   {   4.0,          0.0,          -1.5,          RadOfDeg(0),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
+  /*
   {   5.0,          5.0,          -1.5,          RadOfDeg(90),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
   {   1.0,          6.0,          -1.5,          RadOfDeg(180),      1.2f,    REGULAR,      NO_BRAKE,       1.0,                      0},
   {   0.0,          1.0,          -1.5,          RadOfDeg(270),      1.2f,    REGULAR,      NO_BRAKE,       2.0,                      0},
+  */
 };
 
 struct dronerace_flightplan_item_struct waypoints_dr[MAX_GATES];

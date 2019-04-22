@@ -9,8 +9,10 @@
 #include "stdio.h"
 #include "ransac.h"
 #include <time.h>
+#include "dronerace.h"
 // to know if we are simulating:
 #include "generated/airframe.h"
+#include "modules/sensors/cameras/jevois_mavlink.h"
 
 
 struct dronerace_state_struct dr_state;
@@ -18,6 +20,7 @@ struct dronerace_vision_struct dr_vision;
 int detection_time_stamp;
 void calibrate_detection(float *mx,float *my);
 int assigned_gate = 0;
+
 
 void filter_reset()
 {
@@ -96,9 +99,12 @@ void filter_predict(float phi, float theta, float psi, float dt)
 float log_mx, log_my;
 float mx, my;
 int transfer_measurement_local_2_global(float *mx, float *my, float dx, float dy);
+int filter_cnt = 55;
 
 void filter_correct(void)
 {
+	filter_cnt++;
+	//heart_beat = filter_cnt;
   // Retrieve oldest element of state buffer (that corresponds to current vision measurement) // TODO: should we not empirically determine the delay (is it now just guessed?)
   float sx, sy, sz;
 
@@ -114,7 +120,8 @@ void filter_correct(void)
     //calibrate_detection(&mx,&my);
     assigned_gate = transfer_measurement_local_2_global(&mx, &my, dr_vision.dx, dr_vision.dy);
 
-    if (assigned_gate == dr_fp.gate_nr) {
+    //if (assigned_gate == dr_fp.gate_nr) {
+    if (1) {
 
 
 

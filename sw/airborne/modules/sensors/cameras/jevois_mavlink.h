@@ -75,6 +75,7 @@ extern void jevois_mavlink_init(void);
 extern void jevois_mavlink_periodic(void);
 extern void jevois_mavlink_filter_periodic(void);
 extern void jevois_mavlink_event(void);
+extern uint8_t heart_beat;
 
 #endif
 

@@ -39,8 +39,9 @@
 
 // to know if we are simulating:
 #include "generated/airframe.h"
+int flag_heading_align = 0;
 
-float dt = 1.0f / 512.f;
+float dt = 1.0f / 5000.f;
 
 float input_phi;
 float input_theta;
@@ -50,6 +51,7 @@ volatile int input_cnt = 0;
 volatile float input_dx = 0;
 volatile float input_dy = 0;
 volatile float input_dz = 0;
+long long time_cnt = 0;
 
 uint8_t previous_autopilot_mode;
 
@@ -142,8 +144,16 @@ void dronerace_periodic(void)
     {
         control_reset();
 		filter_reset();
+		ahrs_fc_realign_heading(0.0);
     }
 
+	if(flag_heading_align)
+	{
+		ahrs_fc_realign_heading(0.0);
+		flag_heading_align = 0;
+		control_reset();
+		filter_reset();
+	}
 
   //  test_guidance_indi_temp_run();
   input_phi = stateGetNedToBodyEulers_f()->phi;
@@ -185,5 +195,4 @@ void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
   guidance_v_set_guided_z(-1.5);
   
 }
-
 
