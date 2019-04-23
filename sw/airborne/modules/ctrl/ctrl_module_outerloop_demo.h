@@ -29,6 +29,7 @@
 #define CTRL_MODULE_OUTERLOOP_DEMO_H_
 
 #include <std.h>
+#include "autopilot.h"
 
 // Settings
 extern float comode_time;
@@ -38,6 +39,15 @@ extern float comode_time;
 
 // But re-using an existing altitude-hold controller
 #define GUIDANCE_V_MODE_MODULE_SETTING GUIDANCE_V_MODE_HOVER
+
+struct ctrl_module_demo_struct {
+// RC Inputs
+  struct Int32Eulers rc_sp;
+
+// Output command
+  struct Int32Eulers cmd;
+
+};
 
 // Implement own Horizontal loops
 extern void guidance_h_module_init(void);

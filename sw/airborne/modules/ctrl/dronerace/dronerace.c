@@ -142,10 +142,9 @@ void dronerace_periodic(void)
 {
     if(previous_autopilot_mode != autopilot.mode)
     {
-        control_reset();
-		filter_reset();
 		ahrs_fc_realign_heading(0.0);
     }
+	/*
 
 	if(flag_heading_align)
 	{
@@ -172,6 +171,7 @@ void dronerace_periodic(void)
 
     filter_correct();
   }
+  */
 
 
   previous_autopilot_mode = autopilot.mode;
@@ -184,15 +184,17 @@ void dronerace_set_rc(UNUSED float rt, UNUSED float rx, UNUSED float ry, UNUSED 
 void dronerace_get_cmd(float* alt, float* phi, float* theta, float* psi_cmd)
 {
 
+	/*
   control_run();
 
   *phi = dr_control.phi_cmd;
   *theta = dr_control.theta_cmd;
   *psi_cmd = dr_control.psi_ref;
   *alt = - dr_control.z_cmd;
+  */
 
   guidance_v_mode_changed(GUIDANCE_V_MODE_GUIDED);
-  guidance_v_set_guided_z(-1.5);
+  guidance_v_set_guided_z(-2.0);
   
 }
 

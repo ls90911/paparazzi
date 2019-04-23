@@ -50,6 +50,7 @@
 #include "firmwares/rotorcraft/guidance/guidance_h.h"
 #include "firmwares/rotorcraft/guidance/guidance_v.h"
 #include "subsystems/imu.h"
+#include "modules/ctrl/ctrl_module_outerloop_demo.h"
 #ifdef COMMAND_THRUST
 #include "firmwares/rotorcraft/stabilization.h"
 #else
@@ -119,6 +120,9 @@ void jevois_mavlink_filter_init(void)
  * Paparazzi Module functions : forward to telemetry
  */
 uint16_t cnt_temp;
+uint16_t cnt_att_cmd = 0;
+float roll_cmd;
+float pitch_cmd;
 static void send_dronerace_debug_info(struct transport_tx *trans, struct link_device *dev)
 {
 	//if (jevois_vision_position.received) {
@@ -131,12 +135,10 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
 	float phi = stateGetNedToBodyEulers_f()->phi;
 	float theta = stateGetNedToBodyEulers_f()->theta;
 	float psi = stateGetNedToBodyEulers_f()->psi;
-    cnt_temp = jevois_vision_position.cnt;
+    //cnt_temp = jevois_vision_position.cnt;
 	float buf_size = (float)dr_ransac.buf_size;
     pprz_msg_send_DRONERACE_DEBUG(trans, dev, AC_ID,
-                               &heart_beat,
-                               //&jevois_vision_position.x,
-                               //&jevois_vision_position.y,
+                               &jevois_vision_position.cnt,
 							   &mx,
 							   &my,
                                &phi,
@@ -146,8 +148,8 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &y_OT,
                                &vx_OT,
                                &vy_OT,
-                               &dr_state.x,
-                               &dr_state.y,
+                               &roll_cmd,
+                               &pitch_cmd,
                                &filteredX,
                                &filteredY,
                                &filteredVx,
@@ -156,7 +158,7 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &filteredY, 
                                &indi_ctrl.vx_cmd,
                                &dr_state.time,
-                               &cnt_temp
+                               &cnt_att_cmd
 								 );
 
 }
@@ -216,7 +218,7 @@ void jevois_mavlink_init(void)
 void jevois_mavlink_periodic(void)
 {
   RunOnceEvery(100, mavlink_send_heartbeat());
-  RunOnceEvery(2, mavlink_send_attitude());
+  //RunOnceEvery(2, mavlink_send_attitude());
   RunOnceEvery(1, mavlink_send_highres_imu());
   RunOnceEvery(1, mavlink_send_set_mode());
 }
@@ -287,16 +289,19 @@ void jevois_mavlink_event(void)
           mavlink_manual_setpoint_t jevois_mavlink_manual_setpoint;
           mavlink_msg_manual_setpoint_decode(&msg, &jevois_mavlink_manual_setpoint);
 
+		  /*
           AbiSendMsgMANUAL_SETPOINT(JEVOIS_MAVLINK_ABI_ID, jevois_mavlink_manual_setpoint.thrust,
                                     jevois_mavlink_manual_setpoint.roll,
                                     jevois_mavlink_manual_setpoint.pitch,
                                     jevois_mavlink_manual_setpoint.yaw);
-
-//          DEBUG_PRINT("[jevois mavlink] phi_cmd = %f\n", DegOfRad(jevois_mavlink_manual_setpoint.roll));
-//          DEBUG_PRINT("[jevois mavlink] theta_cmd = %f\n", DegOfRad(jevois_mavlink_manual_setpoint.pitch));
-//          DEBUG_PRINT("[jevois mavlink] psi_cmd = %f\n", DegOfRad(jevois_mavlink_manual_setpoint.yaw));
-//          DEBUG_PRINT("[jevois mavlink] alt_cmd = %f\n", jevois_mavlink_manual_setpoint.thrust);
-
+									*/
+		 
+		  roll_cmd = jevois_mavlink_manual_setpoint.roll;
+		  pitch_cmd = jevois_mavlink_manual_setpoint.pitch;
+		  ctrl.cmd.phi = ANGLE_BFP_OF_REAL(jevois_mavlink_manual_setpoint.roll);
+		  ctrl.cmd.theta = ANGLE_BFP_OF_REAL(jevois_mavlink_manual_setpoint.pitch);
+		  ctrl.cmd.psi = ANGLE_BFP_OF_REAL(jevois_mavlink_manual_setpoint.yaw);
+		  cnt_att_cmd++;
         }
         break;
 
@@ -326,6 +331,15 @@ void jevois_mavlink_event(void)
           //}
         }
         break;
+
+		case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
+		{
+			mavlink_local_position_ned_t mavlink_local_position_ned;
+			mavlink_msg_local_position_ned_decode(&msg,&mavlink_local_position_ned);
+			filteredX = mavlink_local_position_ned.x;
+			filteredY = mavlink_local_position_ned.y;
+		}
+		break;
         default:
         	break;
 
@@ -358,7 +372,7 @@ static void mavlink_send_set_mode(void)
 {
   mavlink_msg_set_mode_send(MAVLINK_COMM_0,
                             get_sys_time_msec(),
-                            0, //autopilotMode.currentMode,
+                            autopilot.mode,
                             0
                            );
   MAVLinkSendMessage();
