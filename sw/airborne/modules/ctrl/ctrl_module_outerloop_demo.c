@@ -30,6 +30,7 @@
 #include "firmwares/rotorcraft/stabilization.h"
 #include "firmwares/rotorcraft/stabilization/stabilization_attitude.h"
 #include "firmwares/rotorcraft/stabilization/stabilization_attitude_rc_setpoint.h"
+#include "firmwares/rotorcraft/guidance/guidance_v.h"
 
 // Own Variables
 
@@ -85,6 +86,8 @@ void guidance_h_module_run(bool in_flight)
   ctrl.cmd.psi = ANGLE_BFP_OF_REAL(yaw);
   */
 
+  guidance_v_mode_changed(GUIDANCE_V_MODE_GUIDED);
+  guidance_v_set_guided_z(-1.5);
 
 
   int32_quat_of_eulers(&stab_att_sp_quat,&ctrl.cmd);

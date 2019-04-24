@@ -551,21 +551,24 @@ void guidance_v_guided_run(bool in_flight)
 bool guidance_v_set_guided_z(float z)
 {
   if (guidance_v_mode == GUIDANCE_V_MODE_GUIDED) {
-    /* disable vertical velocity setpoints */
-    guidance_v_guided_mode = GUIDANCE_V_GUIDED_MODE_ZHOLD;
+	  if(POS_FLOAT_OF_BFP(z) != guidance_v_z_sp)
+	  {
+		  /* disable vertical velocity setpoints */
+		  guidance_v_guided_mode = GUIDANCE_V_GUIDED_MODE_ZHOLD;
 
-    /* set altitude setpoint */
-    guidance_v_z_sp = POS_BFP_OF_REAL(z);
+		  /* set altitude setpoint */
+		  guidance_v_z_sp = POS_BFP_OF_REAL(z);
 
-    /* reset speed setting */
-    guidance_v_zd_sp = 0;
+		  /* reset speed setting */
+		  guidance_v_zd_sp = 0;
 
-    /* reset guidance reference */
-	/*
-    guidance_v_z_sum_err = 0;
-    GuidanceVSetRef(stateGetPositionNed_i()->z, stateGetSpeedNed_i()->z, 0);
-	*/
-    return true;
+		  /* reset guidance reference */
+		  /*
+			 guidance_v_z_sum_err = 0;
+			 GuidanceVSetRef(stateGetPositionNed_i()->z, stateGetSpeedNed_i()->z, 0);
+			 */
+		  return true;
+	  }
   }
   return false;
 }
