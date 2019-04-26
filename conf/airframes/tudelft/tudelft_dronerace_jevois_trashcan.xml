@@ -282,7 +282,7 @@
 
         <define name="SP_MAX_PHI"     value="50." unit="deg"/>
         <define name="SP_MAX_THETA"   value="50." unit="deg"/>
-        <define name="SP_MAX_R"       value="90." unit="deg/s"/>
+        <define name="SP_MAX_R"       value="200." unit="deg/s"/>
         <define name="DEADBAND_A"     value="2"/>
         <define name="DEADBAND_E"     value="2"/>
         <define name="DEADBAND_R"     value="100"/>
@@ -411,7 +411,7 @@
         <define name="HOVER_KP" value="180"/>
         <define name="HOVER_KD" value="80"/>
         <define name="HOVER_KI" value="20"/>
-        <define name="NOMINAL_HOVER_THROTTLE" value="0.33"/>
+        <define name="NOMINAL_HOVER_THROTTLE" value="0.36"/>
         <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
     </section>
 

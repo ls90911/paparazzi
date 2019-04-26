@@ -87,7 +87,7 @@ void guidance_h_module_run(bool in_flight)
   */
 
   guidance_v_mode_changed(GUIDANCE_V_MODE_GUIDED);
-  guidance_v_set_guided_z(-1.5);
+  guidance_v_set_guided_z(-1.7);
 
 
   int32_quat_of_eulers(&stab_att_sp_quat,&ctrl.cmd);
