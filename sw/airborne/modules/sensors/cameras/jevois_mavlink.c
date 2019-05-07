@@ -403,10 +403,10 @@ static void mavlink_send_highres_imu(void)
                                stateGetNedToBodyEulers_f()->phi,
                                stateGetNedToBodyEulers_f()->theta,
                                stateGetNedToBodyEulers_f()->psi,
-                               0,
-                               0,
-                               0,
-                               0,
+                               stateGetPositionNed_f()->x,
+                               stateGetPositionNed_f()->y,
+                               stateGetSpeedNed_f()->x,
+                               stateGetSpeedNed_f()->y,
                                0);
   MAVLinkSendMessage();
 }
