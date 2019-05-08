@@ -312,7 +312,7 @@
 
         <define name="PSI_PGAIN" value="550"/>
         <define name="PSI_DGAIN" value="100"/>
-        <define name="PSI_IGAIN" value="3"/>
+        <define name="PSI_IGAIN" value="20"/>
 
         <define name="PHI_DDGAIN"   value="0"/>
         <define name="THETA_DDGAIN" value="0"/>
@@ -411,9 +411,10 @@
         <define name="HOVER_KP" value="180"/>
         <define name="HOVER_KD" value="80"/>
         <define name="HOVER_KI" value="20"/>
-        <define name="NOMINAL_HOVER_THROTTLE" value="0.36"/>
+        <define name="NOMINAL_HOVER_THROTTLE" value="0.36"/> <!-- 0.36-->
         <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
     </section>
+   
 
     <section name="INS" prefix="INS_">
         <!-- Use GPS altitude measurments and set the R gain -->
