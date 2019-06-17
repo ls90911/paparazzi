@@ -30,19 +30,10 @@
 #include "firmwares/rotorcraft/stabilization.h"
 #include "firmwares/rotorcraft/stabilization/stabilization_attitude.h"
 #include "firmwares/rotorcraft/stabilization/stabilization_attitude_rc_setpoint.h"
-#include "autopilot.h"
 #include "firmwares/rotorcraft/guidance/guidance_v.h"
 
 // Own Variables
 
-struct ctrl_module_demo_struct {
-// RC Inputs
-  struct Int32Eulers rc_sp;
-
-// Output command
-  struct Int32Eulers cmd;
-
-} ctrl;
 struct ctrl_module_demo_struct ctrl; 
 
 // Settings
@@ -102,7 +93,5 @@ void guidance_h_module_run(bool in_flight)
   int32_quat_of_eulers(&stab_att_sp_quat,&ctrl.cmd);
   //stabilization_attitude_set_rpy_setpoint_i(&(ctrl.cmd));
   stabilization_attitude_run(in_flight);
-
-  // Alternatively, use the indi_guidance and send AbiMsgACCEL_SP to it instead of setting pitch and roll
 }
 
