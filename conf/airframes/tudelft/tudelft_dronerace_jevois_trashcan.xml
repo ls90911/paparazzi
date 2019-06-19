@@ -64,7 +64,7 @@
         </module>
 
         <module name="motor_mixing"/>
-
+        <module name ="ranger_through_datalink"/>
         <module name="actuators" type="pwm">
             <define name="SERVO_HZ" value="480"/>
         </module>
@@ -414,7 +414,7 @@
         <define name="NOMINAL_HOVER_THROTTLE" value="0.36"/> <!-- 0.36-->
         <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
     </section>
-   
+
 
     <section name="INS" prefix="INS_">
         <!-- Use GPS altitude measurments and set the R gain -->

@@ -1,0 +1,17 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="ranger_through_datalink" dir="sensors">
+  <doc>
+    <description>Gets ranging sensor data through datalink</description>
+      <define name="RANGER_OFFSET" value="0.0" description="Add an offset to the measurments (0. by default)" unit="m"/>
+      <define name="USE_RANGER_AGL" value="TRUE|FALSE" description="Send data as AGL measurments to the system (TRUE by default)"/>
+  </doc>
+  <header>
+    <file name="ranger_through_datalink.h"/>
+  </header>
+  <init fun="ranger_through_datalink_init()"/>
+  <datalink message="SONAR" fun="ranger_through_datalink_parse_msg()"/>
+  <makefile>
+    <file name="ranger_through_datalink.c"/>
+  </makefile>
+</module>
