@@ -50,8 +50,8 @@ CXXSTANDARD ?= -std=c++0x
 CINCS = $(INCLUDES) -I$(PAPARAZZI_SRC)/sw/include
 
 # add syscalls and c++ new/delete operators
-$(TARGET).srcs += c++.cpp pprz_syscalls.c
-#$(TARGET).CXXFLAGS += -wfno-sized-deallocation
+$(TARGET).srcs += c++.cc pprz_syscalls.c
+$(TARGET).CXXFLAGS += -wfno-sized-deallocation
 
 # input files
 SRCS = $($(TARGET).srcs)
