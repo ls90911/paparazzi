@@ -40,6 +40,8 @@ struct Debug_indi
     float vz_sp;
     float vz_error;
     float az_sp;
+	float az_error;
+	float incremental_z;
 };
 
 extern struct Debug_indi debug_indi;

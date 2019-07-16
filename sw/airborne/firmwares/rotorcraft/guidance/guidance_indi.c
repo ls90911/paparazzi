@@ -273,6 +273,8 @@ void guidance_indi_run(float heading_sp)
   guidance_euler_cmd.theta = pitch_filt.o[0] + control_increment.x;
   guidance_euler_cmd.phi = roll_filt.o[0] + control_increment.y;
   guidance_euler_cmd.psi = heading_sp;
+  debug_indi.az_error = a_diff.z;
+  debug_indi.incremental_z = control_increment.z;
 
 #ifdef GUIDANCE_INDI_SPECIFIC_FORCE_GAIN
   guidance_indi_filter_thrust();
