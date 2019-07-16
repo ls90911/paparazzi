@@ -56,7 +56,7 @@ void schedule_run() {
         controllerInUse = NO_CONTROLLER; 
 	flagNN = false;
     }
-    if (autopilot_get_mode() != AP_MODE_MODULE) return;
+    if (autopilot_get_mode() != AP_MODE_GUIDED) return;
 
 
     readDroneState(&currentDroneState);
