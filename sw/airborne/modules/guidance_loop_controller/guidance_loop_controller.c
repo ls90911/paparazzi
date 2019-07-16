@@ -25,14 +25,47 @@
 
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
 #include "modules/guidance_h_module/guidance_h_module.h"
+#include "firmwares/rotorcraft/guidance/guidance_v.h"
 #include "modules/nn/nn.h"
 #include "modules/nn/nn_params.h"
 #include "stdio.h"
 #include "state.h"
 #include<sys/time.h>
 #include "firmwares/rotorcraft/guidance/guidance_indi.h"
-//#include "modules/nn/nn_params.h"
 
+#ifndef GRAVITY_FACTOR
+#define GRAVITY_FACTOR 9.81
+#endif
+
+#ifndef BEBOP_MASS 
+#define BEBOP_MASS 0.389 
+#endif
+
+float nominal_throttle = GUIDANCE_V_NOMINAL_HOVER_THROTTLE;
+
+/*---------------------------From Kirk --------------------------------*/
+#include "filters/low_pass_filter.h"
+
+float thrust_effectiveness = 0.05f; // transfer function from G to thrust percentage
+float error_integrator = 0.f;
+//#include "modules/nn/nn_params.h"
+#ifndef NN_FILTER_CUTOFF
+#define NN_FILTER_CUTOFF 1.5f
+#endif
+
+#ifndef THRUST_P_GAIN
+#define THRUST_P_GAIN 0.7
+#endif
+#ifndef THRUST_I_GAIN
+#define THRUST_I_GAIN 0.3
+#endif
+
+float thrust_p_gain = THRUST_P_GAIN;
+float thrust_i_gain = THRUST_I_GAIN;
+
+Butterworth2LowPass accel_ned_filt;
+
+/*--------------------------------------------------------------------*/
 
 enum ControllerInUse controllerInUse;
 struct Pos hoverPos;
@@ -130,8 +163,12 @@ void nn_controller(float desired_x,float desired_z)
 	    hoverPos.z = stateGetPositionNed_f()->z;
 
 	    guidance_h_set_guided_heading(0);
-	    guidance_v_set_guided_z(desired_z);
+	    //guidance_v_set_guided_z(desired_z);
 	    gettimeofday(&NN_start, 0);
+		float tau = 1.f / (2.f * M_PI * NN_FILTER_CUTOFF);
+		float sample_time = 1.f / PERIODIC_FREQUENCY;
+		init_butterworth_2_low_pass(&accel_ned_filt, tau, sample_time, 0.0);
+		error_integrator = 0.0;
     }
 
     nn_x_sp = desired_x;
@@ -179,6 +216,19 @@ void nn_controller(float desired_x,float desired_z)
 	
 	nn_cmd.FL = F_min+(F_max-F_min)*control[0];
 	nn_cmd.FR = F_min+(F_max-F_min)*control[1];
+
+	static float error_integrator = 0.f;
+	struct NedCoor_f *accel = stateGetAccelNed_f();
+	update_butterworth_2_low_pass(&accel_ned_filt, accel->z);
+
+	float filtered_az = (accel_ned_filt.o[0]-GRAVITY_FACTOR)/cosf(stateGetNedToBodyEulers_f()->theta);
+	float error_az = (nn_cmd.FL+nn_cmd.FR)/BEBOP_MASS -filtered_az;
+	error_integrator += error_az / PERIODIC_FREQUENCY;
+	float thrust_sp = (error_az*thrust_p_gain + error_integrator*thrust_i_gain)*thrust_effectiveness
+      + nominal_throttle;
+	
+	
+
 }
 
 bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_heading)
