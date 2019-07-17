@@ -329,8 +329,8 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
   // Shuo add for NN ----------------------------------------------------------------------------------------------------
   dq_indi = indi.angular_accel_ref.q;
   dq_nn= 0.0;
-  //if(flagNN == true)
-  if(0)
+  if(flagNN == true)
+  //if(0)
   {
 	  float rate_ref_q = nn_cmd.rate_ref;
       float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+

@@ -57,16 +57,16 @@ float error_integrator = 0.f;
 #endif
 
 #ifndef THRUST_P_GAIN
-#define THRUST_P_GAIN -1.5
+#define THRUST_P_GAIN -1.7
 #endif
 
 
 #ifndef THRUST_D_GAIN
-#define THRUST_D_GAIN -0.8
+#define THRUST_D_GAIN -0.3
 #endif
 
 #ifndef THRUST_I_GAIN
-#define THRUST_I_GAIN -0.6
+#define THRUST_I_GAIN -0.1
 #endif
 
 float thrust_p_gain = THRUST_P_GAIN;
@@ -236,8 +236,22 @@ void nn_controller(float desired_x,float desired_z)
 	static float previous_error = 0.f;
 	struct NedCoor_f *accel = stateGetAccelNed_f();
 	update_butterworth_2_low_pass(&accel_ned_filt, accel->z);
-	//sp_accel.z = (nn_cmd.FL+nn_cmd.FR)/BEBOP_MASS;
-	sp_accel.z = -10.5;
+	sp_accel.z = -(nn_cmd.FL+nn_cmd.FR)/BEBOP_MASS;
+	
+	/*
+	if(getTime(2)<2)
+	{
+		sp_accel.z = -10.5;
+	}
+	else if(getTime(2)<3)
+	{
+		sp_accel.z = -6.0;
+	}
+	else
+	{
+		sp_accel.z = -12.0;
+	}
+	*/
 
 	float filtered_az = (accel_ned_filt.o[0]-GRAVITY_FACTOR)/cosf(stateGetNedToBodyEulers_f()->theta);
 	float error_az = sp_accel.z - filtered_az;
