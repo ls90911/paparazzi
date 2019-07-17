@@ -31,9 +31,10 @@
       <define name="AHRS_GRAVITY_UPDATE_COORDINATED_TURN" value="TRUE"/>
     </module>
     <module name="ins" type="gps_passthrough"/>
+<!--
     <module name="guidance" type="indi">
       <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-1000.0"/>
-    </module>
+    </module> -->
 
     <module name="sys_mon"/>
     <!--module name="geo_mag"/-->
@@ -46,9 +47,11 @@
     <module name="guidance_h_module"/>
     <module name="guidance_v_module"/>
 
+<!--
     <module name="logger_file">
       <define name="FILE_LOGGER_PATH" value="/data/ftp/internal_000"/>
     </module>
+-->
   </firmware>
 
 

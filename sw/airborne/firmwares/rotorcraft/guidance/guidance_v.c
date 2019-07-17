@@ -519,6 +519,7 @@ void guidance_v_guided_enter(void)
 
 void guidance_v_guided_run(bool in_flight)
 {
+	printf("[guidance_v_guided_run] pid vertical loop is running\n");
   switch(guidance_v_guided_mode)
   {
     case GUIDANCE_V_GUIDED_MODE_ZHOLD:
@@ -536,6 +537,7 @@ void guidance_v_guided_run(bool in_flight)
       // Throttle
       guidance_v_z_sp = stateGetPositionNed_i()->z; // for display only
       guidance_v_delta_t = guidance_v_th_sp;
+	printf("[guidance_v_guided_run] thrust command is running\n");
       break;
     default:
       break;

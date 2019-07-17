@@ -158,6 +158,7 @@ void guidance_indi_enter(void)
 int counter = 0;
 void guidance_indi_run(float heading_sp)
 {
+	printf("[guidance_indi_run] guidance indi is running\n");
     counter ++;
   struct FloatEulers eulers_yxz;
   struct FloatQuat * statequat = stateGetNedToBodyQuat_f();
