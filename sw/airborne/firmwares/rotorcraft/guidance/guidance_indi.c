@@ -117,7 +117,7 @@ struct FloatEulers guidance_euler_cmd;
 float thrust_in;
 
 int32_t z_ref;
-struct Debug_indi debug_indi;
+//struct Debug_indi debug_indi;
 static void guidance_indi_propagate_filters(struct FloatEulers *eulers);
 static void guidance_indi_calcG(struct FloatMat33 *Gmat);
 static void guidance_indi_calcG_yxz(struct FloatMat33 *Gmat, struct FloatEulers *euler_yxz);

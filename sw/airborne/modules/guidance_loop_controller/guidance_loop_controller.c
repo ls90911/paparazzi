@@ -31,7 +31,7 @@
 #include "stdio.h"
 #include "state.h"
 #include<sys/time.h>
-#include "firmwares/rotorcraft/guidance/guidance_indi.h"
+//#include "firmwares/rotorcraft/guidance/guidance_indi.h"
 
 #ifndef GRAVITY_FACTOR
 #define GRAVITY_FACTOR 9.81
@@ -41,7 +41,10 @@
 #define BEBOP_MASS 0.389 
 #endif
 
+struct FloatVect3 sp_accel = {0.0, 0.0, 0.0};
 float nominal_throttle = GUIDANCE_V_NOMINAL_HOVER_THROTTLE;
+struct Debug_indi debug_indi;  // not used. For log
+struct Debug_PID_Acceleration debug_pid_acc;
 
 /*---------------------------From Kirk --------------------------------*/
 #include "filters/low_pass_filter.h"
@@ -220,15 +223,21 @@ void nn_controller(float desired_x,float desired_z)
 	static float error_integrator = 0.f;
 	struct NedCoor_f *accel = stateGetAccelNed_f();
 	update_butterworth_2_low_pass(&accel_ned_filt, accel->z);
+	sp_accel.z = (nn_cmd.FL+nn_cmd.FR)/BEBOP_MASS;
 
 	float filtered_az = (accel_ned_filt.o[0]-GRAVITY_FACTOR)/cosf(stateGetNedToBodyEulers_f()->theta);
-	float error_az = (nn_cmd.FL+nn_cmd.FR)/BEBOP_MASS -filtered_az;
+	float error_az = sp_accel.z - filtered_az;
 	error_integrator += error_az / PERIODIC_FREQUENCY;
-	float thrust_sp = (error_az*thrust_p_gain + error_integrator*thrust_i_gain)*thrust_effectiveness
-      + nominal_throttle;
-	
-	
+	float thrust_sp = (error_az*thrust_p_gain + error_integrator*thrust_i_gain)*thrust_effectiveness + nominal_throttle;
+	printf("[guidance_loop_controller] nominal_throttle = %f\n",nominal_throttle);
+	/* --------------------- for log ---------------------------*/
 
+	debug_pid_acc.az_sp = sp_accel.z;
+	debug_pid_acc.az_error = error_az;
+	debug_pid_acc.az_filtered = filtered_az;
+	debug_pid_acc.thrust_sp = thrust_sp;
+	debug_pid_acc.thrust_nominal = nominal_throttle;
+	/* --------------------- for log ---------------------------*/
 }
 
 bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_heading)

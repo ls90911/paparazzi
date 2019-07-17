@@ -34,7 +34,7 @@
 #include "state.h"
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
 #include "firmwares/rotorcraft/stabilization/stabilization_indi_simple.h"
-#include "firmwares/rotorcraft/guidance/guidance_indi.h"
+//#include "firmwares/rotorcraft/guidance/guidance_indi.h"
 #include "modules/nn/nn.h"
 #include "subsystems/actuators/motor_mixing.h"
 
@@ -95,7 +95,7 @@ void file_logger_periodic(void)
   int timeStamp = milliseconds % 100000000;
 
   fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f ,%f,%f,%f,%f,%f,%d,%d,%d,%f,"
-          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", timeStamp,
+          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", timeStamp,
 stateGetPositionNed_f()->x,
 stateGetPositionNed_f()->y,
 stateGetPositionNed_f()->z,
@@ -178,7 +178,13 @@ dq_indi,
 dq_nn,
 
 debug_indi.az_error,
-debug_indi.incremental_z
+debug_indi.incremental_z,
+
+debug_pid_acc.az_sp,
+debug_pid_acc.az_filtered,
+debug_pid_acc.az_error,
+debug_pid_acc.thrust_sp,
+debug_pid_acc.thrust_nominal
          );
   counter++;
 }

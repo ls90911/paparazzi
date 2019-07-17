@@ -33,7 +33,6 @@
 #include "firmwares/rotorcraft/guidance/guidance_h.h"
 #include "modules/scheduleloop/scheduleloop.h"
 #include "modules/guidance_loop_controller/guidance_loop_controller.h"
-#include "modules/guidance_loop_controller/guidance_loop_controller.h"
 
 #ifndef SCALING_COEFF
 #define SCALING_COEFF 1.0  /* squared neighbourhood radius for using the PD */
@@ -96,5 +95,31 @@ extern float psi_c;
 extern float nn_x_sp;
 extern float nn_z_sp;
 extern float scale_factor;
+extern struct FloatVect3 sp_accel;
+
+struct Debug_PID_Acceleration
+{
+	float az_sp;
+	float az_filtered;
+	float az_error;
+	float thrust_sp;
+	float thrust_nominal;
+};
+
+extern struct Debug_PID_Acceleration debug_pid_acc;
+/*-----------------------not used ---------------------*/
+struct Debug_indi
+{
+    float z_sp;
+    float z_ref;
+    float z_error;
+    float vz_sp;
+    float vz_error;
+    float az_sp;
+	float az_error;
+	float incremental_z;
+};
+extern struct Debug_indi debug_indi;
+/*-----------------------not used ---------------------*/
 #endif
 
