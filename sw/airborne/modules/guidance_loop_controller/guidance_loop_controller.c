@@ -57,13 +57,20 @@ float error_integrator = 0.f;
 #endif
 
 #ifndef THRUST_P_GAIN
-#define THRUST_P_GAIN 0.7
+#define THRUST_P_GAIN -1.5
 #endif
+
+
+#ifndef THRUST_D_GAIN
+#define THRUST_D_GAIN -0.8
+#endif
+
 #ifndef THRUST_I_GAIN
-#define THRUST_I_GAIN 0.3
+#define THRUST_I_GAIN -0.6
 #endif
 
 float thrust_p_gain = THRUST_P_GAIN;
+float thrust_d_gain = THRUST_D_GAIN;
 float thrust_i_gain = THRUST_I_GAIN;
 
 Butterworth2LowPass accel_ned_filt;
@@ -107,6 +114,9 @@ bool hover_with_optitrack(float hoverTime)
             printf("hover is initialized\n");
             printf("time 2 is %f\n",getTime(2));
             flagNN = false;
+			float sample_time = 1.f / 100.0;
+			float tau = 1.f / (2.f * M_PI * NN_FILTER_CUTOFF);
+			init_butterworth_2_low_pass(&accel_ned_filt, tau, sample_time, 0.0);
     }
 
     // -------------for log -----------------------
@@ -126,6 +136,10 @@ bool hover_with_optitrack(float hoverTime)
    float_rmat_transp_vmult(&pos_NWU, &R_NED_2_NWU, &pos_NED);
    float_rmat_transp_vmult(&vel_NWU, &R_NED_2_NWU, &vel_NED);
    // ----------------------------------------------
+   struct NedCoor_f *accel = stateGetAccelNed_f();
+   update_butterworth_2_low_pass(&accel_ned_filt, accel->z);
+   float filtered_az = (accel_ned_filt.o[0]-GRAVITY_FACTOR)/cosf(stateGetNedToBodyEulers_f()->theta);
+   debug_pid_acc.az_filtered = filtered_az;
    
    guidance_h_set_guided_pos(0.0, 0.0); 
    guidance_v_set_guided_z(-1.5);
@@ -166,11 +180,9 @@ void nn_controller(float desired_x,float desired_z)
 	    hoverPos.z = stateGetPositionNed_f()->z;
 
 	    guidance_h_set_guided_heading(0);
-	    //guidance_v_set_guided_z(desired_z);
+	    guidance_v_set_guided_z(desired_z);
 	    gettimeofday(&NN_start, 0);
 		float tau = 1.f / (2.f * M_PI * NN_FILTER_CUTOFF);
-		float sample_time = 1.f / PERIODIC_FREQUENCY;
-		init_butterworth_2_low_pass(&accel_ned_filt, tau, sample_time, 0.0);
 		error_integrator = 0.0;
     }
 
@@ -221,15 +233,21 @@ void nn_controller(float desired_x,float desired_z)
 	nn_cmd.FR = F_min+(F_max-F_min)*control[1];
 
 	static float error_integrator = 0.f;
+	static float previous_error = 0.f;
 	struct NedCoor_f *accel = stateGetAccelNed_f();
 	update_butterworth_2_low_pass(&accel_ned_filt, accel->z);
-	sp_accel.z = (nn_cmd.FL+nn_cmd.FR)/BEBOP_MASS;
+	//sp_accel.z = (nn_cmd.FL+nn_cmd.FR)/BEBOP_MASS;
+	sp_accel.z = -10.5;
 
 	float filtered_az = (accel_ned_filt.o[0]-GRAVITY_FACTOR)/cosf(stateGetNedToBodyEulers_f()->theta);
 	float error_az = sp_accel.z - filtered_az;
-	error_integrator += error_az / PERIODIC_FREQUENCY;
-	float thrust_sp = (error_az*thrust_p_gain + error_integrator*thrust_i_gain)*thrust_effectiveness + nominal_throttle;
-	printf("[guidance_loop_controller] nominal_throttle = %f\n",nominal_throttle);
+	error_integrator += error_az / 100.0;
+	float thrust_sp = (error_az*thrust_p_gain + error_integrator*thrust_i_gain + thrust_d_gain*(error_az-previous_error)/100.0)*thrust_effectiveness + nominal_throttle;
+	//printf("[guidance_loop_controller] nominal_throttle = %f\n",nominal_throttle);
+	guidance_v_set_guided_th(thrust_sp);
+
+	previous_error = error_az;
+	
 	/* --------------------- for log ---------------------------*/
 
 	debug_pid_acc.az_sp = sp_accel.z;

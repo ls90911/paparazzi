@@ -329,7 +329,8 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
   // Shuo add for NN ----------------------------------------------------------------------------------------------------
   dq_indi = indi.angular_accel_ref.q;
   dq_nn= 0.0;
-  if(flagNN == true)
+  //if(flagNN == true)
+  if(0)
   {
 	  float rate_ref_q = nn_cmd.rate_ref;
       float dist_square = (stateGetPositionNed_f()->x-nn_x_sp)*(stateGetPositionNed_f()->x-nn_x_sp)+
@@ -352,7 +353,7 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
 
       indi.angular_accel_ref.q = dq_indi + dq_nn; 
 	  rateRef.q_ref = nn_cmd.rate_ref;  
-	  printf("NN rate is running\n");
+	  //printf("NN rate is running\n");
       }
 	  //BoundAbs(rate_ref_r, indi.attitude_max_yaw_rate);
 	  rateRef.q_ref = rate_ref_q;
