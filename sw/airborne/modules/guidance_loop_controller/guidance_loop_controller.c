@@ -304,7 +304,7 @@ bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_h
 }
 
 
-void generate_polynomial_trajectory(float *c_p,float * c_v, float * c_a, float * c_j, 
+void generate_polynomial_trajectory(float **c_p,float * c_v, float * c_a, float * c_j, 
 		                            struct Point_constraints initial_constraints,
 								   	struct Point_constraints final_constraints,
 									float t0, float tf)
@@ -323,17 +323,23 @@ void generate_polynomial_trajectory(float *c_p,float * c_v, float * c_a, float *
     MAKE_MATRIX_PTR(pV, V, 6);
     MAKE_MATRIX_PTR(pb, b, 6);
     pprz_svd_float(pA,W,pV,6,6);
-	float c[6][1];
-    MAKE_MATRIX_PTR(pc, c, 6);
-    pprz_svd_solve_float(pc,pA,W,pV,pb,6,6,1);
-	for(int i = 0; i < 6;i++) c_p[i] = c[i][0];
+    pprz_svd_solve_float(c_p,pA,W,pV,pb,6,6,1);
+	c_v[0] = 5*c_p[0][0]; c_v[1] = 4*c_p[1][0];c_v[2] = 3*c_p[2][0]; c_v[3] = 2*c_p[3][0]; c_v[4] = c_p[4][0];
+    c_a[0] = 20 * c_p[0][0]; c_a[1] = 12 * c_p[1][0]; c_a[2] = 6 * c_p[2][0]; c_a[3] = 2*c_p[3][0];
+    c_j[0] = 60 * c_p[0][0]; c_j[1] = 24 * c_p[1][0]; c_j[2] = 6* c_p[2][0];	
 
 }
+
+float c_p_x[6][1],c_p_y[6][1],c_p_z[6][1],c_p_psi[6][1];
+float c_v_x[5],c_v_y[5],c_v_z[5],c_v_psi[5];
+float c_a_x[4],c_a_y[4],c_a_z[4],c_a_psi[4];
+float c_j_x[3],c_j_y[3],c_j_z[3],c_j_psi[3];
 
 bool differential_flatness_controller(struct Point_constraints xf, struct Point_constraints yf,
 		                              struct Point_constraints zf, struct Point_constraints psif,
 									  float t0, float tf)
 {
+    MAKE_MATRIX_PTR(ptr_c_p_x, c_p_x, 6); MAKE_MATRIX_PTR(ptr_c_p_y, c_p_y, 6); MAKE_MATRIX_PTR(ptr_c_p_z, c_p_z, 6); MAKE_MATRIX_PTR(ptr_c_p_psi, c_p_psi, 6);
 	if(controllerInUse != DIFFERENTIAL_FLATNESS_CONTROLLER)
 	{
 		controllerInUse = DIFFERENTIAL_FLATNESS_CONTROLLER;
@@ -344,8 +350,10 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 	}
 	struct Point_constraints x0 = {0.0,0.0,0.0};
 	struct Point_constraints x_f_temp = {5.0,0.0,0};
-	float c_p[6],c_v[5],c_a[4],c_j[3];
-	generate_polynomial_trajectory(c_p,c_v,c_a,c_j,x0,x_f_temp,0,10);
-	printf("c_p = [%f,%f,%f,%f,%f,%f\n",c_p[0],c_p[1],c_p[2],c_p[3],c_p[4],c_p[5]);
+	generate_polynomial_trajectory(ptr_c_p_x,c_v_x,c_a_x,c_j_x,x0,x_f_temp,0,10);
+	printf("c_p = [%f,%f,%f,%f,%f,%f\n",c_p_x[0][0],c_p_x[1][0],c_p_x[2][0],c_p_x[3][0],c_p_x[4][0],c_p_x[5][0]);
+	printf("c_v = [%f,%f,%f,%f,%f]\n",c_v_x[0],c_v_x[1],c_v_x[2],c_v_x[3],c_v_x[4]);
+	printf("c_a = [%f,%f,%f,%f]\n",c_a_x[0],c_a_x[1],c_a_x[2],c_a_x[3]);
+	printf("c_j = [%f,%f,%f]\n",c_j_x[0],c_j_x[1],c_j_x[2]);
 }
 
