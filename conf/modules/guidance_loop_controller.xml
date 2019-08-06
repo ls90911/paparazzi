@@ -9,6 +9,7 @@
   </header>
   <makefile>
     <file name="guidance_loop_controller.c"/>
+    <file name="pprz_matrix_decomp_float.c" dir="math"/>
   </makefile>
 </module>
 

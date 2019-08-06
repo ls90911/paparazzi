@@ -42,7 +42,7 @@
 #define NN_PLUS_PD FALSE 
 #endif
 
-enum ControllerInUse {NO_CONTROLLER,CONTROLLER_HOVER_WITH_OPTITRACK,CONTROLLER_NN_CONTROLLER,CONTROLLER_GO_TO_POINT} ;
+enum ControllerInUse {NO_CONTROLLER,CONTROLLER_HOVER_WITH_OPTITRACK,CONTROLLER_NN_CONTROLLER,CONTROLLER_GO_TO_POINT, DIFFERENTIAL_FLATNESS_CONTROLLER} ;
 
 struct NN_CMD {
     float thrust_ref;
@@ -73,6 +73,13 @@ struct ADAPT_HOVER_COEFFCIENT
 {
 	int counter;
 	int32_t sumDeltaT;
+};
+
+struct Point_constraints
+{
+	float p;
+	float v;
+	float a;
 };
 
 extern bool hover_with_optitrack(float hoverTime);
@@ -121,5 +128,10 @@ struct Debug_indi
 };
 extern struct Debug_indi debug_indi;
 /*-----------------------not used ---------------------*/
+
+
+extern bool differential_flatness_controller(struct Point_constraints xf, struct Point_constraints yf,
+		                              struct Point_constraints zf, struct Point_constraints psif,
+									  float t0, float tf);
 #endif
 

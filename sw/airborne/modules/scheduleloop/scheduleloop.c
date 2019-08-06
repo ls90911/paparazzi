@@ -94,11 +94,16 @@ void firstPartLogic(void)
 
 void secondPartLogic(void)
 {
+	struct Point_constraints xf = {5,0.0,0.0};
+	struct Point_constraints yf = {0,0.0,0.0};
+	struct Point_constraints zf = {0,0.0,0.0};
+	struct Point_constraints psif = {0,0.0,0.0};
     switch(lowLevelGuidanceState)
     {
         case TEMP:
-            nn_controller(5.0,-1.0);
+            //nn_controller(5.0,-1.0);
             //go_to_point(5.0,0.0,-2.5,0.0);
+			differential_flatness_controller(xf,yf,zf,psif,0,5);
             break;
     }
 

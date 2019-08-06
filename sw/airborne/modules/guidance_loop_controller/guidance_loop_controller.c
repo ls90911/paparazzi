@@ -31,6 +31,8 @@
 #include "stdio.h"
 #include "state.h"
 #include<sys/time.h>
+
+#include "math/pprz_matrix_decomp_float.h"
 //#include "firmwares/rotorcraft/guidance/guidance_indi.h"
 
 #ifndef GRAVITY_FACTOR
@@ -301,4 +303,49 @@ bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_h
 
 }
 
+
+void generate_polynomial_trajectory(float *c_p,float * c_v, float * c_a, float * c_j, 
+		                            struct Point_constraints initial_constraints,
+								   	struct Point_constraints final_constraints,
+									float t0, float tf)
+{
+	float A[6][6] = {{pow(t0,5),		pow(t0,4),		pow(t0,3),		pow(t0,2),		pow(t0,1),		1},
+	                 {pow(tf,5),		pow(tf,4),		pow(tf,3),		pow(tf,2),		pow(tf,1),		1},
+					 {5*pow(t0,4),		4*pow(t0,3),	3*pow(t0,2),	2*pow(t0,1),	1,				0},
+					 {5*pow(tf,4),		4*pow(tf,3),	3*pow(tf,2),	2*pow(tf,1),	1,				0},
+					 {20*pow(t0,3),		12*pow(t0,2),	6*pow(t0,1),	2,				0,				0},
+					 {20*pow(tf,3),		12*pow(tf,2),	6*pow(tf,1),	2,				0,				0}};
+	float b[6][1] = {{initial_constraints.p},{final_constraints.p},{initial_constraints.v},{final_constraints.v},
+		             {initial_constraints.a},{final_constraints.a}};
+
+	float U[6][6],W[6],V[6][6];
+    MAKE_MATRIX_PTR(pA, A, 6);
+    MAKE_MATRIX_PTR(pV, V, 6);
+    MAKE_MATRIX_PTR(pb, b, 6);
+    pprz_svd_float(pA,W,pV,6,6);
+	float c[6][1];
+    MAKE_MATRIX_PTR(pc, c, 6);
+    pprz_svd_solve_float(pc,pA,W,pV,pb,6,6,1);
+	for(int i = 0; i < 6;i++) c_p[i] = c[i][0];
+
+}
+
+bool differential_flatness_controller(struct Point_constraints xf, struct Point_constraints yf,
+		                              struct Point_constraints zf, struct Point_constraints psif,
+									  float t0, float tf)
+{
+	if(controllerInUse != DIFFERENTIAL_FLATNESS_CONTROLLER)
+	{
+		controllerInUse = DIFFERENTIAL_FLATNESS_CONTROLLER;
+		struct Point_constraints x0 = {stateGetPositionNed_f()->x,stateGetSpeedNed_f()->x,stateGetAccelNed_f()->x};
+		struct Point_constraints y0 = {stateGetPositionNed_f()->y,stateGetSpeedNed_f()->y,stateGetAccelNed_f()->y};
+		struct Point_constraints z0 = {stateGetPositionNed_f()->z,stateGetSpeedNed_f()->z,stateGetAccelNed_f()->z};
+		struct Point_constraints psi0 = {stateGetNedToBodyEulers_f()->psi, stateGetBodyRates_f()->r,0.0};
+	}
+	struct Point_constraints x0 = {0.0,0.0,0.0};
+	struct Point_constraints x_f_temp = {5.0,0.0,0};
+	float c_p[6],c_v[5],c_a[4],c_j[3];
+	generate_polynomial_trajectory(c_p,c_v,c_a,c_j,x0,x_f_temp,0,10);
+	printf("c_p = [%f,%f,%f,%f,%f,%f\n",c_p[0],c_p[1],c_p[2],c_p[3],c_p[4],c_p[5]);
+}
 
