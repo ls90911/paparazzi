@@ -303,6 +303,7 @@ bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_h
 
 }
 
+/* ----------------------------------------------------  Differential flatness controller ----------------------------------------------*/
 
 void generate_polynomial_trajectory(float **c_p,float * c_v, float * c_a, float * c_j, 
 		                            struct Point_constraints initial_constraints,
@@ -330,6 +331,11 @@ void generate_polynomial_trajectory(float **c_p,float * c_v, float * c_a, float 
 
 }
 
+float get_position_reference(float ** ptr_c_p,float time);
+float get_velocity_reference(float * ptr_c_v,float time);
+float get_acceleration_reference(float * ptr_c_a,float time);
+float get_jerk_reference(float * ptr_c_j,float time);
+
 float c_p_x[6][1],c_p_y[6][1],c_p_z[6][1],c_p_psi[6][1];
 float c_v_x[5],c_v_y[5],c_v_z[5],c_v_psi[5];
 float c_a_x[4],c_a_y[4],c_a_z[4],c_a_psi[4];
@@ -349,11 +355,47 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 		struct Point_constraints psi0 = {stateGetNedToBodyEulers_f()->psi, stateGetBodyRates_f()->r,0.0};
 	}
 	struct Point_constraints x0 = {0.0,0.0,0.0};
-	struct Point_constraints x_f_temp = {5.0,0.0,0};
+	struct Point_constraints x_f_temp = {10.0,0.0,0};
 	generate_polynomial_trajectory(ptr_c_p_x,c_v_x,c_a_x,c_j_x,x0,x_f_temp,0,10);
 	printf("c_p = [%f,%f,%f,%f,%f,%f\n",c_p_x[0][0],c_p_x[1][0],c_p_x[2][0],c_p_x[3][0],c_p_x[4][0],c_p_x[5][0]);
 	printf("c_v = [%f,%f,%f,%f,%f]\n",c_v_x[0],c_v_x[1],c_v_x[2],c_v_x[3],c_v_x[4]);
 	printf("c_a = [%f,%f,%f,%f]\n",c_a_x[0],c_a_x[1],c_a_x[2],c_a_x[3]);
 	printf("c_j = [%f,%f,%f]\n",c_j_x[0],c_j_x[1],c_j_x[2]);
+	printf("p(6.6) = %f\n",get_position_reference(ptr_c_p_x,6.6));
+	printf("v(2.5) = %f\n",get_velocity_reference(c_v_x,2.5));
+	printf("a(0.5) = %f\n",get_acceleration_reference(c_a_x,0.5));
+	printf("j(7.8) = %f\n",get_jerk_reference(c_j_x,7.8));
+	return true;
 }
 
+float get_position_reference(float ** ptr_c_p,float time)
+{
+	float sum = 0;
+	for(int i = 0; i<6; i++) sum += ptr_c_p[i][0]*pow(time,5-i); 
+	return sum;
+}
+
+
+float get_velocity_reference(float * ptr_c_v,float time)
+{
+	float sum = 0;
+	for(int i = 0; i<5; i++) sum += ptr_c_v[i]*pow(time,4-i); 
+	return sum;
+}
+
+float get_acceleration_reference(float * ptr_c_a,float time)
+{
+	float sum = 0;
+	for(int i = 0; i<4; i++) sum += ptr_c_a[i]*pow(time,3-i); 
+	return sum;
+}
+
+
+float get_jerk_reference(float * ptr_c_j,float time)
+{
+	float sum = 0;
+	for(int i = 0; i<3; i++) sum += ptr_c_j[i]*pow(time,2-i); 
+	return sum;
+}
+
+/* ----------------------------------------------------  Differential flatness controller end ----------------------------------------------*/
