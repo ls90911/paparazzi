@@ -43,6 +43,18 @@
 #define BEBOP_MASS 0.389 
 #endif
 
+#ifndef BEBOP_DRAG_X
+#define BEBOP_DRAG_X -0.5
+#endif
+
+#ifndef BEBOP_DRAG_Y
+#define BEBOP_DRAG_Y -0.5
+#endif
+
+
+#ifndef BEBOP_DRAG_Z
+#define BEBOP_DRAG_Z -0.5
+#endif
 struct FloatVect3 sp_accel = {0.0, 0.0, 0.0};
 float nominal_throttle = GUIDANCE_V_NOMINAL_HOVER_THROTTLE;
 struct Debug_indi debug_indi;  // not used. For log
@@ -308,33 +320,16 @@ bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_h
 void generate_polynomial_trajectory(float **c_p,float * c_v, float * c_a, float * c_j, 
 		                            struct Point_constraints initial_constraints,
 								   	struct Point_constraints final_constraints,
-									float t0, float tf)
-{
-	float A[6][6] = {{pow(t0,5),		pow(t0,4),		pow(t0,3),		pow(t0,2),		pow(t0,1),		1},
-	                 {pow(tf,5),		pow(tf,4),		pow(tf,3),		pow(tf,2),		pow(tf,1),		1},
-					 {5*pow(t0,4),		4*pow(t0,3),	3*pow(t0,2),	2*pow(t0,1),	1,				0},
-					 {5*pow(tf,4),		4*pow(tf,3),	3*pow(tf,2),	2*pow(tf,1),	1,				0},
-					 {20*pow(t0,3),		12*pow(t0,2),	6*pow(t0,1),	2,				0,				0},
-					 {20*pow(tf,3),		12*pow(tf,2),	6*pow(tf,1),	2,				0,				0}};
-	float b[6][1] = {{initial_constraints.p},{final_constraints.p},{initial_constraints.v},{final_constraints.v},
-		             {initial_constraints.a},{final_constraints.a}};
-
-	float U[6][6],W[6],V[6][6];
-    MAKE_MATRIX_PTR(pA, A, 6);
-    MAKE_MATRIX_PTR(pV, V, 6);
-    MAKE_MATRIX_PTR(pb, b, 6);
-    pprz_svd_float(pA,W,pV,6,6);
-    pprz_svd_solve_float(c_p,pA,W,pV,pb,6,6,1);
-	c_v[0] = 5*c_p[0][0]; c_v[1] = 4*c_p[1][0];c_v[2] = 3*c_p[2][0]; c_v[3] = 2*c_p[3][0]; c_v[4] = c_p[4][0];
-    c_a[0] = 20 * c_p[0][0]; c_a[1] = 12 * c_p[1][0]; c_a[2] = 6 * c_p[2][0]; c_a[3] = 2*c_p[3][0];
-    c_j[0] = 60 * c_p[0][0]; c_j[1] = 24 * c_p[1][0]; c_j[2] = 6* c_p[2][0];	
-
-}
-
+									float t0, float tf);
+void feed_forward_controller(struct FloatRates * ptr_omega_ff, float * thrust_ff,float *c_v_x,float *c_v_y,float *c_v_z,
+		                                                                 float *c_a_x,float *c_a_y,float *c_a_z,
+							 											 float *c_j_x,float *c_j_y,float *c_j_z,
+							                                             float **c_p_psi,float *c_v_psi,float t);
 float get_position_reference(float ** ptr_c_p,float time);
 float get_velocity_reference(float * ptr_c_v,float time);
 float get_acceleration_reference(float * ptr_c_a,float time);
 float get_jerk_reference(float * ptr_c_j,float time);
+void cross_product_3(float * o,float *a,float *b);
 
 float c_p_x[6][1],c_p_y[6][1],c_p_z[6][1],c_p_psi[6][1];
 float c_v_x[5],c_v_y[5],c_v_z[5],c_v_psi[5];
@@ -344,6 +339,7 @@ float c_j_x[3],c_j_y[3],c_j_z[3],c_j_psi[3];
 
 struct timeval time_df_0;
 struct timeval time_df;
+struct FloatRates omega_ff;
 
 bool differential_flatness_controller(struct Point_constraints xf, struct Point_constraints yf,
 		                              struct Point_constraints zf, struct Point_constraints psif,
@@ -366,7 +362,92 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 
 	gettimeofday(&time_df, 0);
     float currentDeltaT = timedifference_msec(time_df_0,time_df)/1000.0;
+	struct FloatRates rate_ff;
+	float thrust_ff;
+
+
+	feed_forward_controller(&rate_ff, &thrust_ff,c_v_x,c_v_y,c_v_z,c_a_x,c_a_y,c_a_z,
+			c_j_x,c_j_y,c_j_z, ptr_c_p_psi,c_v_psi,currentDeltaT);
+
+
 	return true;
+}
+
+void feed_forward_controller(struct FloatRates * ptr_omega_ff, float * thrust_ff,float *c_v_x,float *c_v_y,float *c_v_z,
+		                                                                 float *c_a_x,float *c_a_y,float *c_a_z,
+							 											 float *c_j_x,float *c_j_y,float *c_j_z,
+							                                             float **c_p_psi,float *c_v_psi,float t)
+{
+	float v[3] = {get_velocity_reference(c_v_x,t),get_velocity_reference(c_v_y,t),get_velocity_reference(c_v_z,t)};
+	float a[3] = {get_acceleration_reference(c_a_x,t),get_acceleration_reference(c_a_y,t),get_acceleration_reference(c_a_z,t)};
+	float jerk[3] = {get_jerk_reference(c_j_x,t),get_jerk_reference(c_j_y,t),get_jerk_reference(c_j_z,t)};
+	float psi = get_position_reference(c_p_psi,t);
+	float dPsi = get_velocity_reference(c_v_psi,t);
+	float x_c[3] = {cos(psi), sin(psi), 0};
+	float y_c[3] = {-sin(psi), cos(psi), 0};
+	float z_w[3] = {0,0,1};
+
+	float g[3], drag_x[3],drag_y[3],drag_z[3],g_plus_drag_x[3],g_plus_drag_y[3],g_plus_drag_z[3],alpha[3],beta[3],gamma[3];
+	float x_b[3],y_b[3],z_b[3];
+	vector_scale_3(g,z_w,GRAVITY_FACTOR);
+	vector_scale_3(drag_x,v,BEBOP_DRAG_X);
+	float_vect_sum(g_plus_drag_x,g,drag_x,3);
+	float_vect_diff(alpha,a,g_plus_drag_x,3);
+
+	vector_scale_3(drag_y,v,BEBOP_DRAG_Y);
+	float_vect_sum(g_plus_drag_y,g,drag_y,3);
+	float_vect_diff(beta,a,g_plus_drag_y,3);
+
+	float alpha_cross_yc[3], xb_cross_beta[3];
+	cross_product_3(alpha_cross_yc,alpha,y_c);
+	vector_scale_3(x_b,alpha_cross_yc,1.0/float_vect_norm(alpha_cross_yc,3));
+
+	cross_product_3(xb_cross_beta,x_b,beta);
+	vector_scale_3(y_b,xb_cross_beta,1.0/float_vect_norm(xb_cross_beta,3));
+	cross_product_3(z_b,x_b,y_b);
+	
+	vector_scale_3(drag_z,v,BEBOP_DRAG_Z);
+	float_vect_sum(g_plus_drag_z,g,drag_z,3);
+	float_vect_diff(gamma,a,g_plus_drag_z,3);
+	*thrust_ff = float_vect_dot_product(z_b,gamma,3);
+
+	float yc_cross_zb[3];
+	cross_product_3(yc_cross_zb,y_c,z_b);
+	float A[3][3] = {{0,
+               		  *thrust_ff+(BEBOP_DRAG_Z - BEBOP_DRAG_X)*(float_vect_dot_product(z_b,v,3)),
+				 	  (BEBOP_DRAG_X-BEBOP_DRAG_Y)*(float_vect_dot_product(z_b,v,3))},
+		             {*thrust_ff-(BEBOP_DRAG_Y - BEBOP_DRAG_Z)*(float_vect_dot_product(z_b,v,3)),
+				       0,
+					   -(BEBOP_DRAG_X - BEBOP_DRAG_Y)*(float_vect_dot_product(x_b,v,3))},
+		             {0.0,
+				 	 -float_vect_dot_product(y_c,z_b,3),
+					 float_vect_norm(yc_cross_zb,3)}};
+	float b[3][1] = {{float_vect_dot_product(x_b,jerk,3) - BEBOP_DRAG_X * float_vect_dot_product(x_b,a,3)},
+		            {-float_vect_dot_product(y_b,jerk,3) + BEBOP_DRAG_Y * float_vect_dot_product(y_b,a,3)},
+	                {dPsi * float_vect_dot_product(x_c,x_b,3)}};
+	float U[3][3],W[3],V[3][3],angular_rate[3][1];
+    MAKE_MATRIX_PTR(ptr_angular_rate, angular_rate, 3)
+    MAKE_MATRIX_PTR(pA, A, 3);
+    MAKE_MATRIX_PTR(pV, V, 3);
+    MAKE_MATRIX_PTR(pb, b, 3);
+    pprz_svd_float(pA,W,pV,3,3);
+    pprz_svd_solve_float(ptr_angular_rate,pA,W,pV,pb,3,3,1);
+	ptr_omega_ff->p = angular_rate[0][0];
+	ptr_omega_ff->q = angular_rate[1][0];
+	ptr_omega_ff->r = angular_rate[2][0];
+}
+
+void cross_product_3(float * o,float *a,float *b)
+{
+	o[0] = a[1]*b[2]-a[2]*b[1];
+	o[1] = a[2]*b[0]-a[0]*b[2];
+	o[2] = a[0]*b[1]-a[1]*b[0];
+}
+
+void vector_scale_3(float *o,float *a,float k)
+{
+	for(int i=0;i<3;i++)
+		o[i] = a[i]*k; 
 }
 
 float get_position_reference(float ** ptr_c_p,float time)
@@ -374,6 +455,34 @@ float get_position_reference(float ** ptr_c_p,float time)
 	float sum = 0;
 	for(int i = 0; i<6; i++) sum += ptr_c_p[i][0]*pow(time,5-i); 
 	return sum;
+}
+
+
+
+void generate_polynomial_trajectory(float **c_p,float * c_v, float * c_a, float * c_j, 
+		                            struct Point_constraints initial_constraints,
+								   	struct Point_constraints final_constraints,
+									float t0, float tf)
+{
+	float A[6][6] = {{pow(t0,5),		pow(t0,4),		pow(t0,3),		pow(t0,2),		pow(t0,1),		1},
+	                 {pow(tf,5),		pow(tf,4),		pow(tf,3),		pow(tf,2),		pow(tf,1),		1},
+					 {5*pow(t0,4),		4*pow(t0,3),	3*pow(t0,2),	2*pow(t0,1),	1,				0},
+					 {5*pow(tf,4),		4*pow(tf,3),	3*pow(tf,2),	2*pow(tf,1),	1,				0},
+					 {20*pow(t0,3),		12*pow(t0,2),	6*pow(t0,1),	2,				0,				0},
+					 {20*pow(tf,3),		12*pow(tf,2),	6*pow(tf,1),	2,				0,				0}};
+	float b[6][1] = {{initial_constraints.p},{final_constraints.p},{initial_constraints.v},{final_constraints.v},
+		             {initial_constraints.a},{final_constraints.a}};
+
+	float U[6][6],W[6],V[6][6];
+    MAKE_MATRIX_PTR(pA, A, 6);
+    MAKE_MATRIX_PTR(pV, V, 6);
+    MAKE_MATRIX_PTR(pb, b, 6);
+    pprz_svd_float(pA,W,pV,6,6);
+    pprz_svd_solve_float(c_p,pA,W,pV,pb,6,6,1);
+	c_v[0] = 5*c_p[0][0]; c_v[1] = 4*c_p[1][0];c_v[2] = 3*c_p[2][0]; c_v[3] = 2*c_p[3][0]; c_v[4] = c_p[4][0];
+    c_a[0] = 20 * c_p[0][0]; c_a[1] = 12 * c_p[1][0]; c_a[2] = 6 * c_p[2][0]; c_a[3] = 2*c_p[3][0];
+    c_j[0] = 60 * c_p[0][0]; c_j[1] = 24 * c_p[1][0]; c_j[2] = 6* c_p[2][0];	
+
 }
 
 
