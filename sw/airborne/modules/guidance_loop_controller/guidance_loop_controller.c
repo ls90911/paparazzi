@@ -341,6 +341,10 @@ float c_v_x[5],c_v_y[5],c_v_z[5],c_v_psi[5];
 float c_a_x[4],c_a_y[4],c_a_z[4],c_a_psi[4];
 float c_j_x[3],c_j_y[3],c_j_z[3],c_j_psi[3];
 
+
+struct timeval time_df_0;
+struct timeval time_df;
+
 bool differential_flatness_controller(struct Point_constraints xf, struct Point_constraints yf,
 		                              struct Point_constraints zf, struct Point_constraints psif,
 									  float t0, float tf)
@@ -353,18 +357,15 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 		struct Point_constraints y0 = {stateGetPositionNed_f()->y,stateGetSpeedNed_f()->y,stateGetAccelNed_f()->y};
 		struct Point_constraints z0 = {stateGetPositionNed_f()->z,stateGetSpeedNed_f()->z,stateGetAccelNed_f()->z};
 		struct Point_constraints psi0 = {stateGetNedToBodyEulers_f()->psi, stateGetBodyRates_f()->r,0.0};
+		generate_polynomial_trajectory(ptr_c_p_x,c_v_x,c_a_x,c_j_x,x0,xf,t0,tf);
+		generate_polynomial_trajectory(ptr_c_p_y,c_v_y,c_a_y,c_j_y,y0,yf,t0,tf);
+		generate_polynomial_trajectory(ptr_c_p_z,c_v_z,c_a_z,c_j_z,z0,zf,t0,tf);
+		generate_polynomial_trajectory(ptr_c_p_psi,c_v_psi,c_a_psi,c_j_psi,psi0,psif,t0,tf);
+		gettimeofday(&time_df_0, 0);
 	}
-	struct Point_constraints x0 = {0.0,0.0,0.0};
-	struct Point_constraints x_f_temp = {10.0,0.0,0};
-	generate_polynomial_trajectory(ptr_c_p_x,c_v_x,c_a_x,c_j_x,x0,x_f_temp,0,10);
-	printf("c_p = [%f,%f,%f,%f,%f,%f\n",c_p_x[0][0],c_p_x[1][0],c_p_x[2][0],c_p_x[3][0],c_p_x[4][0],c_p_x[5][0]);
-	printf("c_v = [%f,%f,%f,%f,%f]\n",c_v_x[0],c_v_x[1],c_v_x[2],c_v_x[3],c_v_x[4]);
-	printf("c_a = [%f,%f,%f,%f]\n",c_a_x[0],c_a_x[1],c_a_x[2],c_a_x[3]);
-	printf("c_j = [%f,%f,%f]\n",c_j_x[0],c_j_x[1],c_j_x[2]);
-	printf("p(6.6) = %f\n",get_position_reference(ptr_c_p_x,6.6));
-	printf("v(2.5) = %f\n",get_velocity_reference(c_v_x,2.5));
-	printf("a(0.5) = %f\n",get_acceleration_reference(c_a_x,0.5));
-	printf("j(7.8) = %f\n",get_jerk_reference(c_j_x,7.8));
+
+	gettimeofday(&time_df, 0);
+    float currentDeltaT = timedifference_msec(time_df_0,time_df)/1000.0;
 	return true;
 }
 

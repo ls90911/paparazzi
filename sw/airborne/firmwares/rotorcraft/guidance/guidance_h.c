@@ -463,7 +463,6 @@ static void guidance_h_update_reference(void)
 #if !GUIDANCE_INDI
 static void guidance_h_traj_run(bool in_flight)
 {
-	printf("[guidance_h_traj_run] pid horizontal is running\n");
   /* maximum bank angle: default 20 deg, max 40 deg*/
   static const int32_t traj_max_bank = Min(BFP_OF_REAL(GUIDANCE_H_MAX_BANK, INT32_ANGLE_FRAC),
                                        BFP_OF_REAL(RadOfDeg(40), INT32_ANGLE_FRAC));
