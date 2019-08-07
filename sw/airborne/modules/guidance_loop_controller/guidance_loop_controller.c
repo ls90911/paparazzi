@@ -330,6 +330,7 @@ float get_velocity_reference(float * ptr_c_v,float time);
 float get_acceleration_reference(float * ptr_c_a,float time);
 float get_jerk_reference(float * ptr_c_j,float time);
 void cross_product_3(float * o,float *a,float *b);
+void vector_scale_3(float *o,float *a,float k);
 
 float c_p_x[6][1],c_p_y[6][1],c_p_z[6][1],c_p_psi[6][1];
 float c_v_x[5],c_v_y[5],c_v_z[5],c_v_psi[5];
@@ -349,10 +350,18 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 	if(controllerInUse != DIFFERENTIAL_FLATNESS_CONTROLLER)
 	{
 		controllerInUse = DIFFERENTIAL_FLATNESS_CONTROLLER;
+		/* ----------------------------    real flight ------------------------------------------------*/
+		/*
 		struct Point_constraints x0 = {stateGetPositionNed_f()->x,stateGetSpeedNed_f()->x,stateGetAccelNed_f()->x};
 		struct Point_constraints y0 = {stateGetPositionNed_f()->y,stateGetSpeedNed_f()->y,stateGetAccelNed_f()->y};
 		struct Point_constraints z0 = {stateGetPositionNed_f()->z,stateGetSpeedNed_f()->z,stateGetAccelNed_f()->z};
 		struct Point_constraints psi0 = {stateGetNedToBodyEulers_f()->psi, stateGetBodyRates_f()->r,0.0};
+		*/
+		/* ----------------------------    real flight ------------------------------------------------*/
+		struct Point_constraints x0 = {0.0,0.0,0.0};
+		struct Point_constraints y0 = {0.0,0.0,0.0};
+		struct Point_constraints z0 = {-1.5,0.0,0.0};
+		struct Point_constraints psi0 = {0.0,0.0,0.0};
 		generate_polynomial_trajectory(ptr_c_p_x,c_v_x,c_a_x,c_j_x,x0,xf,t0,tf);
 		generate_polynomial_trajectory(ptr_c_p_y,c_v_y,c_a_y,c_j_y,y0,yf,t0,tf);
 		generate_polynomial_trajectory(ptr_c_p_z,c_v_z,c_a_z,c_j_z,z0,zf,t0,tf);
@@ -367,7 +376,10 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 
 
 	feed_forward_controller(&rate_ff, &thrust_ff,c_v_x,c_v_y,c_v_z,c_a_x,c_a_y,c_a_z,
-			c_j_x,c_j_y,c_j_z, ptr_c_p_psi,c_v_psi,currentDeltaT);
+			c_j_x,c_j_y,c_j_z, ptr_c_p_psi,c_v_psi,2);
+
+	if(currentDeltaT < 10.0)
+		printf("Time = %f, p = %f, q = %f, r = %f, T = %f\n",currentDeltaT,rate_ff.p,rate_ff.q,rate_ff.r,thrust_ff);
 
 
 	return true;
@@ -387,29 +399,55 @@ void feed_forward_controller(struct FloatRates * ptr_omega_ff, float * thrust_ff
 	float y_c[3] = {-sin(psi), cos(psi), 0};
 	float z_w[3] = {0,0,1};
 
+	/*
+	printf("c_v_x = %f,%f,%f]\n",c_v_x[0],c_v_x[1],c_v_x[2]);
+	printf("v = [%f,%f,%f]\n",v[0],v[1],v[2]);
+	printf("jerk = [%f,%f,%f]\n",jerk[0],jerk[1],jerk[2]);
+	*/
+
 	float g[3], drag_x[3],drag_y[3],drag_z[3],g_plus_drag_x[3],g_plus_drag_y[3],g_plus_drag_z[3],alpha[3],beta[3],gamma[3];
 	float x_b[3],y_b[3],z_b[3];
-	vector_scale_3(g,z_w,GRAVITY_FACTOR);
+	vector_scale_3(g,z_w,9.8);
 	vector_scale_3(drag_x,v,BEBOP_DRAG_X);
 	float_vect_sum(g_plus_drag_x,g,drag_x,3);
 	float_vect_diff(alpha,a,g_plus_drag_x,3);
+	/*
+	printf("z_w = [%f,%f,%f]\n\n",z_w[0],z_w[1],z_w[2]);
+	printf("g = [%f,%f,%f]\n\n",g[0],g[1],g[2]);
+	printf("drag_x = [%f,%f,%f]\n\n",drag_x[0],drag_x[1],drag_x[2]);
+	printf("g + drag_x= [%f,%f,%f]\n\n",g_plus_drag_x[0],g_plus_drag_x[1],g_plus_drag_x[2]);
+	printf("a = [%f,%f,%f]\n",a[0],a[1],a[2]);
+	printf("alpha = [%f,%f,%f]\n\n\n\n",alpha[0],alpha[1],alpha[2]);
+	*/
 
 	vector_scale_3(drag_y,v,BEBOP_DRAG_Y);
 	float_vect_sum(g_plus_drag_y,g,drag_y,3);
 	float_vect_diff(beta,a,g_plus_drag_y,3);
+	/*
+	printf("beta = [%f,%f,%f]\n\n\n\n",beta[0],beta[1],beta[2]);
+	*/
 
 	float alpha_cross_yc[3], xb_cross_beta[3];
 	cross_product_3(alpha_cross_yc,alpha,y_c);
 	vector_scale_3(x_b,alpha_cross_yc,1.0/float_vect_norm(alpha_cross_yc,3));
+	/*
+	printf("x_b= [%f,%f,%f]\n\n\n\n",x_b[0],x_b[1],x_b[2]);
+	*/
 
 	cross_product_3(xb_cross_beta,x_b,beta);
 	vector_scale_3(y_b,xb_cross_beta,1.0/float_vect_norm(xb_cross_beta,3));
 	cross_product_3(z_b,x_b,y_b);
+
+	/*
+	printf("y_b= [%f,%f,%f]\n\n\n\n",y_b[0],y_b[1],y_b[2]);
+	printf("z_b= [%f,%f,%f]\n\n\n\n",z_b[0],z_b[1],z_b[2]);
+	*/
 	
 	vector_scale_3(drag_z,v,BEBOP_DRAG_Z);
 	float_vect_sum(g_plus_drag_z,g,drag_z,3);
 	float_vect_diff(gamma,a,g_plus_drag_z,3);
 	*thrust_ff = float_vect_dot_product(z_b,gamma,3);
+	//printf("thrust_ff =  %f\n\n\n\n",*thrust_ff);
 
 	float yc_cross_zb[3];
 	cross_product_3(yc_cross_zb,y_c,z_b);
@@ -435,6 +473,7 @@ void feed_forward_controller(struct FloatRates * ptr_omega_ff, float * thrust_ff
 	ptr_omega_ff->p = angular_rate[0][0];
 	ptr_omega_ff->q = angular_rate[1][0];
 	ptr_omega_ff->r = angular_rate[2][0];
+	//printf("omegai = [%f,%f,%f]\n\n\n\n",ptr_omega_ff->p,ptr_omega_ff->q,ptr_omega_ff->r);
 }
 
 void cross_product_3(float * o,float *a,float *b)
@@ -447,7 +486,7 @@ void cross_product_3(float * o,float *a,float *b)
 void vector_scale_3(float *o,float *a,float k)
 {
 	for(int i=0;i<3;i++)
-		o[i] = a[i]*k; 
+		*(o+i) = *(a+i)*k; 
 }
 
 float get_position_reference(float ** ptr_c_p,float time)
