@@ -376,10 +376,12 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 
 
 	feed_forward_controller(&rate_ff, &thrust_ff,c_v_x,c_v_y,c_v_z,c_a_x,c_a_y,c_a_z,
-			c_j_x,c_j_y,c_j_z, ptr_c_p_psi,c_v_psi,2);
+			c_j_x,c_j_y,c_j_z, ptr_c_p_psi,c_v_psi,currentDeltaT);
 
+	/*
 	if(currentDeltaT < 10.0)
 		printf("Time = %f, p = %f, q = %f, r = %f, T = %f\n",currentDeltaT,rate_ff.p,rate_ff.q,rate_ff.r,thrust_ff);
+		*/
 
 
 	return true;
