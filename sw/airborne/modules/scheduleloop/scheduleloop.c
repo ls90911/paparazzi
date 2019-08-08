@@ -54,7 +54,8 @@ void schedule_run() {
         highLevelGuidanceState = FIRST_HIGH_LEVEL;
         lowLevelGuidanceState = TEMP;
         controllerInUse = NO_CONTROLLER; 
-	flagNN = false;
+		flagNN = false;
+		flagRateControl = false;
     }
     if (autopilot_get_mode() != AP_MODE_GUIDED) return;
 
@@ -83,7 +84,7 @@ void firstPartLogic(void)
     switch(lowLevelGuidanceState)
     {
         case TEMP:
-            if(hover_with_optitrack(3.0))
+            if(hover_with_optitrack(5.0))
             {
                 highLevelGuidanceState = SECOND_HIGH_LEVEL;
             }
@@ -94,17 +95,24 @@ void firstPartLogic(void)
 
 void secondPartLogic(void)
 {
-	struct Point_constraints xf = {5,0.0,0.0};
-	struct Point_constraints yf = {2,0.0,0.0};
+	struct Point_constraints xf = {6,0.0,0.0};
+	struct Point_constraints yf = {-4,0.0,0.0};
 	struct Point_constraints zf = {-2.5,0.0,0.0};
 	struct Point_constraints psif = {0,0.0,0.0};
     switch(lowLevelGuidanceState)
     {
         case TEMP:
-            //nn_controller(5.0,-1.0);
+            //nn_controller(5.0,-2.5);
             //go_to_point(5.0,0.0,-2.5,0.0);
-			differential_flatness_controller(xf,yf,zf,psif,0,10);
+			if(differential_flatness_controller(xf,yf,zf,psif,0,3))
+			{
+				flagRateControl = false;
+				lowLevelGuidanceState = HOVER; 
+			}
             break;
+		case HOVER:
+			go_to_point(xf.p,yf.p,zf.p,psif.p);
+			break;
     }
 
 }

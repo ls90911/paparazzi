@@ -326,6 +326,10 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
 
   indi.angular_accel_ref.q = indi.reference_acceleration.err_q * QUAT1_FLOAT_OF_BFP(att_err->qy)
                              - indi.reference_acceleration.rate_q * rates_for_feedback.q;
+
+
+
+
   // Shuo add for NN ----------------------------------------------------------------------------------------------------
   dq_indi = indi.angular_accel_ref.q;
   dq_nn= 0.0;
@@ -367,11 +371,27 @@ static inline void stabilization_indi_calc_cmd(int32_t indi_commands[], struct I
   }
   rateRef.p_ref = indi.reference_acceleration.err_p * QUAT1_FLOAT_OF_BFP(att_err->qx) / indi.reference_acceleration.rate_q ;
   //---------------------------------------------------------------------------------------------------------------------
+  //
+  /* ----------------------------------------------Shuo add for differential flatness rate control ---------------*/
+  if(flagRateControl)
+  {
+	  indi.angular_accel_ref.p = df_omega_cmd.p * indi.reference_acceleration.rate_p - indi.reference_acceleration.rate_p * rates_for_feedback.p;
+	  indi.angular_accel_ref.q = df_omega_cmd.q  * indi.reference_acceleration.rate_q - indi.reference_acceleration.rate_q * rates_for_feedback.q;
+	  rateRef.p_ref = df_omega_cmd.p;
+	  rateRef.q_ref = df_omega_cmd.q;
+  }
   //This separates the P and D controller and lets you impose a maximum yaw rate.
   float rate_ref_r = indi.reference_acceleration.err_r * QUAT1_FLOAT_OF_BFP(att_err->qz) / indi.reference_acceleration.rate_r;
   BoundAbs(rate_ref_r, indi.attitude_max_yaw_rate);
   rateRef.r_ref = rate_ref_r;
   indi.angular_accel_ref.r = indi.reference_acceleration.rate_r * (rate_ref_r - rates_for_feedback.r);
+  if(flagRateControl)
+  {
+	  rate_ref_r = df_omega_cmd.r;
+	  BoundAbs(rate_ref_r, indi.attitude_max_yaw_rate);
+	  rateRef.r_ref = rate_ref_r;
+	  indi.angular_accel_ref.r = indi.reference_acceleration.rate_r * (rate_ref_r - rates_for_feedback.r);
+  }
 
   /* Check if we are running the rate controller and overwrite */
   if (rate_control) {

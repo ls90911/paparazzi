@@ -86,6 +86,7 @@ extern bool hover_with_optitrack(float hoverTime);
 extern void nn_controller(float desired_x,float desired_z);
 extern bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_heading);
 
+extern bool flagRateControl;
 extern bool flagNN;
 extern enum ControllerInUse controllerInUse;
 extern struct NN_CMD nn_cmd;
@@ -103,6 +104,8 @@ extern float nn_x_sp;
 extern float nn_z_sp;
 extern float scale_factor;
 extern struct FloatVect3 sp_accel;
+extern struct FloatRates df_omega_cmd;
+extern float p_ref[3];
 
 struct Debug_PID_Acceleration
 {

@@ -95,7 +95,7 @@ void file_logger_periodic(void)
   int timeStamp = milliseconds % 100000000;
 
   fprintf(file_logger, "%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f,%d,%f,%f,%f,%f,%f ,%f,%f,%f,%f,%f,%d,%d,%d,%f,"
-          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", timeStamp,
+          "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", timeStamp,
 stateGetPositionNed_f()->x,
 stateGetPositionNed_f()->y,
 stateGetPositionNed_f()->z,
@@ -134,11 +134,11 @@ stateGetAccelNed_f()->x,
 stateGetAccelNed_f()->y,
 stateGetAccelNed_f()->z,
 
-  debug_indi.z_sp,
-  debug_indi.z_ref,
-  debug_indi.z_error,
-  debug_indi.vz_sp,
-  debug_indi.az_sp,
+debug_indi.z_sp,
+debug_indi.z_ref,
+debug_indi.z_error,
+debug_indi.vz_sp,
+debug_indi.az_sp,
   
 imu.accel.x,
 imu.accel.y,
@@ -184,7 +184,11 @@ debug_pid_acc.az_sp,
 debug_pid_acc.az_filtered,
 debug_pid_acc.az_error,
 debug_pid_acc.thrust_sp,
-debug_pid_acc.thrust_nominal
+debug_pid_acc.thrust_nominal,
+
+p_ref[0],
+p_ref[1],
+p_ref[2]
          );
   counter++;
 }

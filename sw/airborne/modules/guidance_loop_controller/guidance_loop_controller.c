@@ -95,6 +95,7 @@ enum ControllerInUse controllerInUse;
 struct Pos hoverPos;
 struct Euler hoverEuler;
 bool flagNN;
+bool flagRateControl;
 struct NN_CMD nn_cmd;
 struct NN_STATE nn_state;
 struct ADAPT_HOVER_COEFFCIENT hover_coefficient;
@@ -170,9 +171,11 @@ bool hover_with_optitrack(float hoverTime)
 
 }
 
-float timedifference_msec(struct timeval t0, struct timeval t1)
+float timedifference_msec(struct timeval t0, struct timeval t1);
+void acceleration_z_controller(float desired_z);
+float timedifference_msec(struct timeval tt0, struct timeval tt1)
 {
-	return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
+	return (tt1.tv_sec - tt0.tv_sec) * 1000.0f + (tt1.tv_usec - tt0.tv_usec) / 1000.0f;
 }
 
 void nn_controller(float desired_x,float desired_z)
@@ -196,7 +199,6 @@ void nn_controller(float desired_x,float desired_z)
 	    guidance_h_set_guided_heading(0);
 	    guidance_v_set_guided_z(desired_z);
 	    gettimeofday(&NN_start, 0);
-		float tau = 1.f / (2.f * M_PI * NN_FILTER_CUTOFF);
 		error_integrator = 0.0;
     }
 
@@ -210,7 +212,6 @@ void nn_controller(float desired_x,float desired_z)
     gettimeofday(&t1, 0);
     temp_time = timedifference_msec(NN_start,t1);
     time_int = temp_time/1000;
-    int temp = time_int/10%10;
 	    //guidance_v_set_guided_z(-0.5-0.5*(temp));
 
     // transform coordinate from Optitrack frame to NED frame of cyberzoo and then to North-west-up frame
@@ -229,11 +230,11 @@ void nn_controller(float desired_x,float desired_z)
     float_rmat_transp_vmult(&vel_NWU, &R_NED_2_NWU, &vel_NED);
 
    // prepare current states to feed NN
-    float state[NUM_STATE_VARS] = {desired_x-pos_NWU.x, -vel_NWU.x, pos_NWU.z+desired_z, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta,-stateGetBodyRates_f()->q};
+    float state_nn[NUM_STATE_VARS] = {desired_x-pos_NWU.x, -vel_NWU.x, pos_NWU.z+desired_z, vel_NWU.z, -stateGetNedToBodyEulers_f()->theta,-stateGetBodyRates_f()->q};
     float control[NUM_CONTROL_VARS];
     gettimeofday(&t0, 0);
     //nn_stable(state, control);
-    nn(state, control);
+    nn(state_nn, control);
 //   nested_control(state, control) ;
     gettimeofday(&t1, 0);
     nn_time = timedifference_msec(t0,t1);
@@ -245,45 +246,32 @@ void nn_controller(float desired_x,float desired_z)
 	
 	nn_cmd.FL = F_min+(F_max-F_min)*control[0];
 	nn_cmd.FR = F_min+(F_max-F_min)*control[1];
-
-	static float error_integrator = 0.f;
-	static float previous_error = 0.f;
-	struct NedCoor_f *accel = stateGetAccelNed_f();
-	update_butterworth_2_low_pass(&accel_ned_filt, accel->z);
 	sp_accel.z = -(nn_cmd.FL+nn_cmd.FR)/BEBOP_MASS;
-	
-	/*
-	if(getTime(2)<2)
-	{
-		sp_accel.z = -10.5;
-	}
-	else if(getTime(2)<3)
-	{
-		sp_accel.z = -6.0;
-	}
-	else
-	{
-		sp_accel.z = -12.0;
-	}
-	*/
-
-	float filtered_az = (accel_ned_filt.o[0]-GRAVITY_FACTOR)/cosf(stateGetNedToBodyEulers_f()->theta);
-	float error_az = sp_accel.z - filtered_az;
-	error_integrator += error_az / 100.0;
-	float thrust_sp = (error_az*thrust_p_gain + error_integrator*thrust_i_gain + thrust_d_gain*(error_az-previous_error)/100.0)*thrust_effectiveness + nominal_throttle;
-	//printf("[guidance_loop_controller] nominal_throttle = %f\n",nominal_throttle);
-	guidance_v_set_guided_th(thrust_sp);
-
-	previous_error = error_az;
+	acceleration_z_controller(sp_accel.z);
 	
 	/* --------------------- for log ---------------------------*/
 
 	debug_pid_acc.az_sp = sp_accel.z;
+	/* --------------------- for log ---------------------------*/
+}
+
+
+void acceleration_z_controller(float desired_z)
+{
+	static float error_integrator = 0.f;
+	static float previous_error = 0.f;
+	struct NedCoor_f *accel = stateGetAccelNed_f();
+	update_butterworth_2_low_pass(&accel_ned_filt, accel->z);
+	float filtered_az = (accel_ned_filt.o[0]-GRAVITY_FACTOR)/cosf(stateGetNedToBodyEulers_f()->theta)/cosf(stateGetNedToBodyEulers_f()->phi);
+	float error_az = desired_z - filtered_az;
+	error_integrator += error_az / 100.0;
+	float thrust_sp = (error_az*thrust_p_gain + error_integrator*thrust_i_gain + thrust_d_gain*(error_az-previous_error)/100.0)*thrust_effectiveness + nominal_throttle;
+	guidance_v_set_guided_th(thrust_sp);
+	previous_error = error_az;
 	debug_pid_acc.az_error = error_az;
 	debug_pid_acc.az_filtered = filtered_az;
 	debug_pid_acc.thrust_sp = thrust_sp;
 	debug_pid_acc.thrust_nominal = nominal_throttle;
-	/* --------------------- for log ---------------------------*/
 }
 
 bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_heading)
@@ -344,11 +332,12 @@ float c_p_x[6][1],c_p_y[6][1],c_p_z[6][1],c_p_psi[6][1];
 float c_v_x[5],c_v_y[5],c_v_z[5],c_v_psi[5];
 float c_a_x[4],c_a_y[4],c_a_z[4],c_a_psi[4];
 float c_j_x[3],c_j_y[3],c_j_z[3],c_j_psi[3];
-
+float p_ref[3];
 
 struct timeval time_df_0;
 struct timeval time_df;
-struct FloatRates omega_ff;
+struct FloatRates omega_ff,omega_fb,df_omega_cmd;
+float df_thrust_cmd;
 
 bool differential_flatness_controller(struct Point_constraints xf, struct Point_constraints yf,
 		                              struct Point_constraints zf, struct Point_constraints psif,
@@ -359,42 +348,54 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 	{
 		controllerInUse = DIFFERENTIAL_FLATNESS_CONTROLLER;
 		/* ----------------------------    real flight ------------------------------------------------*/
-		/*
-		struct Point_constraints x0 = {stateGetPositionNed_f()->x,stateGetSpeedNed_f()->x,stateGetAccelNed_f()->x};
-		struct Point_constraints y0 = {stateGetPositionNed_f()->y,stateGetSpeedNed_f()->y,stateGetAccelNed_f()->y};
-		struct Point_constraints z0 = {stateGetPositionNed_f()->z,stateGetSpeedNed_f()->z,stateGetAccelNed_f()->z};
+		struct Point_constraints x0 = {stateGetPositionNed_f()->x,0.0,0.0};
+		struct Point_constraints y0 = {stateGetPositionNed_f()->y,0.0,0.0};
+		struct Point_constraints z0 = {stateGetPositionNed_f()->z,0.0,0.0};
 		struct Point_constraints psi0 = {stateGetNedToBodyEulers_f()->psi, stateGetBodyRates_f()->r,0.0};
-		*/
 		/* ----------------------------    real flight ------------------------------------------------*/
+
+		/*
 		struct Point_constraints x0 = {0.0,0.0,0.0};
 		struct Point_constraints y0 = {0.0,0.0,0.0};
 		struct Point_constraints z0 = {-1.5,0.0,0.0};
 		struct Point_constraints psi0 = {0.0,0.0,0.0};
+		*/
+
 		generate_polynomial_trajectory(ptr_c_p_x,c_v_x,c_a_x,c_j_x,x0,xf,t0,tf);
 		generate_polynomial_trajectory(ptr_c_p_y,c_v_y,c_a_y,c_j_y,y0,yf,t0,tf);
 		generate_polynomial_trajectory(ptr_c_p_z,c_v_z,c_a_z,c_j_z,z0,zf,t0,tf);
 		generate_polynomial_trajectory(ptr_c_p_psi,c_v_psi,c_a_psi,c_j_psi,psi0,psif,t0,tf);
 		gettimeofday(&time_df_0, 0);
+		flagRateControl = true;
 	}
 
 	gettimeofday(&time_df, 0);
     float currentDeltaT = timedifference_msec(time_df_0,time_df)/1000.0;
-	struct FloatRates rate_ff,rate_fb;
-	float thrust_ff,thrust;
+	float thrust_ff;
 
 
-	feed_forward_controller(&rate_ff, &thrust_ff,c_v_x,c_v_y,c_v_z,c_a_x,c_a_y,c_a_z,
+	feed_forward_controller(&omega_ff,&thrust_ff,c_v_x,c_v_y,c_v_z,c_a_x,c_a_y,c_a_z,
 			c_j_x,c_j_y,c_j_z, ptr_c_p_psi,c_v_psi,currentDeltaT);
 
-	feedback_controller(&rate_fb, &thrust,ptr_c_p_x,ptr_c_p_y,ptr_c_p_z,
-			c_v_x,c_v_y,c_v_z, c_a_x,c_a_y,c_a_z, ptr_c_p_psi,0.8);
-	/*
-	if(currentDeltaT < 10.0)
-		printf("Time = %f, p = %f, q = %f, r = %f, T = %f\n",currentDeltaT,rate_ff.p,rate_ff.q,rate_ff.r,thrust_ff);
-		*/
+	feedback_controller(&omega_fb,&df_thrust_cmd,ptr_c_p_x,ptr_c_p_y,ptr_c_p_z,
+			c_v_x,c_v_y,c_v_z, c_a_x,c_a_y,c_a_z, ptr_c_p_psi,currentDeltaT);
 
+	df_omega_cmd.p = omega_ff.p + omega_fb.p;
+	df_omega_cmd.q = omega_ff.q + omega_fb.q;
+	df_omega_cmd.r = omega_ff.r + omega_fb.r;
+	acceleration_z_controller(df_thrust_cmd);
+	debug_pid_acc.az_sp = df_thrust_cmd;
 
-	return true;
+	float position_f[3] = {xf.p,yf.p,zf.p};
+	float current_position[3] = {stateGetPositionNed_f()->x,stateGetPositionNed_f()->y,stateGetPositionNed_f()->z};
+	float deltaPosition[3];
+	float_vect_diff(deltaPosition,position_f,deltaPosition,3);
+
+	if(xf.p - current_position[0]<0.5)
+		return true;
+	else
+		return false;
+
 }
 
 void feed_forward_controller(struct FloatRates * ptr_omega_ff, float * thrust_ff,float *c_v_x,float *c_v_y,float *c_v_z,
@@ -494,26 +495,30 @@ void feedback_controller(struct FloatRates * ptr_omega_fb, float * thrust,float 
 		                                                                 float *c_a_x,float *c_a_y,float *c_a_z,
 							                                             float **c_p_psi,float t)
 {
-	float p_ref[3] = {get_position_reference(c_p_x,t),get_position_reference(c_p_y,t),get_position_reference(c_p_z,t)};
+	p_ref[0] = get_position_reference(c_p_x,t);
+	p_ref[1] = get_position_reference(c_p_y,t);
+	p_ref[2] = get_position_reference(c_p_z,t);
 	float v_ref[3] = {get_velocity_reference(c_v_x,t),get_velocity_reference(c_v_y,t),get_velocity_reference(c_v_z,t)};
 	float a_ref[3] = {get_acceleration_reference(c_a_x,t),get_acceleration_reference(c_a_y,t),get_acceleration_reference(c_a_z,t)};
 	float psi_ref = get_position_reference(c_p_psi,t);
 
-	/*
 	float current_position[3] = {stateGetPositionNed_f()->x,stateGetPositionNed_f()->y,stateGetPositionNed_f()->z};
 	float current_velocity[3] = {stateGetSpeedNed_f()->x,stateGetSpeedNed_f()->y,stateGetSpeedNed_f()->z};
-	*/
 
-	float current_position[3] = {-0.0857,0.1325,-1.5520};
-	float current_velocity[3] = {0.6623,-0.5367,0.0589};
+	/*
+	float current_position[3] = {2.5174,0.9978,-1.9964};
+	float current_velocity[3] = {0.9403,0.3758,-0.1874};
+	*/
 
 	float p_error[3],v_error[3],acc_from_p[3],acc_from_v[3],a_fb[3],a_rd[3],a_des[3],x_b_des[3],y_b_des[3],z_b_des[3];
 	float y_c_cross_z_b_des[3],g[3];
     
 	float_vect_diff(p_error,p_ref,current_position,3);
 	float_vect_diff(v_error,v_ref,current_velocity,3);
+	/*
 	printf("p_error= [%f,%f,%f]\n\n\n\n",p_error[0],p_error[1],p_error[2]);
 	printf("v_error= [%f,%f,%f]\n\n\n\n",v_error[0],v_error[1],v_error[2]);
+	*/
 	vector_scale_3(acc_from_p,p_error,k_p);
 	vector_scale_3(acc_from_v,v_error,k_v);
 	float_vect_sum(a_fb,acc_from_p,acc_from_v,3);
@@ -523,26 +528,28 @@ void feedback_controller(struct FloatRates * ptr_omega_fb, float * thrust,float 
 	struct FloatVect3 v_b,drag_b,drag_e; 
 	
 	//   a_rd = R_E_B * D * R_E_B * v
-	//struct FloatEulers eul = {stateGetNedToBodyEulers_f()->phi,stateGetNedToBodyEulers_f()->theta,stateGetNedToBodyEulers_f()->psi};
-	struct FloatEulers eul = {0.095,0.0845,0.0036};
+	struct FloatEulers eul = {stateGetNedToBodyEulers_f()->phi,stateGetNedToBodyEulers_f()->theta,stateGetNedToBodyEulers_f()->psi};
+	//struct FloatEulers eul = {0.0228,-0.0380,-0.0037};
 	float_rmat_of_eulers_321(&R_E_B,&eul);
-	//struct FloatVect3 v_e = {stateGetSpeedNed_f()->x,stateGetSpeedNed_f()->y,stateGetSpeedNed_f()->z};
-	struct FloatVect3 v_e = {0.6623,-0.5367,0.0589};
+	struct FloatVect3 v_e = {stateGetSpeedNed_f()->x,stateGetSpeedNed_f()->y,stateGetSpeedNed_f()->z};
+	//struct FloatVect3 v_e = {0.9403,0.3758,-0.1874};
 	float_rmat_vmult(&v_b,&R_E_B,&v_e);
 	drag_b.x = BEBOP_DRAG_X * v_b.x; drag_b.y = BEBOP_DRAG_Y * v_b.y; drag_b.z = BEBOP_DRAG_Z * v_b.z;
     float_rmat_transp_vmult(&drag_e, &R_E_B,&drag_b);
 	a_rd[0] = drag_e.x; a_rd[1] = drag_e.y; a_rd[2] = drag_e.z;
 
-	printf("a_ref= [%f,%f,%f]\n\n\n\n",a_ref[0],a_ref[1],a_ref[2]);
+	//printf("a_ref= [%f,%f,%f]\n\n\n\n",a_ref[0],a_ref[1],a_ref[2]);
 	// a_des = a_ref + a_fb - a_rd - g*z_w
 	float_vect_add(a_ref,a_fb,3);
 	float_vect_sub(a_ref,a_rd,3);
 	float z_w[3] = {0,0,1};
 	vector_scale_3(g,z_w,9.8);
     float_vect_diff(a_des,a_ref,g,3);
+	/*
 	printf("a_fb = [%f,%f,%f]\n\n\n\n",a_fb[0],a_fb[1],a_fb[2]);
 	printf("a_rd= [%f,%f,%f]\n\n\n\n",a_rd[0],a_rd[1],a_rd[2]);
 	printf("a_des= [%f,%f,%f]\n\n\n\n",a_des[0],a_des[1],a_des[2]);
+	*/
 	
 	// z_b_des = -a_des/norm(a_des)
 	vector_scale_3(z_b_des,a_des,-1.0/float_vect_norm(a_des,3));
@@ -554,6 +561,7 @@ void feedback_controller(struct FloatRates * ptr_omega_fb, float * thrust,float 
 	vector_scale_3(x_b_des,y_c_cross_z_b_des,1.0/float_vect_norm(y_c_cross_z_b_des,3));
 	cross_product_3(y_b_des,z_b_des,x_b_des);
 	*thrust = float_vect_dot_product(a_des,z_b_des,3);
+	//printf("thrust = %f\n\n\n",*thrust);
 
 	RMAT_ELMT(R_B_E, 0, 0) = x_b_des[0];
 	RMAT_ELMT(R_B_E, 0, 1) = y_b_des[0];
@@ -570,6 +578,14 @@ void feedback_controller(struct FloatRates * ptr_omega_fb, float * thrust,float 
 	ptr_omega_fb->p = (att_des.phi - stateGetNedToBodyEulers_f()->phi)*k_att;
 	ptr_omega_fb->q = (att_des.theta - stateGetNedToBodyEulers_f()->theta)*k_att;
 	ptr_omega_fb->r = (att_des.psi - stateGetNedToBodyEulers_f()->psi)*k_att;
+
+	/*
+	printf("att_des = [%f,%f,%f]\n\n\n\n",att_des.phi,att_des.theta,att_des.psi);
+	ptr_omega_fb->p = (att_des.phi - 0.0228)*k_att;
+	ptr_omega_fb->q = (att_des.theta - (-0.0380))*k_att;
+	ptr_omega_fb->r = (att_des.psi - (-0.0037))*k_att;
+	printf("omega = [%f,%f,%f]\n\n\n\n",ptr_omega_fb->p,ptr_omega_fb->q,ptr_omega_fb->r);
+	*/
 
 }
 
