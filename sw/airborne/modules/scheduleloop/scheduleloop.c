@@ -95,8 +95,8 @@ void firstPartLogic(void)
 
 void secondPartLogic(void)
 {
-	struct Point_constraints xf = {6,0.0,0.0};
-	struct Point_constraints yf = {-4,0.0,0.0};
+	struct Point_constraints xf = {7,0.0,0.0};
+	struct Point_constraints yf = {4,0.0,0.0};
 	struct Point_constraints zf = {-2.5,0.0,0.0};
 	struct Point_constraints psif = {0,0.0,0.0};
     switch(lowLevelGuidanceState)
@@ -104,7 +104,7 @@ void secondPartLogic(void)
         case TEMP:
             //nn_controller(5.0,-2.5);
             //go_to_point(5.0,0.0,-2.5,0.0);
-			if(differential_flatness_controller(xf,yf,zf,psif,0,3))
+			if(differential_flatness_controller(xf,yf,zf,psif,0,6))
 			{
 				flagRateControl = false;
 				lowLevelGuidanceState = HOVER; 

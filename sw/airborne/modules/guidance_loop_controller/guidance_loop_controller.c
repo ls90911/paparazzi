@@ -280,25 +280,15 @@ bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_h
     {
             controllerInUse = CONTROLLER_GO_TO_POINT ;
             clearClock(2);
-            guidance_h_mode_changed(GUIDANCE_H_MODE_GUIDED);
-            guidance_v_mode_changed(GUIDANCE_V_MODE_GUIDED);
+            guidance_h_mode_changed(GUIDANCE_H_MODE_HOVER);
+            guidance_v_mode_changed(GUIDANCE_V_MODE_HOVER);
             flagNN = false;
-    }
-    guidance_h_set_guided_pos(desired_x, desired_y);
-    guidance_v_set_guided_z(desired_z);
-    guidance_h_set_guided_heading(desired_heading);
+			/*
+			guidance_h_set_guided_pos(desired_x, desired_y);
+			guidance_v_set_guided_z(desired_z);
+			guidance_h_set_guided_heading(desired_heading);
+			*/
 
-    float error_x =fabs(stateGetPositionNed_f()->x - desired_x);
-    float error_y =fabs(stateGetPositionNed_f()->y - desired_y);
-    float error_z =fabs(stateGetPositionNed_f()->z - desired_z);
-    //set_z_ref(desired_z);
-    if(error_x+error_y+error_z < 0.2)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
     }
 
 }
@@ -338,6 +328,7 @@ struct timeval time_df_0;
 struct timeval time_df;
 struct FloatRates omega_ff,omega_fb,df_omega_cmd;
 float df_thrust_cmd;
+bool flag_maneuver;
 
 bool differential_flatness_controller(struct Point_constraints xf, struct Point_constraints yf,
 		                              struct Point_constraints zf, struct Point_constraints psif,
@@ -348,9 +339,9 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 	{
 		controllerInUse = DIFFERENTIAL_FLATNESS_CONTROLLER;
 		/* ----------------------------    real flight ------------------------------------------------*/
-		struct Point_constraints x0 = {stateGetPositionNed_f()->x,0.0,0.0};
-		struct Point_constraints y0 = {stateGetPositionNed_f()->y,0.0,0.0};
-		struct Point_constraints z0 = {stateGetPositionNed_f()->z,0.0,0.0};
+		struct Point_constraints x0 = {stateGetPositionNed_f()->x,stateGetSpeedNed_f()->x,0.0};
+		struct Point_constraints y0 = {stateGetPositionNed_f()->y,stateGetSpeedNed_f()->y,0.0};
+		struct Point_constraints z0 = {stateGetPositionNed_f()->z,stateGetSpeedNed_f()->z,0.0};
 		struct Point_constraints psi0 = {stateGetNedToBodyEulers_f()->psi, stateGetBodyRates_f()->r,0.0};
 		/* ----------------------------    real flight ------------------------------------------------*/
 
@@ -391,7 +382,7 @@ bool differential_flatness_controller(struct Point_constraints xf, struct Point_
 	float deltaPosition[3];
 	float_vect_diff(deltaPosition,position_f,deltaPosition,3);
 
-	if(xf.p - current_position[0]<0.5)
+	if(fabs(currentDeltaT - tf) < 0.1)
 		return true;
 	else
 		return false;
