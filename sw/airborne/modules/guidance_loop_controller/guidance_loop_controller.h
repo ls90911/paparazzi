@@ -83,7 +83,7 @@ struct Point_constraints
 };
 
 extern bool hover_with_optitrack(float hoverTime);
-extern void nn_controller(float desired_x,float desired_z);
+extern bool nn_controller(float desired_x,float desired_z);
 extern bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_heading);
 
 extern bool flagRateControl;

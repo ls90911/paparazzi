@@ -178,7 +178,7 @@ float timedifference_msec(struct timeval tt0, struct timeval tt1)
 	return (tt1.tv_sec - tt0.tv_sec) * 1000.0f + (tt1.tv_usec - tt0.tv_usec) / 1000.0f;
 }
 
-void nn_controller(float desired_x,float desired_z)
+bool nn_controller(float desired_x,float desired_z)
 {
     if(controllerInUse!= CONTROLLER_NN_CONTROLLER)
     {
@@ -248,10 +248,15 @@ void nn_controller(float desired_x,float desired_z)
 	nn_cmd.FR = F_min+(F_max-F_min)*control[1];
 	sp_accel.z = -(nn_cmd.FL+nn_cmd.FR)/BEBOP_MASS;
 	acceleration_z_controller(sp_accel.z);
+	debug_pid_acc.az_sp = sp_accel.z;
+
+	if(fabs(pos_OT.x- desired_x) < 0.1 && fabs(pos_OT.z- desired_z) < 0.1)
+		return true;
+	else
+		return false;
 	
 	/* --------------------- for log ---------------------------*/
 
-	debug_pid_acc.az_sp = sp_accel.z;
 	/* --------------------- for log ---------------------------*/
 }
 
@@ -286,8 +291,8 @@ bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_h
 			/*
 			guidance_h_set_guided_pos(desired_x, desired_y);
 			guidance_v_set_guided_z(desired_z);
-			guidance_h_set_guided_heading(desired_heading);
 			*/
+			guidance_h_set_guided_heading(desired_heading);
 
     }
 

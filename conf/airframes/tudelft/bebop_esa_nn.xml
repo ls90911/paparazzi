@@ -97,14 +97,12 @@
     <define name="BODY_TO_IMU_THETA" value="0." unit="deg"/>
     <define name="BODY_TO_IMU_PSI" value="0." unit="deg"/>
 
-<define name="ACCEL_X_NEUTRAL" value="10"/>
-<define name="ACCEL_Y_NEUTRAL" value="-37"/>
-<define name="ACCEL_Z_NEUTRAL" value="-20"/>
-<define name="ACCEL_X_SENS" value="2.4535157318690994" integer="16"/>
-<define name="ACCEL_Y_SENS" value="2.449210710278492" integer="16"/>
-<define name="ACCEL_Z_SENS" value="2.44527212229082" integer="16"/>
-
-
+	<define name="ACCEL_X_NEUTRAL" value="6"/>
+	<define name="ACCEL_Y_NEUTRAL" value="-31"/>
+	<define name="ACCEL_Z_NEUTRAL" value="132"/>
+	<define name="ACCEL_X_SENS" value="2.4580330905" integer="16"/>
+	<define name="ACCEL_Y_SENS" value="2.43996185821" integer="16"/>
+	<define name="ACCEL_Z_SENS" value="2.43913305105" integer="16"/>
 
   </section>
 
@@ -190,9 +188,9 @@
   </section>
 
   <section name="GUIDANCE_V" prefix="GUIDANCE_V_">
-    <define name="HOVER_KP" value="283"/>
+    <define name="HOVER_KP" value="400"/>
     <define name="HOVER_KD" value="82"/>
-    <define name="HOVER_KI" value="20"/>
+    <define name="HOVER_KI" value="100"/>
     <define name="NOMINAL_HOVER_THROTTLE" value="0.55"/>
     <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
   </section>
