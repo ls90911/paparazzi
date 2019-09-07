@@ -302,6 +302,7 @@ bool go_to_point(float desired_x,float desired_y,float desired_z,float desired_h
 
 float k_p = 8.0;
 float k_v = 5.0;
+float k_i = 0.5;
 float k_att = 5.0;
 
 void generate_polynomial_trajectory(float **c_p,float * c_v, float * c_a, float * c_j, 

@@ -97,8 +97,8 @@ void firstPartLogic(void)
 void secondPartLogic(void)
 {
 	struct Point_constraints xf = {8,0.0,0.0};
-	struct Point_constraints yf = {0,0.0,0.0};
-	struct Point_constraints zf = {-3.5,0.0,0.0};
+	struct Point_constraints yf = {4,0.0,0.0};
+	struct Point_constraints zf = {-2.5,0.0,0.0};
 	struct Point_constraints psif = {0.0,0.0,0.0};
     switch(lowLevelGuidanceState)
     {
@@ -111,7 +111,7 @@ void secondPartLogic(void)
 			}
 
 #else
-			if(differential_flatness_controller(xf,yf,zf,psif,0,4))
+			if(differential_flatness_controller(xf,yf,zf,psif,0,2.8))
 			{
 				flagRateControl = false;
 				lowLevelGuidanceState = HOVER; 
