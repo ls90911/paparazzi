@@ -92,13 +92,13 @@ void firstPartLogic(void)
     }
 }
 
-#define USE_NN FALSE 
+#define USE_NN TRUE 
 
 void secondPartLogic(void)
 {
-	struct Point_constraints xf = {8,0.0,0.0};
-	struct Point_constraints yf = {4,0.0,0.0};
-	struct Point_constraints zf = {-2.5,0.0,0.0};
+	struct Point_constraints xf = {5,0.0,0.0};
+	struct Point_constraints yf = {0,0.0,0.0};
+	struct Point_constraints zf = {-0.5,0.0,0.0};
 	struct Point_constraints psif = {0.0,0.0,0.0};
     switch(lowLevelGuidanceState)
     {
