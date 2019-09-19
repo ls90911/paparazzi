@@ -274,7 +274,10 @@ void jevois_mavlink_event(void)
           DEBUG_PRINT("[jevois mavlink] VISION_POSITION_ESTIMATE %f,%f,%f \n", jevois_vision_position.x,
               jevois_vision_position.y, jevois_vision_position.z);
 
+
         }
+        default :
+
         break;
 
       }
@@ -347,4 +350,3 @@ static void mavlink_send_highres_imu(void)
                                0);
   MAVLinkSendMessage();
 }
-
