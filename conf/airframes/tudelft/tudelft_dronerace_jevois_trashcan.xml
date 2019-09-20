@@ -133,7 +133,7 @@
         <!--<module name="settings" type="rc"/>-->
 
         <!-- only for... dronerace... -->
-        <module name="dronerace"/>
+       <module name="dronerace"/>
         <module name="ctrl_module_outerloop_demo"/>
 
         <module name="jevois_mavlink">

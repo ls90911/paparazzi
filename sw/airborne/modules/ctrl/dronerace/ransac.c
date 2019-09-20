@@ -3,7 +3,7 @@
 #include "filter.h"
 #include "flightplan.h"
 #include "math/RANSAC.h"
-#include "stdio.h"
+//#include "stdio.h"
 
 // RANSAC Measurement buffer size
 
@@ -105,7 +105,7 @@ void ransac_propagate( void )
         // IF the oldest vision sample is from X seconds ago, then reset
         float age = (dr_state.time - ransac_buf[dr_ransac.buf_index_of_last].time);
         if (age > dr_ransac.dt_novision)
-        { 
+        {
             prediction_correct();
         }
     }
@@ -192,7 +192,7 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
         // Put EVERY FIT in a file to verify
 #define DEBUG_RANSAC
 #ifdef DEBUG_RANSAC
-		/*
+                /*
 
         if(dr_ransac.ransac_cnt % 10000 == 0)
         {
@@ -215,16 +215,16 @@ void ransac_push(float time, float _x, float _y, float _mx, float _my,int _time_
                         ransac_buf[get_index(i)].time_stamp
                 );
             }
-			{
-			  float gate = (float) dr_fp.gate_nr;
-			  float assigned = (float) dr_state.assigned_gate_index;
-	          fprintf(fp,"%d,%d,%f,%f,%f,%f,%f,%f,%d\n", -1 , gate, assigned,  params_x[0], params_x[1], params_y[0], params_y[1] ,0.0f);
-			}
+                        {
+                          float gate = (float) dr_fp.gate_nr;
+                          float assigned = (float) dr_state.assigned_gate_index;
+                  fprintf(fp,"%d,%d,%f,%f,%f,%f,%f,%f,%d\n", -1 , gate, assigned,  params_x[0], params_x[1], params_y[0], params_y[1] ,0.0f);
+                        }
 
             // fprintf(fp,"\n\n X = %f %f Y = %f  %f \n",params_x[0], params_x[1], params_y[0], params_y[1] );
             fclose(fp);
         }
-		*/
+                */
 #endif
 
     }

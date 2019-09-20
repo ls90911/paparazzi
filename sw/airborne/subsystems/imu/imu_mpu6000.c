@@ -111,7 +111,9 @@ void imu_mpu_spi_init(void)
   // change the default configuration
   imu_mpu_spi.mpu.config.smplrt_div = IMU_MPU_SMPLRT_DIV;
   imu_mpu_spi.mpu.config.dlpf_cfg = IMU_MPU_LOWPASS_FILTER;
+  #ifdef ICM20608
   imu_mpu_spi.mpu.config.dlpf_cfg_acc = IMU_MPU_ACCEL_LOWPASS_FILTER; // only for ICM sensors
+  #endif
   imu_mpu_spi.mpu.config.gyro_range = IMU_MPU_GYRO_RANGE;
   imu_mpu_spi.mpu.config.accel_range = IMU_MPU_ACCEL_RANGE;
 }
