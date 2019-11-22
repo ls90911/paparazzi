@@ -93,7 +93,7 @@ void sonar_datalink_init(void)
   sonar_datalink.meas = 0;//todo add minimum of 30cm as per sensor specs?
   sonar_datalink.distance = 0.f;//not max?
   sonar_datalink.offset = SONAR_OFFSET;
-  sonar_datalink.update_agl = false;//USE_SONAR_DATALINK_AGL;
+  sonar_datalink.update_agl = true;//USE_SONAR_DATALINK_AGL;
   sonar_datalink.compensate_rotation = true;//SONAR_DATALINK_COMPENSATE_ROTATION;
 
  // init_median_filter_i(&sonar_datalink_filter, SONAR_DATALINK_MEDIAN_LENGTH);
