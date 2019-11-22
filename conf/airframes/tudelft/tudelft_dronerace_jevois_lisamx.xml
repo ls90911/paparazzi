@@ -105,6 +105,7 @@
 
     <module name="gps" type="datalink"/> <!-- using optitrack and natnet2ivy -->
 
+    <module name="agl_dist"/>
     <!--define name="KILL_ON_GROUND_DETECT" value="TRUE"/-->
   </firmware>
 

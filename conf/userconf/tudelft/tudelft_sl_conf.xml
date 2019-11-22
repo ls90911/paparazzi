@@ -17,8 +17,8 @@
    airframe="airframes/tudelft/tudelft_dronerace_jevois_lisamx.xml"
    radio="radios/OPENUAS/openuas_frsky_X9D_cppm_8ch_out.xml"
    telemetry="telemetry/tudelft/dronerace_debug.xml"
-   flight_plan="flight_plans/tudelft/rotorcraft_autonomous_drone_race.xml"
-   settings="settings/rotorcraft_basic.xml settings/control/stabilization_att_int_quat.xml"
+   flight_plan="flight_plans/dummy.xml"
+   settings="settings/rotorcraft_basic.xml"
    settings_modules="modules/gps.xml modules/ctrl_module_outerloop_demo.xml modules/dronerace.xml modules/sonar_datalink.xml modules/ahrs_float_cmpl_quat.xml modules/ins_extended.xml modules/stabilization_int_quat.xml modules/nav_basic_rotorcraft.xml modules/guidance_rotorcraft.xml modules/imu_common.xml"
    gui_color="#ffffa4eba865"
   />
