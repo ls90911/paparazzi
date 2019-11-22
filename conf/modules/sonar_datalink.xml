@@ -7,7 +7,7 @@
      Get the measured distance value and outputs converted (AGL) distance in [m]
     </description>
     <define name="SONAR_OFFSET" value="0" description="sensor offset in meters - default is 0"/>
-    <configure name="USE_SONAR_DATALINK_AGL" value="0" description="Use this device to update AGL measurements"/>
+    <configure name="USE_SONAR_DATALINK_AGL" value="1" description="Use this device to update AGL measurements"/>
     <configure name="SONAR_DATALINK_COMPENSATE_ROTATION" value="1" description="Compensate AGL measurements for body rotation"/>
     <configure name="SONAR_DATALINK_MEDIAN_LENGTH" value="7" description="Length of median filter for distance measurements"/>
     <define name="SENSOR_SYNC_SEND_SONAR" value="TRUE|FALSE" description="Flag to transmit the data as it is acquired"/>
@@ -26,8 +26,8 @@
     <file name="sonar_datalink.h"/>
   </header>
   <init fun="sonar_datalink_init()"/>
-  <periodic fun="sonar_datalink_downlink()" freq="4" autorun="FALSE"/> <!-- for debug -->
-  <periodic fun="sonar_datalink_periodic()" freq="10"/>
+  <periodic fun="sonar_datalink_downlink()" freq="20" autorun="FALSE"/> <!-- for debug -->
+  <periodic fun="sonar_datalink_periodic()" freq="100"/>
   <makefile target="ap">
     <define name="USE_SONAR_DATALINK_AGL" value="$(USE_SONAR_DATALINK_AGL)"/>
     <define name="SONAR_DATALINK_COMPENSATE_ROTATION" value="$(SONAR_DATALINK_COMPENSATE_ROTATION)"/>

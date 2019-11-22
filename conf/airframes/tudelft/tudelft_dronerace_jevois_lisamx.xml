@@ -1,27 +1,13 @@
 <!DOCTYPE airframe SYSTEM "../airframe.dtd">
-<airframe name="Trashcan">
-    <description>
-* Airframe for the regular "Trashcan" Quadrotor frame equipped with to validate all onboard functionally.
-     + Autopilot:   Default Crazybee F4 Pro STM32F4 and all that comes with it
-     + Actuators:   Default onboard Blheli S ESCs see http://wiki.paparazziuav.org/wiki/Subsystem/actuators#PWM
-     + Telemetry:   Default WiFi  Via ESP8266 see
-     + RC RX:       OpenRX FrSky compatible over air 2.4Ghz CPPM out on LED pin
-
-  NOTES:
-     + All set to expect flying on 2s LiPo battery, 1s LiPo battery possible but no gains set (yet..)
-     + Removed Camera and Video TX to be replaced by a JeVois (www.jevois.org) camera on Uart1
-     + RC control also possible via wifi telemetry module
-     + Vison: added a JeVois on UART1 TX/RX
-     + RC RX: OpenRX FrSky compatible over air 2.4Ghz CPPM out,
-     + Wifi telemetry module also allows RC
-
-   WIP:
-     + GPS:         uBlox SAM M8Q with Magneto n Baro GNSS
-    </description>
+<airframe name="lisamx">
+  <description>
+   later
+   </description>
 
     <firmware name="rotorcraft">
-        <target name="ap" board="crazybee_f4_1.0">
-
+        <target name="ap" board="lisa_mx_2.1">
+                <configure name="FLASH_MODE" value="SWD"/>
+      <!-- MPU is configured to output data at 2kHz, but polled at 512Hz PERIODIC_FREQUENCY -->
             <configure name="NO_LUFTBOOT" value="1"/>
             <configure name="USE_BARO_BOARD" value="FALSE"/>
 
@@ -38,9 +24,10 @@
             <configure name="AHRS_CORRECT_FREQUENCY" value="2000"/>
             <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/> <!-- 75 or 160 max -->
 
+
              <!-- set Gyro/Accel output rate to 2kHz at 8kHz internal sampling -->
-            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/><!--This sets the internal sample rate to 8KHz. -->
-            <define name="IMU_MPU_SMPLRT_DIV" value="3"/> <!-- for 1khz periodic IMU_MPU_SMPLRT_DIV=7 sr = gr(8) /1+IMU_MPU_SMPLRT_DIV (1+7/8=1khz-->
+            <define name="ASPIRIN_2_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/><!--This sets the internal sample rate to 8KHz. -->
+            <define name="ASPIRIN_2_SMPLRT_DIV" value="3"/> <!-- for 1khz periodic IMU_MPU_SMPLRT_DIV=7 sr = gr(8) /1+IMU_MPU_SMPLRT_DIV (1+7/8=1khz-->
 
             <configure name="NAVIGATION_FREQUENCY" value="16"/>
             <configure name="CONTROL_FREQUENCY" value="2000"/>
@@ -51,6 +38,7 @@
             <define name="BAT_CHECKER_DELAY" value="70"/>  <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
             <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="90"/> <!-- in 10/s seconds-->
         </target>
+
 
         <module name="radio_control" type="ppm"> <!--datalink(e.g. wifi) or ppm  or sbus-->
             <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>
@@ -64,29 +52,18 @@
         </module>
 
         <module name="motor_mixing"/>
+
         <module name="actuators" type="pwm">
             <define name="SERVO_HZ" value="480"/>
         </module>
 
-        <module name="telemetry" type="transparent"> <!-- transparent_usb would have been very handy for debugging, but not working ATM, maybe broken in LibopenCM3? -->
-            <configure name="MODEM_PORT" value="UART2"/>
-            <configure name="MODEM_BAUD" value="B115200"/>
-        </module>
-
-        <module name="imu" type="mpu6000">
-            <configure name="IMU_MPU_SPI_DEV" value="spi1"/>
-            <configure name="IMU_MPU_SPI_SLAVE_IDX" value="SPI_SLAVE0"/>
-
-            <!-- define name="ICM20608"/> --> <!-- Not used atm -->
-            <!-- To be able (for now) to set AP IMU orientaion -->
-            <define name="IMU_GYRO_P_SIGN" value="1"/>
-            <define name="IMU_GYRO_Q_SIGN" value="-1"/>
-            <define name="IMU_GYRO_R_SIGN" value="-1"/>
-
-            <define name="IMU_ACCEL_X_SIGN" value="1"/>
-            <define name="IMU_ACCEL_Y_SIGN" value="-1"/>
-            <define name="IMU_ACCEL_Z_SIGN" value="-1"/>
-        </module>
+    <!-- For easier on desk testing transparent_usb, else transparent -->
+    <!-- <module name="telemetry" type="transparent_usb"/>-->
+    <module name="telemetry" type="transparent">
+       <configure name="MODEM_PORT" value="UART3"/>
+       <configure name="MODEM_BAUD" value="B115200"/>
+    </module>
+    <module name="imu"           type="lisa_mx_v2.1"/>
 
         <!-- not all are tested or tuned -->
        <!-- <module name="stabilization" type="rate"/>--><!-- not working yet..)
@@ -97,22 +74,6 @@
         <!-- <module name="stabilization" type="indi" /> -->
 
         <module name="ins" type="extended"/>
-
-        <!-- Not yet tested -->
-        <!--<module name="osd_max7456">
-           <configure name="MAX7456_SPI_DEV" value="SPI2"/>
-           <configure name="MAX7456_SLAVE_IDX" value="SPI_SLAVE1"/>
-        </module>-->
-
-        <!-- <module name="filter_1euro_imu"> -->
-            <!--<define name="IMU_F1E_ID" value="30"/>-->
-            <!--<define name="AHRS_ICQ_IMU_ID" value="F1E_IMU_ID"/>
-            <define name="AHRS_ALIGNER_IMU_ID" value="F1E_IMU_ID"/>-->
-        <!-- </module> -->
-
-        <!--module name="guidance" type="indi">
-             <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
-        </module-->
 
         <module name="ahrs" type="float_cmpl_quat">
             <!--<define name="AHRS_ICQ_IMU_ID" value="IMU_F1E_ID"/>
@@ -125,61 +86,27 @@
             <define name="AHRS_PROPAGATE_LOW_PASS_RATES" value="FALSE"/> <!-- apply a low pass filter on rotational velocity"-->
        </module>
 
-        <!-- WIP for setting values e.g. P/D roll tune via RC Tranmitter, need a new setting file WIP -->
-        <!--<module name="settings" type="rc"/>-->
-        <module name="sonar_datalink">
 
-          <!--<define name="SENSOR_SYNC_SEND_SONAR>--><!-- for debugging only, eg if no message is set in telemetry-->
-        </module>
+    <!-- WIP for setting values e.g. P/D roll tune via RC Tranmitter, need a new setting file WIP -->
+    <!--<module name="settings" type="rc"/>-->
+    <module name="sonar_datalink">
 
-        <!-- only for... dronerace... -->
-        <module name="dronerace"/>
-        <module name="ctrl_module_outerloop_demo"/>
+      <!--<define name="SENSOR_SYNC_SEND_SONAR>--><!-- for debugging only, eg if no message is set in telemetry-->
+    </module>
 
-        <module name="jevois_mavlink">
-            <configure name="JEVOIS_UART" value="UART1"/>
-            <configure name="JEVOIS_BAUD" value="B115200"/>
-        </module>
+    <!-- only for... dronerace... -->
+    <module name="dronerace"/>
+    <module name="ctrl_module_outerloop_demo"/>
 
-        <module name="gps" type="datalink"/> <!-- using optitrack and natnet2ivy -->
+    <module name="jevois_mavlink">
+        <configure name="JEVOIS_UART" value="UART2"/>
+        <configure name="JEVOIS_BAUD" value="B115200"/>
+    </module>
 
-        <!-- No I2C bus yet... still need to find some good spot for I2C pins... except straigt on MCU solder blobs -->
-        <!--
-        <module name="gps" type="ublox">
-          <configure name="GPS_PORT" value="I2C"/>
-        </module>
-        -->
+    <module name="gps" type="datalink"/> <!-- using optitrack and natnet2ivy -->
 
-        <!--<module name="geo_mag"/>
-        <<module name="air_data"/>-->
-
-        <!-- below temporary until tested then disable it -->
-        <!-- <module name="send_imu_mag_current"/> -->
-
-<!--
-        <target name="nps" board="pc">
-            <module name="fdm" type="jsbsim"/>
-            <module name="radio_control" type="ppm">
-                <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>
-            </module>
-        </target>
--->
-<!--       <target name="FPV Racing" board="crazybee_f4_1.0">
-
-            WIP
-              For FPV setup only
-              No GPS
-              No Baro
-              No Magneto
-              Highest loop rate possible for board
-              Flip module
-              Module for OSD
-              Tuned for Race and ACRO
-              Try INDI full
-
-        </target>
--->
-    </firmware>
+    <!--define name="KILL_ON_GROUND_DETECT" value="TRUE"/-->
+  </firmware>
 
     <servos driver="Pwm">
         <servo name="FL" no="3" min="1000" neutral="1030" max="2000"/> <!-- maybe shorter on the cost of resolution... but low high differcnce MUST be bigger than 140-->
@@ -418,7 +345,6 @@
         <define name="ADAPT_THROTTLE_ENABLED" value="FALSE"/>
     </section>
 
-
     <section name="INS" prefix="INS_">
         <!-- Use GPS altitude measurments and set the R gain -->
         <define name="USE_GPS_ALT" value="1"/>
@@ -483,7 +409,7 @@
     </section>
 
     <section name="GCS">
-        <define name="SPEECH_NAME" value="Trashcan"/>
+        <define name="SPEECH_NAME" value="Lisa EM X"/>
         <define name="AC_ICON" value="quadrotor_x"/>
         <define name="ALT_SHIFT_PLUS_PLUS" value="2"/> <!-- 2m low diff for e.g. optitrack, use e.g 10m for outside-->
         <define name="ALT_SHIFT_PLUS" value="1" unit="m"/>

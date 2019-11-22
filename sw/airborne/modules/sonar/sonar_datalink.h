@@ -27,6 +27,7 @@
 #define SONAR_DATALINK_H
 
 #include "std.h"
+#include "stdbool.h"
 
 struct Sonar_Datalink {
   uint16_t meas; ///< Measured distance in mm

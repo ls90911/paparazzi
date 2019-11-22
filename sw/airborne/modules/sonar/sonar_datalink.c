@@ -26,32 +26,38 @@
 
 //FIXME: Better to start using IMCU_REMOTE_GROUND, message is more representative
 
-#include "modules/sonar/sonar_datalink.h"
 #include "subsystems/abi.h"               //for messages subscription
 #include "subsystems/datalink/downlink.h"
-#include "pprzlink/messages.h"            //?
-#include "generated/airframe.h"           // For AC_ID
-#include "state.h"                        //For rotation compensation calc
+#include "subsystems/datalink/datalink.h"
+
+#include "pprzlink/messages.h"
 #include "pprzlink/pprz_transport.h"
 #include "message_pragmas.h"
 
+#include "state.h"                        //For rotation compensation calc
+
+#include "subsystems/abi.h"                 // rssi messages subscription
+#include "generated/airframe.h"           // For AC_ID
+
+#include "modules/sonar/sonar_datalink.h"
+
 // Add an offset to the measurments (in meters)
-#ifndef SONAR_DATALINK_OFFSET
-#define SONAR_DATALINK_OFFSET 0.f
+#ifndef SONAR_OFFSET
+#define SONAR_OFFSET 0.f
 #endif
 
 // Send AGL data over ABI so it can be used in state if needed
-//#ifndef USE_SONAR_DATALINK_AGL
-//#define USE_SONAR_DATALINK_AGL TRUE
-//#endif
+#ifndef USE_SONAR_DATALINK_AGL
+#define USE_SONAR_DATALINK_AGL 0
+#endif
 
 // Rotation compensation
-//#ifndef SONAR_DATALINK_COMPENSATE_ROTATION
-//#define SONAR_DATALINK_COMPENSATE_ROTATION TRUE
-//#endif
+#ifndef SONAR_DATALINK_COMPENSATE_ROTATION
+#define SONAR_DATALINK_COMPENSATE_ROTATION 1
+#endif
 
 struct Sonar_Datalink sonar_datalink;
-struct MedianFilterInt sonar_datalink_filter;
+//struct MedianFilterInt sonar_datalink_filter;
 
 #if PERIODIC_TELEMETRY
 #include "subsystems/datalink/telemetry.h"
@@ -87,10 +93,10 @@ void sonar_datalink_init(void)
   sonar_datalink.meas = 0;//todo add minimum of 30cm as per sensor specs?
   sonar_datalink.distance = 0.f;//not max?
   sonar_datalink.offset = SONAR_OFFSET;
-  sonar_datalink.update_agl = USE_SONAR_DATALINK_AGL;
-  sonar_datalink.compensate_rotation = SONAR_DATALINK_COMPENSATE_ROTATION;
+  sonar_datalink.update_agl = false;//USE_SONAR_DATALINK_AGL;
+  sonar_datalink.compensate_rotation = true;//SONAR_DATALINK_COMPENSATE_ROTATION;
 
-  init_median_filter_i(&sonar_datalink_filter, SONAR_DATALINK_MEDIAN_LENGTH);
+ // init_median_filter_i(&sonar_datalink_filter, SONAR_DATALINK_MEDIAN_LENGTH);
 
 #if PERIODIC_TELEMETRY
   register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_SONAR, sonar_datalink_send_sonar);
@@ -100,34 +106,43 @@ void sonar_datalink_init(void)
 void sonar_datalink_periodic(void)
 {
 #ifndef SITL
-  uint8_t sender_id = DL_SONAR_ac_id(dl_buffer);//SenderIdOfPprzMsg(dl_buffer);
+
+  uint8_t sender_id = SenderIdOfPprzMsg(dl_buffer);
   uint8_t msg_id = IdOfPprzMsg(dl_buffer);
-  sonar_datalink.meas = 66; //DL_SONAR_meas(dl_buffer);
+
+  //sonar_datalink.meas = (uint16_t)msg_id; //FOR TEMP DEBUGGING ONLY to validate if messageID 236 is there
+  //sonar_datalink.meas = 45; //FOR TEMP DEBUGGING ONLY
 
   // Data needs to come from self AC
-  if (sender_id == AC_ID && msg_id == DL_SONAR) {
-    sonar_datalink.distance = (float)(sonar_datalink.meas - sonar_datalink.offset);// * SONAR_SCALE;
-    // check if data is within range FIXME: test al cases with offset
-    if (sonar_datalink.meas > 0) {
-      sonar_datalink.distance = (float)sonar_datalink.meas / 1000.f + sonar_datalink.offset;
+  //if (sender_id == AC_ID){
+    if (msg_id==DL_SONAR) { //newer is PPRZ_MSG_ID_SONAR
+      sonar_datalink.meas = DL_SONAR_sonar_meas(dl_buffer);
+      //sonar_datalink.meas = 49; //FOR TEMP DEBUGGING ONLY
+      sonar_datalink.distance = (float)(sonar_datalink.meas - sonar_datalink.offset);// * SONAR_SCALE;
+      // check if data is within range FIXME: test all cases with offset
+      if (sonar_datalink.meas > 0) {
+        sonar_datalink.distance = (float)sonar_datalink.meas / 1000.f + sonar_datalink.offset;
 
-      //sonar_datalink.meas = update_median_filter_i( &sonar_datalink_filter, (uint32_t)(sonar_datalink.meas));
+        //sonar_datalink.meas = update_median_filter_i( &sonar_datalink_filter, (uint32_t)(sonar_datalink.meas));
 
-      // Compensate AGL measurement for body rotation
-      if (sonar_datalink.compensate_rotation) {
-        float phi = stateGetNedToBodyEulers_f()->phi;
-        float theta = stateGetNedToBodyEulers_f()->theta;
-        float gain = (float)fabs((double)(cosf(phi) * cosf(theta)));
-        sonar_datalink.distance = sonar_datalink.distance * gain;
-      }
+        // Compensate AGL measurement for body rotation
+        if (sonar_datalink.compensate_rotation) {
+          float phi = stateGetNedToBodyEulers_f()->phi;
+          float theta = stateGetNedToBodyEulers_f()->theta;
+          float gain = (float)fabs((double)(cosf(phi) * cosf(theta)));
+          sonar_datalink.distance = sonar_datalink.distance * gain;
+        }
 
-      // send ABI message if requested flag set to true so yeah dynamic runtime o set or not may come in handy
-      if (sonar_datalink.update_agl) {
-        uint32_t now_ts = get_sys_time_usec();
-        AbiSendMsgAGL(AGL_SONAR_ADC_ID, now_ts, sonar_datalink.distance);//AGL_SONAR_SONAR_DATALINK_ID
+        // send ABI message if requested flag set to true so yeah dynamic runtime o set or not may come in handy
+        sonar_datalink.distance=.66f;
+        //if (sonar_datalink.update_agl) {
+          uint32_t now_ts = get_sys_time_usec();
+          sonar_datalink.distance=.77f;
+          AbiSendMsgAGL(AGL_SONAR_ADC_ID, now_ts, sonar_datalink.distance);//AGL_SONAR_SONAR_DATALINK_ID
+        //}
       }
     }
-
+ // }
 #else // SITL
   sonar_datalink.distance = stateGetPositionEnu_f()->z;//not correct, no rotateion compensation and not really AGL
   Bound(sonar_datalink.distance, 0.1f, 7.0f);//not definable  fixed at 7 ?
