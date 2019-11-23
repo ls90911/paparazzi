@@ -29,6 +29,8 @@
 #include "subsystems/abi.h"               //for messages subscription
 #include "subsystems/datalink/downlink.h"
 #include "subsystems/datalink/datalink.h"
+#include "subsystems/ins/vf_extended_float.h"
+#include "subsystems/ins/ins_int.h"
 
 #include "pprzlink/messages.h"
 #include "pprzlink/pprz_transport.h"
@@ -53,7 +55,7 @@
 
 // Rotation compensation
 #ifndef SONAR_DATALINK_COMPENSATE_ROTATION
-#define SONAR_DATALINK_COMPENSATE_ROTATION 1
+#define SONAR_DATALINK_COMPENSATE_ROTATION 0
 #endif
 
 struct Sonar_Datalink sonar_datalink;
@@ -134,11 +136,13 @@ void sonar_datalink_periodic(void)
         }
 
         // send ABI message if requested flag set to true so yeah dynamic runtime o set or not may come in handy
-        sonar_datalink.distance=.66f;
+        //sonar_datalink.distance=.66f;
         //if (sonar_datalink.update_agl) {
           uint32_t now_ts = get_sys_time_usec();
-          sonar_datalink.distance=.77f;
-          AbiSendMsgAGL(AGL_SONAR_ADC_ID, now_ts, sonar_datalink.distance);//AGL_SONAR_SONAR_DATALINK_ID
+          //sonar_datalink.distance=.77f;
+		  vff_update_agl(-sonar_datalink.distance, 0.2);
+          ins_int.propagation_cnt = 0;
+          //AbiSendMsgAGL(AGL_SONAR_ADC_ID, now_ts, sonar_datalink.distance);//AGL_SONAR_SONAR_DATALINK_ID
         //}
       }
     }
