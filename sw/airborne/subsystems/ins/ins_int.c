@@ -98,7 +98,7 @@ PRINT_CONFIG_MSG("INS_SONAR_UPDATE_ON_AGL defaulting to FALSE")
 
 /** maximum number of propagation steps without any updates in between */
 #ifndef INS_MAX_PROPAGATION_STEPS
-#define INS_MAX_PROPAGATION_STEPS 200
+#define INS_MAX_PROPAGATION_STEPS 2000
 #endif
 
 #ifndef USE_INS_NAV_INIT
@@ -306,6 +306,9 @@ void ins_int_propagate(struct Int32Vect3 *accel, float dt)
    * This should only be relevant in the startup phase when the baro is not yet initialized
    * and there is no gps fix yet...
    */
+    vff_propagate(z_accel_meas_float, dt);
+    ins_update_from_vff();
+	/*
   if (ins_int.propagation_cnt < INS_MAX_PROPAGATION_STEPS) {
     vff_propagate(z_accel_meas_float, dt);
     ins_update_from_vff();
@@ -315,6 +318,7 @@ void ins_int_propagate(struct Int32Vect3 *accel, float dt)
     // but vehicle not accelerating in ltp)
     ins_int.ltp_accel.z = accel_meas_ltp.z + ACCEL_BFP_OF_REAL(9.81);
   }
+  */
 
 #if USE_HFF
   /* propagate horizontal filter */

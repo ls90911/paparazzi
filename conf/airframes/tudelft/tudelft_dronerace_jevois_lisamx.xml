@@ -89,10 +89,7 @@
 
     <!-- WIP for setting values e.g. P/D roll tune via RC Tranmitter, need a new setting file WIP -->
     <!--<module name="settings" type="rc"/>-->
-    <module name="sonar_datalink">
-       <define name="USE_SONAR_DATALINK_AGL" value="1"/>
-       <define name="SONAR_UPDATE_ON_AGL" value="1"/>
-    </module>
+    <module name="sonar_datalink"/>
 
 
       <!--<define name="SENSOR_SYNC_SEND_SONAR>--><!-- for debugging only, eg if no message is set in telemetry-->
