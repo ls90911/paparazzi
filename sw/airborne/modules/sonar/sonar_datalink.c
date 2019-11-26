@@ -112,7 +112,7 @@ void sonar_datalink_periodic(void)
   uint8_t sender_id = SenderIdOfPprzMsg(dl_buffer);
   uint8_t msg_id = IdOfPprzMsg(dl_buffer);
 
-  //sonar_datalink.meas = (uint16_t)msg_id; //FOR TEMP DEBUGGING ONLY to validate if messageID 236 is there
+  //sonar_datalink.meas = (uint16_t)msg_id; //FOR TEMP DEBUGGING ONLY to validate if message ID of SONAR (236 in our case) is there
   //sonar_datalink.meas = 45; //FOR TEMP DEBUGGING ONLY
 
   // Data needs to come from self AC
@@ -121,11 +121,11 @@ void sonar_datalink_periodic(void)
       sonar_datalink.meas = DL_SONAR_sonar_meas(dl_buffer);
       //sonar_datalink.meas = 49; //FOR TEMP DEBUGGING ONLY
       sonar_datalink.distance = (float)(sonar_datalink.meas - sonar_datalink.offset);// * SONAR_SCALE;
-      // check if data is within range FIXME: test all cases with offset
+      // check if data is within range TODO: test all cases with offset
       if (sonar_datalink.meas > 0) {
         sonar_datalink.distance = (float)sonar_datalink.meas / 1000.f + sonar_datalink.offset;
 
-        //sonar_datalink.meas = update_median_filter_i( &sonar_datalink_filter, (uint32_t)(sonar_datalink.meas));
+        //sonar_datalink.meas = update_median_filter_i( &sonar_datalink_filter, (uint32_t)(sonar_datalink.meas));//FIXME: if you need it
 
         // Compensate AGL measurement for body rotation
         if (sonar_datalink.compensate_rotation) {
@@ -136,13 +136,13 @@ void sonar_datalink_periodic(void)
         }
 
         // send ABI message if requested flag set to true so yeah dynamic runtime o set or not may come in handy
-        //sonar_datalink.distance=.66f;
+        //sonar_datalink.distance=.66f; //FOR TEMP DEBUGGING ONLY
         //if (sonar_datalink.update_agl) {
-          uint32_t now_ts = get_sys_time_usec();
-          //sonar_datalink.distance=.77f;
-		  vff_update_agl(-sonar_datalink.distance, 0.2);
-          ins_int.propagation_cnt = 0;
-          //AbiSendMsgAGL(AGL_SONAR_ADC_ID, now_ts, sonar_datalink.distance);//AGL_SONAR_SONAR_DATALINK_ID
+        uint32_t now_ts = get_sys_time_usec();
+        //sonar_datalink.distance=.77f; //FOR TEMP DEBUGGING ONLY
+        vff_update_agl(-sonar_datalink.distance, 0.2); //FOR TEMP DEBUGGING ONLY
+        ins_int.propagation_cnt = 0; //FOR TEMP DEBUGGING ONLY
+        //AbiSendMsgAGL(AGL_SONAR_ADC_ID, now_ts, sonar_datalink.distance);//AGL_SONAR_SONAR_DATALINK_ID
         //}
       }
     }
