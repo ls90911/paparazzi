@@ -12,7 +12,7 @@
 
 // Variables
 struct dronerace_control_struct dr_control;
-struct pid_term_struct pid_term = {0.0,0.0,0.0};
+struct pid_term_struct pid_term = {0.0,0.0,0.0,0.0,0.0,0.0};
 struct indi_controller_struct indi_ctrl;
 
 float k_p_vel_x = 0.3;
@@ -90,8 +90,8 @@ void control_run(void)
 
   if(dr_ransac.buf_size < 5)
   {
-	  vxcmd = 0.0;
-	  vycmd = 0.0;
+          vxcmd = 0.0;
+          vycmd = 0.0;
   }
 
 
@@ -124,5 +124,3 @@ void control_run(void)
   vx_error_previous = vx_err;
   vy_error_previous = vy_err;
 }
-
-

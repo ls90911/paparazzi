@@ -28,7 +28,7 @@
     </mode>
 
     <mode name="my_logger" key_press="l">
-      <message name="DRONERACE_DEBUG"          period="0.01"/>
+      <message name="DRONERACE_DEBUG"          period="0.02"/>
       <message name="SONAR"                    period="0.5"/>
       <message name="AUTOPILOT_VERSION"        period="11.1"/>
       <message name="DL_VALUE"                 period="1.1"/>

@@ -26,31 +26,32 @@
             <configure name="USE_BARO_BOARD" value="FALSE"/>
 
             <define name="AUTOPILOT_DISABLE_AHRS_KILL"/> <!--  Starts in KILL, but can now switch to NAV -->
-            <define name="AHRS_ALIGNER_SAMPLES_NB" value="1200"/>  <!--When fidly plugging in a battery, aircraft kind of wobbly, now avoid messing up the aligner this way -->
+            <!--<define name="AHRS_ALIGNER_SAMPLES_NB" value="1200"/>-->  <!--When fidly plugging in a battery, aircraft kind of wobbly, now avoid messing up the aligner this way -->
             <!-- <define name="LOW_NOISE_THRESHOLD" value="30000"/>-->
             <!-- <define name="LOW_NOISE_TIME" value="10"/>-->
 
             <!-- 2 kHz periodic -->
-            <configure name="PERIODIC_FREQUENCY" value="2048"/>
-
-            <define name="HFF_PRESCALER" value="40"/><!-- FIXME: determine fully correct one-->
+          <configure name="PERIODIC_FREQUENCY" value="2048"/>
+<!--
+            <define name="HFF_PRESCALER" value="40"/>--><!-- FIXME: determine fully correct one-->
             <define name="AHRS_PROPAGATE_FREQUENCY" value="2000"/>
             <configure name="AHRS_CORRECT_FREQUENCY" value="2000"/>
-            <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/> <!-- 75 or 160 max -->
-
-             <!-- set Gyro/Accel output rate to 2kHz at 8kHz internal sampling -->
-            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/><!--This sets the internal sample rate to 8KHz. -->
-            <define name="IMU_MPU_SMPLRT_DIV" value="3"/> <!-- for 1khz periodic IMU_MPU_SMPLRT_DIV=7 sr = gr(8) /1+IMU_MPU_SMPLRT_DIV (1+7/8=1khz-->
+            <configure name="AHRS_MAG_CORRECT_FREQUENCY" value="50"/><!-- 75 or 160 max -->
 
             <configure name="NAVIGATION_FREQUENCY" value="16"/>
             <configure name="CONTROL_FREQUENCY" value="2000"/>
-            <configure name="TELEMETRY_FREQUENCY" value="120"/>
+            <configure name="TELEMETRY_FREQUENCY" value="60"/>
             <configure name="MODULES_FREQUENCY" value="2048"/>
 
+            <define name="IMU_MPU_LOWPASS_FILTER" value="MPU60X0_DLPF_256HZ"/>
+            <define name="IMU_MPU_ACCEL_LOWPASS_FILTER" value="MPU60X0_DLPF_ACC_218HZ"/>
+            <define name="IMU_MPU_SMPLRT_DIV" value="3"/>
+
             <!--<define name="USE_PERSISTENT_SETTINGS" value="TRUE"/> --><!-- handy with the short flight time between tuning sets, not tested if it works yet, this board we have 16kb reserved -->
+        </target>
+
             <define name="BAT_CHECKER_DELAY" value="70"/>  <!-- to avoid bat low spike detection when strong up movement withch draws short sudden power-->
             <define name="CATASTROPHIC_BATTERY_KILL_DELAY" value="90"/> <!-- in 10/s seconds-->
-        </target>
 
         <module name="radio_control" type="ppm"> <!--datalink(e.g. wifi) or ppm  or sbus-->
             <define name="RADIO_CONTROL_NB_CHANNEL" value="8"/>
@@ -127,7 +128,7 @@
 
         <!-- WIP for setting values e.g. P/D roll tune via RC Tranmitter, need a new setting file WIP -->
         <!--<module name="settings" type="rc"/>-->
-        <module name="sonar_datalink">
+        <module name="sonar_datalink"><!-- since on the crazybee f4 no way to easy connect  I2C devices they are connecte on ESP8266 and data injected into PPRZ datastream-->
 
           <!--<define name="SENSOR_SYNC_SEND_SONAR>--><!-- for debugging only, eg if no message is set in telemetry-->
         </module>

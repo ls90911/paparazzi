@@ -119,28 +119,28 @@ void jevois_mavlink_filter_init(void)
 /*
  * Paparazzi Module functions : forward to telemetry
  */
-uint16_t cnt_temp;
 uint16_t cnt_att_cmd = 0;
 float roll_cmd;
 float pitch_cmd;
 static void send_dronerace_debug_info(struct transport_tx *trans, struct link_device *dev)
 {
-	//if (jevois_vision_position.received) {
+        //if (jevois_vision_position.received) {
     //jevois_vision_position.received = false;
     //uint16_t cnt = jevois_vision_position.cnt;
-	float x_OT = stateGetPositionNed_f()->x;
-	float y_OT = stateGetPositionNed_f()->y;
-	float vx_OT = stateGetSpeedNed_f()->x;
-	float vy_OT = stateGetSpeedNed_f()->y;
-	float phi = stateGetNedToBodyEulers_f()->phi;
-	float theta = stateGetNedToBodyEulers_f()->theta;
-	float psi = stateGetNedToBodyEulers_f()->psi;
-    //cnt_temp = jevois_vision_position.cnt;
-	float buf_size = (float)dr_ransac.buf_size;
+        float x_OT = stateGetPositionNed_f()->x;
+        float y_OT = stateGetPositionNed_f()->y;
+        float vx_OT = stateGetSpeedNed_f()->x;
+        float vy_OT = stateGetSpeedNed_f()->y;
+        float phi = stateGetNedToBodyEulers_f()->phi;
+        float theta = stateGetNedToBodyEulers_f()->theta;
+        float psi = stateGetNedToBodyEulers_f()->psi;
+        uint8_t cnt_temp = (uint8_t)jevois_vision_position.cnt;
+        float buf_size = (float)dr_ransac.buf_size;
+
     pprz_msg_send_DRONERACE_DEBUG(trans, dev, AC_ID,
-                               &jevois_vision_position.cnt,
-							   &mx,
-							   &my,
+                               &cnt_temp,
+                               &mx,
+                               &my,
                                &phi,
                                &theta,
                                &psi,
@@ -154,12 +154,12 @@ static void send_dronerace_debug_info(struct transport_tx *trans, struct link_de
                                &filteredY,
                                &filteredVx,
                                &filteredVy,
-                               &filteredX, 
-                               &filteredY, 
+                               &filteredX,
+                               &filteredY,
                                &indi_ctrl.vx_cmd,
                                &dr_state.time,
                                &cnt_att_cmd
-								 );
+                                                                 );
 
 }
 // Send Manual Setpoint over telemetry using ROTORCRAFT_RADIO_CONTROL message
@@ -289,19 +289,19 @@ void jevois_mavlink_event(void)
           mavlink_manual_setpoint_t jevois_mavlink_manual_setpoint;
           mavlink_msg_manual_setpoint_decode(&msg, &jevois_mavlink_manual_setpoint);
 
-		  /*
+                  /*
           AbiSendMsgMANUAL_SETPOINT(JEVOIS_MAVLINK_ABI_ID, jevois_mavlink_manual_setpoint.thrust,
                                     jevois_mavlink_manual_setpoint.roll,
                                     jevois_mavlink_manual_setpoint.pitch,
                                     jevois_mavlink_manual_setpoint.yaw);
-									*/
-		 
-		  roll_cmd = jevois_mavlink_manual_setpoint.roll;
-		  pitch_cmd = jevois_mavlink_manual_setpoint.pitch;
-		  ctrl.cmd.phi = ANGLE_BFP_OF_REAL(jevois_mavlink_manual_setpoint.roll);
-		  ctrl.cmd.theta = ANGLE_BFP_OF_REAL(jevois_mavlink_manual_setpoint.pitch);
-		  ctrl.cmd.psi = ANGLE_BFP_OF_REAL(jevois_mavlink_manual_setpoint.yaw);
-		  cnt_att_cmd++;
+                                                                        */
+
+                  roll_cmd = jevois_mavlink_manual_setpoint.roll;
+                  pitch_cmd = jevois_mavlink_manual_setpoint.pitch;
+                  ctrl.cmd.phi = ANGLE_BFP_OF_REAL(jevois_mavlink_manual_setpoint.roll);
+                  ctrl.cmd.theta = ANGLE_BFP_OF_REAL(jevois_mavlink_manual_setpoint.pitch);
+                  ctrl.cmd.psi = ANGLE_BFP_OF_REAL(jevois_mavlink_manual_setpoint.yaw);
+                  cnt_att_cmd++;
         }
         break;
 
@@ -332,16 +332,16 @@ void jevois_mavlink_event(void)
         }
         break;
 
-		case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
-		{
-			mavlink_local_position_ned_t mavlink_local_position_ned;
-			mavlink_msg_local_position_ned_decode(&msg,&mavlink_local_position_ned);
-			filteredX = mavlink_local_position_ned.x;
-			filteredY = mavlink_local_position_ned.y;
-		}
-		break;
+                case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
+                {
+                        mavlink_local_position_ned_t mavlink_local_position_ned;
+                        mavlink_msg_local_position_ned_decode(&msg,&mavlink_local_position_ned);
+                        filteredX = mavlink_local_position_ned.x;
+                        filteredY = mavlink_local_position_ned.y;
+                }
+                break;
         default:
-        	break;
+                break;
 
       }
     }
@@ -426,22 +426,22 @@ static void mavlink_send_control_system_state(void)
   position_sp[0] = dr_fp.x_set;
   position_sp[1] = dr_fp.y_set;
   mavlink_msg_control_system_state_send(MAVLINK_COMM_0,
-		                          get_sys_time_msec(),
-								  0.0,
-								  0.0,
-								  0.0,
-								  filteredVx,
-								  filteredVy,
-								  (float)dr_fp.gate_nr,
-								  filteredX,
-								  filteredY,
-								  dr_state.x,
-								  dr_state.y,
-								  velocity_sp,
-								  position_sp,
-								  control_sp,
-								  0.0,
-								  0.0,
-								  0.0);
+                                          get_sys_time_msec(),
+                                                                  0.0,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  filteredVx,
+                                                                  filteredVy,
+                                                                  (float)dr_fp.gate_nr,
+                                                                  filteredX,
+                                                                  filteredY,
+                                                                  dr_state.x,
+                                                                  dr_state.y,
+                                                                  velocity_sp,
+                                                                  position_sp,
+                                                                  control_sp,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  0.0);
   MAVLinkSendMessage();
 }
