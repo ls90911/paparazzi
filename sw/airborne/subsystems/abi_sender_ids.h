@@ -103,6 +103,10 @@
 #define AIRSPEED_ADC_ID 2
 #endif
 
+#ifndef AIRSPEED_SDP3X_ID
+#define AIRSPEED_SDP3X_ID 3
+#endif
+
 /*
  * IDs of Incidence angles (message 24)
  */
@@ -429,9 +433,19 @@
 #define RELATIVE_LOCALIZATION_ID 1
 #endif
 
-
 #ifndef DETECT_GATE_ABI_ID
 #define DETECT_GATE_ABI_ID 33
+#endif
+
+/*
+ * VISUAL_DETECTION communication (message 27)
+*/
+#ifndef COLOR_OBJECT_DETECTION1_ID
+#define COLOR_OBJECT_DETECTION1_ID 1
+#endif
+
+#ifndef COLOR_OBJECT_DETECTION2_ID
+#define COLOR_OBJECT_DETECTION2_ID 2
 #endif
 
 /*
